@@ -574,21 +574,28 @@ class StatisticalFeatures:
         return np.array(feats), feats_names
 
     def calculate_mean(self, signal):
+        # Manolopoulos et al., 2001, https://www.researchgate.net/publication/234800113
         return np.array([np.mean(signal)])
 
     def calculate_geometric_mean(self, signal):
+        # Chaddad et al., 2014, DOI: 10.1117/12.2062143
         return np.array([gmean(signal)])
 
     def calculate_harmonic_mean(self, signal):
+        # Chaddad et al., 2014, DOI: 10.1117/12.2062143
         return np.array([hmean(signal)])
 
     def calculate_trimmed_mean(self, signal):
+        # Chaddad et al., 2014, DOI: 10.1117/12.2062143
         feats = []
         for proportiontocut in self.trimmed_mean_thresholds:
             feats.append(trim_mean(signal, proportiontocut=proportiontocut))
         return np.array(feats)
 
     def calculate_mean_abs(self, signal):
+        # Myroniv et al., 2017, https://www.researchgate.net/publication/323935725
+        # Phinyomark et al., 2012, DOI: 10.1016/j.eswa.2012.01.102
+        # Purushothaman et al., 2018, DOI: 10.1007/s13246-018-0646-7
         return np.array([np.mean(np.abs(signal))])
 
     def calculate_geometric_mean_abs(self, signal):
@@ -604,30 +611,37 @@ class StatisticalFeatures:
         return np.array(feats)
 
     def calculate_std(self, signal):
+        # Manolopoulos et al., 2001, https://www.researchgate.net/publication/234800113
         return np.array([np.std(signal)])
 
     def calculate_std_abs(self, signal):
         return np.array([np.std(np.abs(signal))])
 
     def calculate_skewness(self, signal):
+        # Manolopoulos et al., 2001, https://www.researchgate.net/publication/234800113
+        # Khorshidtalab et al., 2013 , DOI: 10.1088/0967-3334/34/11/1563
         return np.array([skew(signal)])
 
     def calculate_skewness_abs(self, signal):
         return np.array([skew(np.abs(signal))])
 
     def calculate_kurtosis(self, signal):
+        # Manolopoulos et al., 2001, https://www.researchgate.net/publication/234800113
+        # Khorshidtalab et al., 2013 , DOI: 10.1088/0967-3334/34/11/1563
         return np.array([kurtosis(signal)])
 
     def calculate_kurtosis_abs(self, signal):
         return np.array([kurtosis(np.abs(signal))])
 
     def calculate_median(self, signal):
+        # Banos et al., 2012, DOI: 10.1016/j.eswa.2012.01.164
         return np.array([np.median(signal)])
 
     def calculate_median_abs(self, signal):
         return np.array([np.median(np.abs(signal))])
 
     def calculate_min(self, signal):
+        # 18th International Conference on Computer Communications and Networks, DOI: 10.1109/ICCCN15201.2009
         min_val = np.min(signal)
         return np.array([min_val])
 
@@ -636,6 +650,7 @@ class StatisticalFeatures:
         return np.array([min_abs_val])
 
     def calculate_max(self, signal):
+        # Khorshidtalab et al., 2013 , DOI: 10.1088/0967-3334/34/11/1563
         max_val = np.max(signal)
         return np.array([max_val])
 
@@ -651,21 +666,28 @@ class StatisticalFeatures:
         return np.array([np.max(abs_signal) - np.min(abs_signal)])
 
     def calculate_variance(self, signal):
+        # Khorshidtalab et al., 2013 , DOI: 10.1088/0967-3334/34/11/1563
         return np.array([np.var(signal)])
 
     def calculate_variance_abs(self, signal):
         return np.array([np.var(np.abs(signal))])
 
     def calculate_interquartile_range(self, signal):
+        # Formula from Bedeeuzzaman et al., 2012, DOI: 10.5120/6304-8614
+        # Bedeeuzzaman et al., 2012, DOI: 10.5120/6304-8614
         return np.array([np.percentile(signal, 75) - np.percentile(signal, 25)])
 
     def calculate_mean_absolute_deviation(self, signal):
+        # Formula from Khair et al., 2017, DOI: 10.1088/1742-6596/930/1/012002
         return np.array([np.mean(np.abs(signal - np.mean(signal)))])
 
     def calculate_root_mean_square(self, signal):
+        # Formula from Khorshidtalab et al., 2013, DOI: 10.1088/0967-3334/34/11/1563
+        # 18th International Conference on Computer Communications and Networks, DOI: 10.1109/ICCCN15201.2009
         return np.array([np.sqrt(np.mean(signal**2))])
 
     def calculate_signal_energy(self, signal):
+        # Formula from Rafiuddin et al., 2011, DOI: 10.1109/MSPCT.2011.6150470
         return np.array([np.sum(signal**2)])
 
     def calculate_log_energy(self, signal):
@@ -679,12 +701,17 @@ class StatisticalFeatures:
             epsilon = 1e-10
             hist = np.where(hist > 0, hist, epsilon)
             # Calculate the entropy
+            # Guido, 2018, DOI: 10.1016/j.inffus.2017.09.006
             entropy = -np.sum(hist * np.log2(hist))
         except:
             entropy = np.nan
         return np.array([entropy])
 
     def calculate_zero_crossings(self, signal):
+        # Myroniv et al., 2017, https://www.researchgate.net/publication/323935725_Analyzing_User_Emotions_via_Physiology_Signals
+        # Sharma et al., 2020, DOI: 10.1016/j.apacoust.2019.107020
+        # Purushothaman et al., 2018, DOI: 10.1007/s13246-018-0646-7
+
         # Compute the difference in signbit (True if number is negative)
         zero_cross_diff = np.diff(np.signbit(signal))
         # Sum the differences to get the number of zero-crossings
@@ -692,27 +719,34 @@ class StatisticalFeatures:
         return np.array([num_zero_crossings])
 
     def calculate_crest_factor(self, signal):
+        # Formula from Cempel, 1980, DOI: 10.1016/0022-460X(80)90667-7
         crest_factor = np.max(np.abs(signal)) / np.sqrt(np.mean(signal**2))
         return np.array([crest_factor])
 
     def calculate_clearance_factor(self, signal):
+        # Formula from The MathWorks Inc., 2022, Available: [Signal Features](https://www.mathworks.com)
         clearance_factor = np.max(np.abs(signal)) / (np.mean(np.sqrt(np.abs(signal))) ** 2)
         return np.array([clearance_factor])
 
     def calculate_shape_factor(self, signal):
+        # Formula from Cempel, 1980, DOI: 10.1016/0022-460X(80)90667-7
         shape_factor = np.sqrt(np.mean(signal**2)) / np.mean(np.abs(signal))
         return np.array([shape_factor])
 
     def calculate_mean_crossing(self, signal):
+        # Formula from Myroniv et al., 2017, https://www.researchgate.net/publication/323935725
         mean_value = np.mean(signal)
         mean_crossings = np.where(np.diff(np.sign(signal - mean_value)))[0]
         return np.array([len(mean_crossings)])
 
     def calculate_impulse_factor(self, signal):
+        # Formula from Cempel, 1980, DOI: 10.1016/0022-460X(80)90667-7
         impulse_factor = np.max(np.abs(signal)) / np.mean(np.abs(signal))
         return np.array([impulse_factor])
 
     def calculate_mean_auto_correlation(self, signal):
+        # Fulcher, 2017, DOI: 10.48550/arXiv.1709.08055
+        # Banos et al., 2012, DOI: 10.1016/j.eswa.2012.01.164
         auto_correlation_values = acf(signal, nlags=self.n_lags_auto_correlation)[1:]
         return np.array([np.mean(auto_correlation_values)])
 
@@ -723,27 +757,35 @@ class StatisticalFeatures:
         return np.array(feats)
 
     def calculate_coefficient_of_variation(self, signal):
-        # Also one of the signal-to-noise definitions
+        # Formula from Jalilibal et al., 2021, DOI: 10.1016/j.cie.2021.107600
         coefficient_of_variation = np.std(signal) / np.mean(signal)
         return np.array([coefficient_of_variation])
 
     def calculate_median_absolute_deviation(self, signal):
+        # Formula from Pham-Gia, 2001, DOI: 10.1016/S0895-7177(01)00109-1
+        # Rafiuddin et al., 2011, DOI: 10.1109/MSPCT.2011.6150470
         median_value = np.median(signal)
         mad = np.median(np.abs(signal - median_value))
         return np.array([mad])
 
     def calculate_signal_magnitude_area(self, signal):
+        # Formula from Khan et al., 2010, DOI: 10.1109/TITB.2010.2051955
+        # Formula from Rafiuddin et al., 2011, DOI: 10.1109/MSPCT.2011.6150470
         return np.array([np.sum(np.abs(signal))])
 
     def calculate_avg_amplitude_change(self, signal):
+        # Formula from Phinyomark et al., 2012, DOI: 10.1016/j.eswa.2012.01.102
         avg_amplitude_change = np.mean(np.abs(np.diff(signal)))
         return np.array([avg_amplitude_change])
 
     def calculate_slope_sign_change(self, signal):
+        # Purushothaman et al., 2018, DOI: 10.1007/s13246-018-0646-7
         slope_sign_change = np.count_nonzero(np.abs(np.diff(np.sign(np.diff(signal)))))
         return np.array([slope_sign_change])
 
     def calculate_higuchi_fractal_dimensions(self, signal):
+        # Wanliss et al., 2022, DOI: 10.1007/s11071-022-07353-2
+        # Wijayanto et al., 2019, DOI: 10.1109/ICITEED.2019.8929940
         def compute_length_for_interval(data, interval, start_time):
             data_size = data.size
             num_intervals = np.floor((data_size - start_time) / interval).astype(np.int64)
@@ -771,6 +813,8 @@ class StatisticalFeatures:
         return np.array(feats)
 
     def calculate_permutation_entropy(self, signal):
+        # Bandt et al., 2002, DOI: 10.1103/PhysRevLett.88.174102
+        # Zanin et al., 2012, DOI: 10.3390/e14081553
         try:
             order = self.permutation_entropy_order
             delay = self.permutation_entropy_delay
@@ -809,6 +853,8 @@ class StatisticalFeatures:
         return np.array([entropy_value])
 
     def calculate_svd_entropy(self, signal):
+        # Banerjee et al., 2014, DOI: 10.1016/j.ins.2013.12.029
+        # Strydom et al., 2021, DOI: 10.3389/fevo.2021.623141
         try:
             order = self.svd_entropy_order
             delay = self.svd_entropy_delay
@@ -843,6 +889,7 @@ class StatisticalFeatures:
         return np.array([svd_entropy_value])
 
     def calculate_hjorth_mobility_and_complexity(self, signal):
+        # Hjorth, 1970, DOI:10.1016/0013-4694(70)90143-4
         try:
             signal = np.asarray(signal)
             # Calculate derivatives
@@ -873,8 +920,10 @@ class StatisticalFeatures:
 
     def calculate_rms_to_mean_abs(self, signal):
         # Compute rms value
+        # Formula from Khorshidtalab et al., 2013, DOI: 10.1088/0967-3334/34/11/1563
         rms_val = np.sqrt(np.mean(signal ** 2))
         # Compute mean absolute value
+        # Formula from Khorshidtalab et al., 2013, DOI: 10.1088/0967-3334/34/11/1563
         mean_abs_val = np.mean(np.abs(signal))
         # Compute ratio of RMS value to mean absolute value
         ratio = rms_val / mean_abs_val
@@ -896,6 +945,7 @@ class StatisticalFeatures:
             return np.array([np.nan])
 
     def calculate_renyi_entropy(self, signal):
+        # Beadle et al., 2008, DOI: 10.1109/ACSSC.2008.5074715
         try:
             # Calculate the histogram
             hist, _ = np.histogram(signal, bins=self.window_size//2, density=True)
@@ -912,20 +962,24 @@ class StatisticalFeatures:
             return np.array([np.nan])
 
     def calculate_absolute_energy(self, signal):
+        # https://tsfel.readthedocs.io/en/latest/descriptions/feature_list.html
         return np.sum(signal**2)
 
     def calculate_approximate_entropy(self, signal):
+        # https://doi.org/10.3390%2Fe21060541
         count, _ = np.histogram(signal, bins=10, density=True)
         count = count[count > 0]  # Avoid log(0) issue
         return -np.sum(count * np.log(count))
 
     def calculate_area_under_curve(self, signal):
+        # https://www.researchgate.net/publication/324936696_Enhancing_EEG_Signals_Recognition_Using_ROC_Curve
         return simps(np.abs(signal), dx=1)
 
     def calculate_area_under_squared_curve(self, signal):
         return simps(signal**2, dx=1)
 
     def calculate_autoregressive_model_coefficients(self, signal, order=4):
+        # https://doi.org/10.1109/IEMBS.2008.4650379
         model = AutoReg(signal, lags=order, old_names=False)
         model_fitted = model.fit()
         return model_fitted.params
@@ -934,34 +988,43 @@ class StatisticalFeatures:
         return len(signal)
 
     def calculate_count_above_mean(self, signal):
+        # https://tsfresh.readthedocs.io/en/latest/api/tsfresh.feature_extraction.html#
         mean_val = np.mean(signal)
         return np.sum(signal > mean_val)
 
     def calculate_count_below_mean(self, signal):
+        # https://tsfresh.readthedocs.io/en/latest/api/tsfresh.feature_extraction.html#
         mean_val = np.mean(signal)
         return np.sum(signal < mean_val)
 
     def calculate_count_of_negative_values(self, signal):
+        # https://tsfresh.readthedocs.io/en/latest/api/tsfresh.feature_extraction.html#
         return np.sum(signal < 0)
 
     def calculate_count_of_positive_values(self, signal):
+        # https://tsfresh.readthedocs.io/en/latest/api/tsfresh.feature_extraction.html#
         return np.sum(signal > 0)
 
     def calculate_covariance(self, signal, other_signal):
+        # https://support.ptc.com/help/mathcad/r9.0/en/index.html#page/PTC_Mathcad_Help/covariance.html
         return np.cov(signal, other_signal)[0, 1]
 
     def calculate_cumulative_energy(self, signal):
+        # https://doi.org/10.1016/j.ijepes.2020.106192
         return np.cumsum(np.square(signal))[-1]
 
     def calculate_cumulative_sum(self, signal):
+        # https://docs.amd.com/r/2020.2-English/ug1483-model-composer-sys-gen-user-guide/Cumulative-Sum
         return np.cumsum(signal)[-1]
 
     def calculate_differential_entropy(self, signal):
+        # https://www.frontiersin.org/articles/10.3389/fphy.2020.629620/full
         probability, _ = np.histogram(signal, bins=10, density=True)
         probability = probability[probability > 0]
         return entropy(probability)
 
     def calculate_energy_ratio_by_chunks(self, signal, chunks=4):
+        # https://github.com/blue-yonder/tsfresh/blob/main/tsfresh/feature_extraction/feature_calculators.py#L2212
         chunk_size = len(signal) // chunks
         energies = np.array([np.sum(signal[i*chunk_size:(i+1)*chunk_size]**2) for i in range(chunks)])
         total_energy = np.sum(signal**2)
@@ -975,57 +1038,71 @@ class StatisticalFeatures:
         return s[-1]
 
     def calculate_first_location_of_maximum(self, signal):
+        # https://tsfresh.readthedocs.io/en/latest/api/tsfresh.feature_extraction.html#
         return np.argmax(signal)
 
     def calculate_first_location_of_minimum(self, signal):
+        # https://tsfresh.readthedocs.io/en/latest/api/tsfresh.feature_extraction.html#
         return np.argmin(signal)
 
     def calculate_first_order_difference(self, signal):
+        # https://cran.r-project.org/web/packages/doremi/vignettes/first-order.html
         return np.diff(signal, n=1)
 
     def calculate_first_quartile(self, signal):
         return np.percentile(signal, 25)
 
     def calculate_fisher_information(self, signal):
+        # https://www.researchgate.net/publication/311396939_Analysis_of_Signals_by_the_Fisher_Information_Measure
         variance = np.var(signal)
         return 1 / variance if variance != 0 else float('inf')
 
     def calculate_histogram_bin_frequencies(self, signal, bins=10):
+        # https://doi.org/10.1016/B978-044452075-3/50032-7
         hist, _ = np.histogram(signal, bins=bins)
         return hist
 
     def calculate_intercept_of_linear_fit(self, signal):
+        # https://www.mathworks.com/help/matlab/data_analysis/linear-regression.html
         slope, intercept, _, _, _ = linregress(np.arange(len(signal)), signal)
         return intercept
 
     def calculate_katz_fractal_dimension(self, signal):
+        # https://doi.org/10.3390/fractalfract8010009
         distance = np.max(np.abs(np.diff(signal)))
         length = np.sum(np.abs(np.diff(signal)))
         return np.log10(length / distance)
 
     def calculate_last_location_of_maximum(self, signal):
+        # https://tsfresh.readthedocs.io/en/latest/api/tsfresh.feature_extraction.html#
         return np.max(np.where(signal == np.max(signal))[0])
 
     def calculate_last_location_of_minimum(self, signal):
+        # https://tsfresh.readthedocs.io/en/latest/api/tsfresh.feature_extraction.html#
         return np.max(np.where(signal == np.min(signal))[0])
 
     def calculate_linear_trend_with_full_linear_regression_results(self, signal):
+        # https://www.mathworks.com/help/matlab/data_analysis/linear-regression.html
         slope, intercept, r_value, p_value, std_err = linregress(np.arange(len(signal)), signal)
         return slope, intercept, r_value**2, p_value, std_err
 
     def calculate_local_maxima_and_minima(self, signal):
+        # https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.find_peaks.html
         local_max = find_peaks(signal)[0]
         local_min = find_peaks(-signal)[0]
         return len(local_max), len(local_min)
 
     def calculate_log_return(self, signal):
+        # https://pypi.org/project/stockstats/
         return np.log(signal[-1] / signal[0]) if signal[0] != 0 else float('inf')
 
     def calculate_longest_strike_above_mean(self, signal):
+        # https://tsfresh.readthedocs.io/en/v0.8.1/api/tsfresh.feature_extraction.html
         mean_val = np.mean(signal)
         return max([sum(1 for i in g) for k, g in groupby(signal > mean_val) if k])
 
     def calculate_longest_strike_below_mean(self, signal):
+        # https://tsfresh.readthedocs.io/en/v0.8.1/api/tsfresh.feature_extraction.html
         mean_val = np.mean(signal)
         return max([sum(1 for i in g) for k, g in groupby(signal < mean_val) if k])
 
@@ -1034,16 +1111,20 @@ class StatisticalFeatures:
         return np.mean([(x - mean_val)**order for x in signal if x < mean_val])
 
     def calculate_mean_absolute_change(self, signal):
+        # https://en.wikipedia.org/wiki/Mean_absolute_difference
         return np.mean(np.abs(np.diff(signal)))
 
     def calculate_mean_crossings(self, signal):
+        # https://sensiml.com/documentation/pipeline-functions/feature-generators.html
         mean_val = np.mean(signal)
         return np.sum(np.diff(signal > mean_val))
 
     def calculate_mean_relative_change(self, signal):
+        # https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/j.1365-2745.2007.01281.x
         return np.mean(np.abs(np.diff(signal) / signal[:-1]))
 
     def calculate_mean_second_derivative_central(self, signal):
+        # https://tsfresh.readthedocs.io/en/latest/text/list_of_features.html
         return np.mean(np.diff(signal, n=2))
 
     def calculate_median_second_derivative_central(self, signal):
@@ -1054,18 +1135,23 @@ class StatisticalFeatures:
         return mode(signal)[0][0]
 
     def calculate_moving_average(self, signal, window_size=10):
+        # https://cyclostationary.blog/2021/05/23/sptk-the-moving-average-filter/
         if len(signal) < window_size:
             return np.nan
         return np.convolve(signal, np.ones(window_size) / window_size, mode='valid')
 
     def calculate_number_of_inflection_points(self, signal):
+        # https://en.wikipedia.org/wiki/Inflection_point
         second_derivative = np.diff(signal, n=2)
         return np.sum(np.diff(np.sign(second_derivative)) != 0)
 
     def calculate_peak_to_peak_distance(self, signal):
+        # https://www.mathworks.com/matlabcentral/fileexchange/20314-peak-to-peak-of-signal
         return np.ptp(signal)
 
     def calculate_pearson_correlation_coefficient(self, signal):
+        # https://en.wikipedia.org/wiki/Pearson_correlation_coefficient
+        # https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.pearsonr.html
         if len(signal) < 2:
             return np.nan
         return pearsonr(signal[:-1], signal[1:])[0]
@@ -1077,10 +1163,12 @@ class StatisticalFeatures:
         return np.mean(signal > 0) * 100
 
     def calculate_percentage_of_reoccurring_datapoints_to_all_datapoints(self, signal):
+        # https://tsfresh.readthedocs.io/en/v0.8.1/api/tsfresh.feature_extraction.html
         unique, counts = np.unique(signal, return_counts=True)
         return 100 * np.sum(counts > 1) / len(signal)
 
     def calculate_percentage_of_reoccurring_values_to_all_values(self, signal):
+        # https://tsfresh.readthedocs.io/en/v0.8.1/api/tsfresh.feature_extraction.html
         unique, counts = np.unique(signal, return_counts=True)
         return 100 * np.sum(counts[counts > 1]) / np.sum(counts)
     
@@ -1088,11 +1176,13 @@ class StatisticalFeatures:
         return np.percentile(signal, percentiles)
 
     def calculate_petrosian_fractal_dimension(self, signal):
+        # https://doi.org/10.7555%2FJBR.33.20190009
         N = len(signal)
         nzc = np.sum(np.diff(signal) != 0)
         return np.log10(N) / (np.log10(N) + np.log10(N / (N + 0.4 * nzc)))
 
     def calculate_ratio_beyond_r_sigma(self, signal, r=2):
+        # https://tsfresh.readthedocs.io/en/latest/api/tsfresh.feature_extraction.html
         std_dev = np.std(signal)
         mean_val = np.mean(signal)
         return np.sum(np.abs(signal - mean_val) > r * std_dev) / len(signal)
@@ -1113,34 +1203,42 @@ class StatisticalFeatures:
         return np.convolve(signal, np.ones(window) / window, mode='valid')
 
     def calculate_sample_entropy(self, signal):
+        # https://raphaelvallat.com/antropy/build/html/generated/antropy.sample_entropy.html
+        # https://doi.org/10.1109/SCEECS.2012.6184830
         return entropy(np.histogram(signal, bins=10)[0])  # Simplified example
 
     def calculate_second_order_difference(self, signal):
+        # https://numpy.org/doc/stable/reference/generated/numpy.diff.html
         return np.diff(signal, n=2)
     
     def calculate_signal_resultant(self, signal):
         return np.sqrt(np.sum(signal**2))
 
     def calculate_signal_to_noise_ratio(self, signal):
+        # https://en.wikipedia.org/wiki/Signal-to-noise_ratio
         mean_signal = np.mean(signal)
         std_noise = np.std(signal)
         return mean_signal / std_noise if std_noise > 0 else float('inf')
 
     def calculate_slope_of_linear_fit(self, signal):
+        # https://www.mathworks.com/help/matlab/data_analysis/linear-regression.html
         slope, _, _, _, _ = linregress(np.arange(len(signal)), signal)
         return slope
 
     def calculate_smoothing_by_binomial_filter(self, signal):
+        # https://www.wavemetrics.com/products/igorpro/dataanalysis/signalprocessing/smoothing
         kernel = np.array([1, 2, 1]) / 4.0
         return convolve(signal, kernel, mode='reflect')
 
     def calculate_stochastic_oscillator_value(self, signal):
+        # https://www.investopedia.com/terms/s/stochasticoscillator.asp
         low_min = np.min(signal)
         high_max = np.max(signal)
         current_value = signal[-1]
         return 100 * (current_value - low_min) / (high_max - low_min)
 
     def calculate_sum(self, signal):
+        # https://tsfresh.readthedocs.io/en/latest/api/tsfresh.feature_extraction.html#
         return np.sum(signal)
 
     def calculate_sum_of_negative_values(self, signal):
@@ -1150,10 +1248,12 @@ class StatisticalFeatures:
         return np.sum(signal[signal > 0])
 
     def calculate_sum_of_reoccurring_data_points(self, signal):
+        # https://tsfresh.readthedocs.io/en/latest/api/tsfresh.feature_extraction.html#
         unique, counts = np.unique(signal, return_counts=True)
         return np.sum(unique[counts > 1])
 
     def calculate_sum_of_reoccurring_values(self, signal):
+        # https://tsfresh.readthedocs.io/en/latest/api/tsfresh.feature_extraction.html#
         unique, counts = np.unique(signal, return_counts=True)
         return np.sum(counts[counts > 1])
 
@@ -1161,19 +1261,23 @@ class StatisticalFeatures:
         return np.percentile(signal, 75)
 
     def calculate_variance_of_absolute_differences(self, signal):
+        # https://doi.org/10.1080/00031305.2014.994712
         abs_diffs = np.abs(np.diff(signal))
         return np.var(abs_diffs)
 
     def calculate_weighted_moving_average(self, signal, weights=None):
+        # https://www.mathworks.com/help/signal/ug/signal-smoothing.html
         if weights is None:
             weights = np.linspace(1, 0, num=len(signal))
         weights = weights / np.sum(weights)
         return np.convolve(signal, weights, 'valid')
 
     def calculate_winsorized_mean(self, signal, limits=[0.05, 0.05]):
+        # https://www.investopedia.com/terms/w/winsorized_mean.asp
         return stats.mstats.winsorize(signal, limits=limits).mean()
 
     def calculate_zero_crossing_rate(self, signal):
+        # https://librosa.org/doc/main/generated/librosa.feature.zero_crossing_rate.html
         zero_crossings = np.where(np.diff(np.signbit(signal)))[0]
         return len(zero_crossings) / len(signal)
 

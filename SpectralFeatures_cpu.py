@@ -37,22 +37,33 @@ class SpectralFeatures:
 
         # Calculating the spectral features.
         # Spectral centroid (order 1-4)
+        # https://doi.org/10.1016/j.softx.2020.100456
         for order in range(1, 5):
             feats.extend(self.calculate_spectral_centroid(freqs_spectrum, spectrum_magnitudes, order=order))
             feats_names.append(f"{signal_name}_spectral_centroid_order_{order}")
+        
         # Spectral variance / spectral spread
+        # https://doi.org/10.1016/j.softx.2020.100456
         feats.extend(self.calculate_spectral_variance(freqs_spectrum, spectrum_magnitudes))
         feats_names.append(f"{signal_name}_spectral_var")
+
         # Spectral skewness
+        # https://doi.org/10.1016/j.softx.2020.100456
         feats.extend(self.calculate_spectral_skewness(freqs_spectrum, spectrum_magnitudes))
         feats_names.append(f"{signal_name}_spectral_skewness")
+
         # Spectral kurtosis
+        # https://doi.org/10.1016/j.softx.2020.100456
         feats.extend(self.calculate_spectral_kurtosis(freqs_spectrum, spectrum_magnitudes))
         feats_names.append(f"{signal_name}_spectral_kurtosis")
+
         # Median frequency of the power spectrum of a signal
+        # https://doi.org/10.1109/iembs.2008.4649357
         feats.extend(self.calculate_median_frequency(freqs_psd, psd))
         feats_names.append(f"{signal_name}_median_frequency")
+
         # Spectral bandwidth order 1 / Spectral mean deviation
+        # https://zenodo.org/badge/latestdoi/6309729
         feats.extend(self.calculate_spectral_bandwidth(freqs_spectrum, spectrum_magnitudes, 1))
         feats_names.append(f"{signal_name}_spectral_mean_deviation")
         # Spectral bandwidth order 2 / Spectral standard deviation
@@ -64,138 +75,184 @@ class SpectralFeatures:
         # Spectral bandwidth order 4
         feats.extend(self.calculate_spectral_bandwidth(freqs_spectrum, spectrum_magnitudes, 4))
         feats_names.append(f"{signal_name}_spectral_bandwidth_order_4")
+
         # Spectral mean absolute deviation
+        # https://zenodo.org/badge/latestdoi/6309729
         feats.extend(self.calculate_spectral_absolute_deviation(freqs_spectrum, spectrum_magnitudes))
         feats_names.append(f"{signal_name}_spectral_abs_deviation_order_1")
         # Spectral mean absolute deviation order 3
         feats.extend(self.calculate_spectral_absolute_deviation(freqs_spectrum, spectrum_magnitudes, order=3))
         feats_names.append(f"{signal_name}_spectral_abs_deviation_order_3")
+
         # Spectral linear slope for spectrum
+        # https://doi.org/10.1016/j.softx.2020.100456
         feats.extend(self.calculate_spectral_slope_linear(freqs_spectrum, spectrum_magnitudes))
         feats_names.append(f"{signal_name}_spectrum_linear_slope")
+
         # Spectral logarithmic slope for spectrum
+        # https://doi.org/10.1016/j.softx.2020.100456
         feats.extend(self.calculate_spectral_slope_logarithmic(freqs_spectrum, spectrum_magnitudes))
         feats_names.append(f"{signal_name}_spectrum_logarithmic_slope")
+
         # Spectral linear slope for psd
+        # https://doi.org/10.1016/j.softx.2020.100456
         feats.extend(self.calculate_spectral_slope_linear(freqs_psd, psd))
         feats_names.append(f"{signal_name}_power_spectrum_linear_slope")
+
         # Spectral logarithmic slope for psd
+        # https://doi.org/10.1016/j.softx.2020.100456
         feats.extend(self.calculate_spectral_slope_logarithmic(freqs_psd, psd))
         feats_names.append(f"{signal_name}_power_spectrum_logarithmic_slope")
+
         # Spectral flatness
+        # https://doi.org/10.1016/B978-0-12-398499-9.00012-1
         feats.extend(self.calculate_spectral_flatness(spectrum_magnitudes))
         feats_names.append(f"{signal_name}_spectral_flatness")
+
         # Spectral peaks of power spectral density
+        # https://doi.org/10.1016/0025-5564(71)90072-1
         feats.extend(self.calculate_peak_frequencies(freqs_psd, psd))
         for rank in range(1, self.n_dom_freqs+1):
             feats_names.append(f"{signal_name}_peak_freq_{rank}")
+
         # Spectral edge frequency for different thresholds
+        # https://doi.org/10.1111/j.1399-6576.1991.tb03374.x
         feats.extend(self.calculate_spectral_edge_frequency(freqs_psd, psd))
         for threshold in self.cumulative_power_thresholds:
             feats_names.append(f"{signal_name}_edge_freq_thresh_{threshold}")
+
         # Spectral band power for different bands
         feats.extend(self.calculate_band_power(freqs_psd, psd))
         feats_names.append(f"{signal_name}_spectral_total_power")
         for band in self.f_bands:
             feats_names.append(f"{signal_name}_spectral_abs_power_band_{str(band)}")
             feats_names.append(f"{signal_name}_spectral_rel_power_band_{str(band)}")
+
         # Spectral entropy
+        # https://doi.org/10.1016/j.softx.2020.100456
         feats.extend(self.calculate_spectral_entropy(psd))
         feats_names.append(f"{signal_name}_spectral_entropy")
+
         # Spectral contrast for different bands
+        # https://zenodo.org/badge/latestdoi/6309729
         feats.extend(self.calculate_spectral_contrast(freqs_psd, psd))
         for band in self.f_bands:
             feats_names.append(f"{signal_name}_spectral_contrast_band_{str(band)}")
+        
         # Spectral coefficient of variation
+        # https://doi.org/10.21105/joss.01272
         feats.extend(self.calculate_spectral_cov(freqs_spectrum, spectrum_magnitudes))
         feats_names.append(f"{signal_name}_spectral_coefficient_of_variation")
+
         # Spectral flux
+        # https://doi.org/10.1016/B978-0-08-099388-1.00004-2
         feats.extend(self.calculate_spectral_flux(spectrum_magnitudes))
         feats_names.append(f"{signal_name}_spectral_flux")
+
         # Spectral roll-off
+        # https://doi.org/10.1016/j.softx.2020.100456
         feats.extend(self.calculate_spectral_rolloff(freqs_spectrum, spectrum_magnitudes))
         feats_names.append(f"{signal_name}_spectral_rolloff")
+
         # Harmonic Ratio
+        # https://www.mathworks.com/help/audio/ref/harmonicratio.html
         feats.extend(self.calculate_harmonic_ratio(signal))
         feats_names.append(f"{signal_name}_harmonic_ratio")
+
         # Fundamental Frequency
+        # https://doi.org/10.1121%2F1.4740482
         feats.extend(self.calculate_fundamental_frequency(signal))
         feats_names.append(f"{signal_name}_fundamental_frequency")
+
         # Spectral Crest Factor
+        # https://www.mathworks.com/help/signal/ref/spectralcrest.html#d126e220002
         feats.extend(self.calculate_spectral_crest_factor(spectrum_magnitudes))
         feats_names.append(f"{signal_name}_spectral_crest_factor")
+
         # Spectral Decrease
+        # https://doi.org/10.1016/j.softx.2020.100456
         feats.extend(self.calculate_spectral_decrease(freqs_spectrum, spectrum_magnitudes))
         feats_names.append(f"{signal_name}_spectral_decrease")
+
         # Spectral Irregularity
+        # https://docs.twoears.eu/en/latest/afe/available-processors/spectral-features/
+        # https://doi.org/10.1109/ICASSP.2004.1325955
         feats.extend(self.calculate_spectral_irregularity(spectrum_magnitudes))
         feats_names.append(f"{signal_name}_spectral_irregularity")
 
         # Mean Frequency: The average frequency, weighted by amplitude.
+        # https://www.mathworks.com/help/signal/ref/meanfreq.html
         feats.extend(self.calculate_mean_frequency(freqs_spectrum, spectrum_magnitudes))
         feats_names.append(f"{signal_name}_mean_frequency")
 
         # Frequency Winsorized Mean: A mean that reduces the effect of outliers by limiting extreme values.
+        # https://doi.org/10.1007/978-94-010-0231-8_13
         feats.extend(self.calculate_frequency_winsorized_mean(freqs_spectrum, spectrum_magnitudes))
         feats_names.append(f"{signal_name}_frequency_winsorized_mean")
 
         # Total Harmonic Distortion: Measures the distortion due to harmonics in a signal.
+        # 10.1109/TCOMM.2011.061511.100749
+        # https://zenodo.org/badge/latestdoi/6309729
         feats.extend(self.calculate_total_harmonic_distortion(signal))
         feats_names.append(f"{signal_name}_total_harmonic_distortion")
 
         # Inharmonicity: Measures the deviation of the frequencies of the overtones from whole number multiples of the fundamental frequency.
+        # https://zenodo.org/badge/latestdoi/6309729
         feats.extend(self.calculate_inharmonicity(signal))
         feats_names.append(f"{signal_name}_inharmonicity")
 
         # Tristimulus: Measures the relative amplitude of the first few harmonics.
+        # https://zenodo.org/badge/latestdoi/6309729
         feats.extend(self.calculate_tristimulus(spectrum_magnitudes))
         feats_names.extend([f"{signal_name}_tristimulus_1", f"{signal_name}_tristimulus_2", f"{signal_name}_tristimulus_3"])
 
-        # Irregularity K: A specific measure of spectral irregularity.
-        feats.extend(self.calculate_irregularity_k(spectrum_magnitudes))
-        feats_names.append(f"{signal_name}_irregularity_k")
-
-        # Irregularity J: Another measure of spectral irregularity.
-        feats.extend(self.calculate_irregularity_j(spectrum_magnitudes))
-        feats_names.append(f"{signal_name}_irregularity_j")
-
         # Spectral Roll-On: The opposite of spectral roll-off, measuring the frequency above which a certain percentage of the total spectral energy is contained.
+        # https://doi.org/10.1016/j.softx.2020.100456
         feats.extend(self.calculate_spectral_rollon(freqs_spectrum, spectrum_magnitudes))
         feats_names.append(f"{signal_name}_spectral_rollon")
 
         # Spectral Hole Count: The number of significant dips in the spectrum.
+        # https://doi.org/10.1103/PhysRevA.104.063111
         feats.extend(self.calculate_spectral_hole_count(spectrum_magnitudes))
         feats_names.append(f"{signal_name}_spectral_hole_count")
 
         # Spectral Auto-correlation: The auto-correlation of the spectrum.
+        # https://doi.org/10.48550/arXiv.1702.00105
         feats.extend(self.calculate_spectral_autocorrelation(spectrum_magnitudes))
         feats_names.append(f"{signal_name}_spectral_autocorrelation")
 
         # Spectral Variability: Measures the variability of the spectrum.
+        # https://doi.org/10.1016/j.dsp.2015.10.011
         feats.extend(self.calculate_spectral_variability(spectrum_magnitudes))
         feats_names.append(f"{signal_name}_spectral_variability")
 
         # Spectral Spread Ratio: The ratio of spectral spread to some reference value.
+        # https://doi.org/10.1016/j.softx.2020.100456
         feats.extend(self.calculate_spectral_spread_ratio(freqs_spectrum, spectrum_magnitudes))
         feats_names.append(f"{signal_name}_spectral_spread_ratio")
 
         # Spectral Skewness Ratio: The ratio of spectral skewness to some reference value.
+        # https://doi.org/10.1016/j.softx.2020.100456
         feats.extend(self.calculate_spectral_skewness_ratio(freqs_spectrum, spectrum_magnitudes))
         feats_names.append(f"{signal_name}_spectral_skewness_ratio")
 
         # Spectral Kurtosis Ratio: The ratio of spectral kurtosis to some reference value.
+        # https://doi.org/10.1016/j.softx.2020.100456
         feats.extend(self.calculate_spectral_kurtosis_ratio(freqs_spectrum, spectrum_magnitudes))
         feats_names.append(f"{signal_name}_spectral_kurtosis_ratio")
 
         # Spectral Tonal Power Ratio: The ratio of tonal power to total power.
+        # https://zenodo.org/badge/latestdoi/6309729
         feats.extend(self.calculate_spectral_tonal_power_ratio(signal))
         feats_names.append(f"{signal_name}_spectral_tonal_power_ratio")
 
         # Spectral Noise to Harmonics Ratio: The ratio of noise energy to harmonic energy.
+        # https://zenodo.org/badge/latestdoi/6309729
         feats.extend(self.calculate_spectral_noise_to_harmonics_ratio(signal))
         feats_names.append(f"{signal_name}_spectral_noise_to_harmonics_ratio")
 
         # Spectral Even to Odd Harmonic Energy Ratio: The ratio of even harmonic energy to odd harmonic energy.
+        # https://zenodo.org/badge/latestdoi/6309729
         feats.extend(self.calculate_spectral_even_to_odd_harmonic_energy_ratio(signal))
         feats_names.append(f"{signal_name}_spectral_even_to_odd_harmonic_energy_ratio")
 
@@ -212,26 +269,32 @@ class SpectralFeatures:
         feats_names.append(f"{signal_name}_spectral_frequency_above_peak")
 
         # Spectral Cumulative Frequency Below 50% Power: The frequency below which 50% of the spectral power is contained.
+        # https://doi.org/10.48550/arXiv.0901.3708
         feats.extend(self.calculate_spectral_cumulative_frequency(freqs_spectrum, spectrum_magnitudes, 0.5))
         feats_names.append(f"{signal_name}_spectral_cumulative_frequency_below_50_percent_power")
 
         # Spectral Cumulative Frequency Below 75% Power: The frequency below which 75% of the spectral power is contained.
+        # https://doi.org/10.48550/arXiv.0901.3708
         feats.extend(self.calculate_spectral_cumulative_frequency(freqs_spectrum, spectrum_magnitudes, 0.75))
         feats_names.append(f"{signal_name}_spectral_cumulative_frequency_below_75_percent_power")
 
         # Spectral Cumulative Frequency Above 75% Power: The frequency above which 75% of the spectral power is contained.
+        # https://doi.org/10.48550/arXiv.0901.3708
         feats.extend(self.calculate_spectral_cumulative_frequency_above(freqs_spectrum, spectrum_magnitudes, 0.75))
         feats_names.append(f"{signal_name}_spectral_cumulative_frequency_above_75_percent_power")
 
         # Spectral Spread Shift: The change in spectral spread over time.
+        # https://docs.twoears.eu/en/latest/afe/available-processors/spectral-features/
         feats.extend(self.calculate_spectral_spread_shift(freqs_spectrum, spectrum_magnitudes))
         feats_names.append(f"{signal_name}_spectral_spread_shift")
 
         # Spectral Entropy Shift: The change in spectral entropy over time.
+        # https://doi.org/10.3390/buildings12030310
         feats.extend(self.calculate_spectral_entropy_shift(spectrum_magnitudes))
         feats_names.append(f"{signal_name}_spectral_entropy_shift")
 
         # Spectral Change Vector Magnitude: The magnitude of change in the spectral features over time.
+        # https://doi.org/10.3390/rs3112473
         feats.extend(self.calculate_spectral_change_vector_magnitude(spectrum_magnitudes))
         feats_names.append(f"{signal_name}_spectral_change_vector_magnitude")
 
@@ -244,26 +307,33 @@ class SpectralFeatures:
         feats_names.append(f"{signal_name}_spectral_mid_frequency_content")
 
         # Spectral Peak-to-Valley Ratio: The ratio of peak to valley values in the spectrum.
+        # https://doi.org/10.3389/fpsyg.2022.994047
+        # https://openlab.help.agilent.com/en/index.htm#t=mergedProjects/DataAnalysis/27021601168830603.htm
         feats.extend(self.calculate_spectral_peak_to_valley_ratio(spectrum_magnitudes))
         feats_names.append(f"{signal_name}_spectral_peak_to_valley_ratio")
 
         # Spectral Valley Depth Mean: The mean depth of valleys in the spectrum.
+        # https://doi.org/10.48550/arXiv.1506.04828
         feats.extend(self.calculate_spectral_valley_depth_mean(spectrum_magnitudes))
         feats_names.append(f"{signal_name}_spectral_valley_depth_mean")
 
         # Spectral Valley Depth Standard Deviation: The standard deviation of valley depths.
+        # https://doi.org/10.48550/arXiv.1506.04828
         feats.extend(self.calculate_spectral_valley_depth_std(spectrum_magnitudes))
         feats_names.append(f"{signal_name}_spectral_valley_depth_std")
 
         # Spectral Valley Depth Variance: The variance of valley depths.
+        # https://doi.org/10.48550/arXiv.1506.04828
         feats.extend(self.calculate_spectral_valley_depth_variance(spectrum_magnitudes))
         feats_names.append(f"{signal_name}_spectral_valley_depth_variance")
 
         # Spectral Valley Width Mode: The most frequent valley width.
+        # https://doi.org/10.48550/arXiv.1506.04828
         feats.extend(self.calculate_spectral_valley_width_mode(spectrum_magnitudes))
         feats_names.append(f"{signal_name}_spectral_valley_width_mode")
 
         # Spectral Valley Width Standard Deviation: The standard deviation of valley widths.
+        # https://doi.org/10.48550/arXiv.1506.04828
         feats.extend(self.calculate_spectral_valley_width_std(spectrum_magnitudes))
         feats_names.append(f"{signal_name}_spectral_valley_width_std")
 
@@ -272,38 +342,47 @@ class SpectralFeatures:
         feats_names.append(f"{signal_name}_spectral_subdominant_valley")
 
         # Spectral Valley Count: The number of valleys in the spectrum.
+        # https://doi.org/10.48550/arXiv.1506.04828
         feats.extend(self.calculate_spectral_valley_count(spectrum_magnitudes))
         feats_names.append(f"{signal_name}_spectral_valley_count")
 
         # Spectral Peak Broadness: The width of the spectral peaks.
+        # https://terpconnect.umd.edu/~toh/spectrum/PeakFindingandMeasurement.htm
         feats.extend(self.calculate_spectral_peak_broadness(freqs_spectrum, spectrum_magnitudes))
         feats_names.append(f"{signal_name}_spectral_peak_broadness")
 
         # Spectral Valley Broadness: The width of the spectral valleys.
+        # https://doi.org/10.48550/arXiv.1506.04828
         feats.extend(self.calculate_spectral_valley_broadness(freqs_spectrum, spectrum_magnitudes))
         feats_names.append(f"{signal_name}_spectral_valley_broadness")
 
         # Frequency Variance: Variance of the frequencies weighted by amplitude.
+        # https://doi.org/10.1016/B978-0-12-811153-6.00003-8
         feats.extend(self.calculate_frequency_variance(freqs_spectrum, spectrum_magnitudes))
         feats_names.append(f"{signal_name}_frequency_variance")
 
         # Frequency Standard Deviation: Standard deviation of the frequencies weighted by amplitude.
+        # https://doi.org/10.1016/B978-0-12-811153-6.00003-8
         feats.extend(self.calculate_frequency_std(freqs_spectrum, spectrum_magnitudes))
         feats_names.append(f"{signal_name}_frequency_std")
 
         # Frequency Range: Range of the frequencies.
+        # https://doi.org/10.1016/B978-0-12-811153-6.00003-8
         feats.extend(self.calculate_frequency_range(freqs_spectrum))
         feats_names.append(f"{signal_name}_frequency_range")
 
         # Frequency Trimmed Mean: The mean frequency after trimming a percentage of the highest and lowest values.
+        # https://doi.org/10.1016/B978-0-12-811153-6.00003-8
         feats.extend(self.calculate_frequency_trimmed_mean(freqs_spectrum, spectrum_magnitudes))
         feats_names.append(f"{signal_name}_frequency_trimmed_mean")
 
         # Harmonic Product Spectrum: The product of harmonics in the spectrum.
+        # 10.1109/MHS.2018.8886911
         feats.extend(self.calculate_harmonic_product_spectrum(spectrum_magnitudes))
         feats_names.append(f"{signal_name}_harmonic_product_spectrum")
 
         # Smoothness: Measures the smoothness of the spectrum.
+        # https://doi.org/10.3390/rs13163196
         feats.extend(self.calculate_smoothness(spectrum_magnitudes))
         feats_names.append(f"{signal_name}_smoothness")
 
@@ -500,14 +579,6 @@ class SpectralFeatures:
         t2 = magnitudes[1] / np.sum(magnitudes)
         t3 = np.sum(magnitudes[2:]) / np.sum(magnitudes)
         return np.array([t1, t2, t3])
-    
-    def calculate_irregularity_k(self, magnitudes):
-        irregularity_k = np.sum(np.abs(magnitudes[1:] - magnitudes[:-1])) / (len(magnitudes) - 1)
-        return np.array([irregularity_k])
-
-    def calculate_irregularity_j(self, magnitudes):
-        irregularity_j = np.sum(np.abs(magnitudes[1:] - magnitudes[:-1])) / np.sum(magnitudes)
-        return np.array([irregularity_j])
 
     def calculate_spectral_rollon(self, freqs, magnitudes, roll_percent=0.85):
         cumulative_magnitudes = np.cumsum(magnitudes)

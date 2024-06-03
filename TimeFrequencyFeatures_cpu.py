@@ -112,13 +112,14 @@ class TimeFrequencyFeatures:
             feats_names.append(f"{signal_name}_iqr_of_wav_coeffs_lvl_{i_level}")
 
         feats.extend(self.extract_wavelet_features(signal_name, wavelet_coefficients))
-        feats.extend(self.extract_tkeo_features(signal_name, signal_tkeo))
+        #feats.extend(self.extract_tkeo_features(signal_name, signal_tkeo))
         feats.extend(self.extract_spectrogram_features(signal_name, signal))
         feats.extend(self.extract_stft_features(signal_name, signal))
 
         return np.array(feats), feats_names
 
     def extract_wavelet_features(self, signal_name, wavelet_coefficients):
+        # https://doi.org/10.1016/B978-012047141-6/50006-9
         feats = []
         feats_names = []
 
@@ -129,16 +130,17 @@ class TimeFrequencyFeatures:
 
         return feats, feats_names
 
-    def extract_tkeo_features(self, signal_name, signal_tkeo):
-        feats = []
-        feats_names = []
+    # def extract_tkeo_features(self, signal_name, signal_tkeo):
+    #     feats = []
+    #     feats_names = []
 
-        feats.extend(self.statistical_feature_extractor.calculate_statistical_features(signal_tkeo))
-        feats_names.extend([f"{signal_name}_tkeo_{name}" for name in self.statistical_feature_extractor.feature_names])
+    #     feats.extend(self.statistical_feature_extractor.calculate_statistical_features(signal_tkeo))
+    #     feats_names.extend([f"{signal_name}_tkeo_{name}" for name in self.statistical_feature_extractor.feature_names])
 
         return feats, feats_names
 
     def extract_spectrogram_features(self, signal_name, signal):
+        # https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.spectrogram.html
         feats = []
         feats_names = []
 
@@ -151,6 +153,7 @@ class TimeFrequencyFeatures:
         return feats, feats_names
 
     def extract_stft_features(self, signal_name, signal):
+        # https://doi.org/10.1016/B978-0-12-374490-6.00007-6
         feats = []
         feats_names = []
 
@@ -161,6 +164,7 @@ class TimeFrequencyFeatures:
         feats_names.extend([f"{signal_name}_stft_{name}" for name in self.statistical_feature_extractor.feature_names])
 
     def teager_kaiser_energy_operator(self, signal):
+        # https://doi.org/10.1016/j.dsp.2018.03.010
         # Calculate the TKEO
         tkeo = np.roll(signal, -1) * np.roll(signal, 1) - signal ** 2
         # The first and last elements are not valid due to roll operation

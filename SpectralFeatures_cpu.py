@@ -122,6 +122,7 @@ class SpectralFeatures:
             feats_names.append(f"{signal_name}_edge_freq_thresh_{threshold}")
 
         # Spectral band power for different bands
+        # https://www.mathworks.com/help/signal/ref/bandpower.html
         feats.extend(self.calculate_band_power(freqs_psd, psd))
         feats_names.append(f"{signal_name}_spectral_total_power")
         for band in self.f_bands:
@@ -257,14 +258,17 @@ class SpectralFeatures:
         feats_names.append(f"{signal_name}_spectral_even_to_odd_harmonic_energy_ratio")
 
         # Spectral Strongest Frequency Phase: The phase of the strongest frequency component.
+        # https://mriquestions.com/phase-v-frequency.html
         feats.extend(self.calculate_spectral_strongest_frequency_phase(freqs_spectrum, spectrum))
         feats_names.append(f"{signal_name}_spectral_strongest_frequency_phase")
 
         # Spectral Frequency Below Peak: Frequency below the peak frequency.
+        # https://doi.org/10.1016/B978-012437552-9/50003-9
         feats.extend(self.calculate_spectral_frequency_below_peak(freqs_spectrum, spectrum_magnitudes))
         feats_names.append(f"{signal_name}_spectral_frequency_below_peak")
 
-        # Spectral Frequency Above Peak: Frequency above the peak frequency.
+        # Spectral Frequency Above Peak: Frequency above the peak frequency (next frequency value after the peak).
+        # https://doi.org/10.1016/B978-012437552-9/50003-9
         feats.extend(self.calculate_spectral_frequency_above_peak(freqs_spectrum, spectrum_magnitudes))
         feats_names.append(f"{signal_name}_spectral_frequency_above_peak")
 
@@ -299,10 +303,12 @@ class SpectralFeatures:
         feats_names.append(f"{signal_name}_spectral_change_vector_magnitude")
 
         # Spectral Low Frequency Content: The amount of energy in the low-frequency band.
+        # https://resources.pcb.cadence.com/blog/2022-an-overview-of-frequency-bands-and-their-applications
         feats.extend(self.calculate_spectral_low_frequency_content(freqs_spectrum, spectrum_magnitudes))
         feats_names.append(f"{signal_name}_spectral_low_frequency_content")
 
         # Spectral Mid Frequency Content: The amount of energy in the mid-frequency band.
+        # https://resources.pcb.cadence.com/blog/2022-an-overview-of-frequency-bands-and-their-applications
         feats.extend(self.calculate_spectral_mid_frequency_content(freqs_spectrum, spectrum_magnitudes))
         feats_names.append(f"{signal_name}_spectral_mid_frequency_content")
 
@@ -798,7 +804,7 @@ class SpectralFeatures:
         return np.array([roughness])
     
 
-# features haven't been implemented yet
+# features haven't been implemented yet and cannot find reference
 # https://musicinformationretrieval.com/spectral_features.html
 # Spectral Strongest Frequency Magnitude: Magnitude of the strongest frequency component.
 # Spectral Strongest Frequency: The strongest frequency component.

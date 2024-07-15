@@ -137,7 +137,7 @@ class TimeFrequencyFeatures:
     #     feats.extend(self.statistical_feature_extractor.calculate_statistical_features(signal_tkeo))
     #     feats_names.extend([f"{signal_name}_tkeo_{name}" for name in self.statistical_feature_extractor.feature_names])
 
-        return feats, feats_names
+        # return feats, feats_names
 
     def extract_spectrogram_features(self, signal_name, signal):
         # https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.spectrogram.html

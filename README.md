@@ -75,4 +75,7 @@ The return is a pd dataframe with columns: 'feature name', 'feature value gpu', 
 ## Time Frequency Features
 | Feature    | Description | Reference |
 | -------- | ------- | ------- |
-|extract_wavelet_features||
+|extract_wavelet_features(params)||
+|extract_spectrogram_features(params)||
+|extract_stft_features(params)||
+|teager_kaiser_energy_operator(X)||

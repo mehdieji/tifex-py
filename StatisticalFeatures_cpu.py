@@ -1199,9 +1199,6 @@ class StatisticalFeatures:
         unique_values = len(np.unique(signal))
         return unique_values / len(signal)
 
-    def calculate_roll_mean(self, signal, window=10):
-        return np.convolve(signal, np.ones(window) / window, mode='valid')
-
     def calculate_sample_entropy(self, signal):
         # https://raphaelvallat.com/antropy/build/html/generated/antropy.sample_entropy.html
         # https://doi.org/10.1109/SCEECS.2012.6184830
@@ -1277,7 +1274,7 @@ class StatisticalFeatures:
         return stats.mstats.winsorize(signal, limits=limits).mean()
 
     def calculate_zero_crossing_rate(self, signal):
-        # https://librosa.org/doc/main/generated/librosa.feature.zero_crossing_rate.html
+        # https://librosa.org/doc/0.10.2/generated/librosa.feature.zero_crossing_rate.html#librosa-feature-zero-crossing-rate
         zero_crossings = np.where(np.diff(np.signbit(signal)))[0]
         return len(zero_crossings) / len(signal)
 

@@ -1134,7 +1134,7 @@ class StatisticalFeatures:
         return np.median(second_derivative)
 
     def calculate_mode(self, signal):
-        return mode(signal)[0][0]
+        return mode(signal)[0]
 
     def calculate_moving_average(self, signal, window_size=10):
         # https://cyclostationary.blog/2021/05/23/sptk-the-moving-average-filter/

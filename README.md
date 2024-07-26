@@ -14,8 +14,6 @@ The return is a pd dataframe with columns: 'feature name', 'feature value gpu', 
 <br>
 "* **": More than one reference and one is questionable
 <br>
-"$": Implementation is questionable
-<br>
 "~": Further research required on feature
 <br>
 

@@ -720,11 +720,13 @@ class StatisticalFeatures:
 
     def calculate_crest_factor(self, signal):
         # Formula from Cempel, 1980, DOI: 10.1016/0022-460X(80)90667-7
+        # DOI: 10.3390/S150716225
         crest_factor = np.max(np.abs(signal)) / np.sqrt(np.mean(signal**2))
         return np.array([crest_factor])
 
     def calculate_clearance_factor(self, signal):
         # Formula from The MathWorks Inc., 2022, Available: [Signal Features](https://www.mathworks.com)
+        # DOI: 10.3390/S150716225
         clearance_factor = np.max(np.abs(signal)) / (np.mean(np.sqrt(np.abs(signal))) ** 2)
         return np.array([clearance_factor])
 
@@ -1213,6 +1215,7 @@ class StatisticalFeatures:
 
     def calculate_signal_to_noise_ratio(self, signal):
         # https://en.wikipedia.org/wiki/Signal-to-noise_ratio
+        # DOI:10.4249/SCHOLARPEDIA.2088
         mean_signal = np.mean(signal)
         std_noise = np.std(signal)
         return mean_signal / std_noise if std_noise > 0 else float('inf')

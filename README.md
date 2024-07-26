@@ -12,8 +12,6 @@ The return is a pd dataframe with columns: 'feature name', 'feature value gpu', 
 <br>
 "**": Reference but questionable
 <br>
-"??": Reference not directly linked to ADLs
-<br>
 "* **": More than one reference and one is questionable
 <br>
 "$": Implementation is questionable
@@ -29,27 +27,27 @@ The return is a pd dataframe with columns: 'feature name', 'feature value gpu', 
 1| calculate_mean(X) | Calculates the mean of X |
 2| calculate_geometric_mean(X) | Calculates the geometric mean of X |
 3| calculate_trimmed_mean(X) | Calculates the trimmed mean of X |
-4| calculate_mean_abs(X) | Calculates the mean absolute value of X |
-5| calculate_geometric_mean_abs(X) | Calculates the geometric mean of the absolute X | * |
-6| calculate_harmonic_mean_abs(X)| Calculates the harmonic mean of the absolute X| * |
-7|calculate_trimmed_mean_abs(X)| Calculates the trimmed mean of absolute X| * |
+4| calculate_mean_abs(X) | Calculates the mean of the absolute values of X |
+5| calculate_geometric_mean_abs(X) | Calculates the geometric mean of the absolute values of X | * |
+6| calculate_harmonic_mean_abs(X)| Calculates the harmonic mean of the absolute values of X| * |
+7|calculate_trimmed_mean_abs(X)| Calculates the trimmed mean of absolute values of X| * |
 8|calculate_std(X) | Calculates the standard deviation of X |
-9|calculate_std_abs(X) | Calculates the standard deviation of absolute X | * |
+9|calculate_std_abs(X) | Calculates the standard deviation of the absolute values of X | * |
 10|calculate_skewness(X)|Calculates the skewness of X|
-11|calculate_skewness_abs(X)| Calculate skewness of absolute X|*|
+11|calculate_skewness_abs(X)| Calculate skewness of absolute values of X|*|
 12|calculate_kurtosis(X)|Calculates the kurtosis of X|
-13|calculate_kurtosis_abs(X)|Calculates the kurtosis of absolute X| * |
+13|calculate_kurtosis_abs(X)|Calculates the kurtosis of the absolute values of X| * |
 14|calculate_median(X)|Calculates median of X|
-15|calculate_median_abs|Calculates the median of absolute X|*|
+15|calculate_median_abs|Calculates the median of the absolute values of X|*|
 16|calculate_min(X)|Calculates the minimum value of X| **|
 17|calculate_min_abs(X)|Calculates the minimum value of the absolute values of X| *|
 18|calculate_max(X)|Calculates the maximum value of X|
 19|calculate_max_abs(X)|Calculates the maximum value of the absolute values of X| *|
 20|calculate_range(X)|Calculates the range of X| * |
-21|calculate_range_abs(X)|Calculates the range of absolute X|*|
+21|calculate_range_abs(X)|Calculates the range of the absolute values of X|*|
 22|calculate_variance(X)|Calculates the variance of X |
-23|calculate_variance_abs(X)|Calculates the variance of absolute X|*|
-24|calculate_interquartile_range(X)|Calculates the interquartile range of X| ??|
+23|calculate_variance_abs(X)|Calculates the variance of the absolute values of X|*|
+24|calculate_interquartile_range(X)|Calculates the interquartile range of X|
 25|calculate_mean_absolute_deviation(X)|Calculates the mean of the absolute deviation of X ** |
 26|calculate_root_mean_square(X)|Calculates the root mean square of X| * **|
 27|calculate_signal_energy(X)|Calculates the energy of X|
@@ -65,13 +63,13 @@ The return is a pd dataframe with columns: 'feature name', 'feature value gpu', 
 37|calculate_higher_order_moments(X)|Calculates the higher order moments of X| * |
 38|calculate_coefficient_of_variation(X)|Calculates the coefficient of X|
 39|calculate_median_absolute_deviation(X)|Calculates the median deviation of absolute X|
-40|calculate_signal_magnitude_area(X)|Calculates the magnitude area of X. The sum of the absolute values of X.| $|
+40|calculate_signal_magnitude_area(X)|Calculates the magnitude area of X. The sum of the absolute values of X|
 41|calculate_avg_amplitude_change(X)|Calculates the average wavelength of X|
 42|calculate_slope_sign_change(X)|Calculates the number of times the slope of X changes sign|
 43|calculate_higuchi_fractal_dimensions(X)|Uses the Higuchi method to calculate the fractal dimensions of X|
 44|calculate_permutation_entropy(X)|Calculates the permutation entropy of X|
 45|calculate_svd_entropy(X)|Singular Value Decomposition|
-46|calculate_hjorth_mobility_and_complexity(X)|Calculates features for X based on the first and second derivatives of X|
+46|calculate_hjorth_mobility_and_complexity(X)|Calculates mobility and complexity of X which are bases on the first and second derivatives of X|
 47|calculate_cardinality(X)||*|
 48|calculate_rms_to_mean_abs(X)|Computes the ratio of the RMS value to mean absolute value of X|
 49|calculate_tsallis_entropy(X)|Tsallis entropy estimates the information X|*|
@@ -156,7 +154,7 @@ The return is a pd dataframe with columns: 'feature name', 'feature value gpu', 
 1|extract_wavelet_features(params)||*|
 2|extract_spectrogram_features(params)||
 3|extract_stft_features(params)||
-4|teager_kaiser_energy_operator(X)||
+4|teager_kaiser_energy_operator(X)|Calculates instantaneous energy of X which is sensitive to both amplitude and frequency|
 
 
 

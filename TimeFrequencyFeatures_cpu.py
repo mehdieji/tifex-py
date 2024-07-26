@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.signal import spectrogram, stft
-from StatisticalFeatures import StatisticalFeatures
+from StatisticalFeatures_cpu import StatisticalFeatures
 import pywt
 
 
@@ -166,6 +166,7 @@ class TimeFrequencyFeatures:
     def teager_kaiser_energy_operator(self, signal):
         # https://doi.org/10.1016/j.dsp.2018.03.010
         # Calculate the TKEO
+        # [x(n)] = x(n)^2 − x(n −k)x(n +k)        
         tkeo = np.roll(signal, -1) * np.roll(signal, 1) - signal ** 2
         # The first and last elements are not valid due to roll operation
         tkeo[0] = 0

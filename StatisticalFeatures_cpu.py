@@ -18,7 +18,7 @@ class StatisticalFeatures:
                  moment_orders=None,
                  trimmed_mean_thresholds=None,
                  higuchi_k_values=None,
-                 tsallis_q_parameer=1,
+                 tsallis_q_parameter=1,
                  renyi_alpha_parameter=2,
                  permutation_entropy_order=3,
                  permutation_entropy_delay=1,
@@ -27,7 +27,7 @@ class StatisticalFeatures:
                  ):
 
         self.window_size = window_size
-        self.tsallis_q_parameer = tsallis_q_parameer
+        self.tsallis_q_parameter = tsallis_q_parameter
         self.renyi_alpha_parameter = renyi_alpha_parameter
         self.permutation_entropy_order = permutation_entropy_order
         self.permutation_entropy_delay = permutation_entropy_delay
@@ -938,11 +938,11 @@ class StatisticalFeatures:
             # Replace zero values with a small epsilon
             epsilon = 1e-10
             hist = np.where(hist > 0, hist, epsilon)
-            if self.tsallis_q_parameer == 1:
+            if self.tsallis_q_parameter == 1:
                 # Return the Boltzmann–Gibbs entropy
                 return np.array([-sum([p * (0 if p == 0 else np.log(p)) for p in hist])])
             else:
-                return np.array([(1 - sum([p ** self.tsallis_q_parameer for p in hist])) / (self.tsallis_q_parameer - 1)])
+                return np.array([(1 - sum([p ** self.tsallis_q_parameter for p in hist])) / (self.tsallis_q_parameter - 1)])
         except:
             return np.array([np.nan])
 

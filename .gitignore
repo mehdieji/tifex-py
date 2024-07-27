@@ -1,4 +1,9 @@
 # Files
 /glossary.md
+*.ipynb
+
+
+# Folders
 /.vscode
+/__pycache__
 Public Dataset/

@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.stats import skew, kurtosis, moment, gmean, hmean, trim_mean, entropy, linregress, mode, pearsonr
 from statsmodels.tsa.stattools import acf
-from scipy.integrate import simps
+from scipy.integrate import simpson
 from statsmodels.tsa.ar_model import AutoReg
 from scipy import integrate
 from scipy.signal import detrend, argrelextrema, find_peaks
@@ -481,10 +481,6 @@ class StatisticalFeatures:
         feats.append(rvnsl)
         feats_names.append(f"{signal_name}_ratio_value_number_to_sequence_length")
 
-        # Roll Mean
-        roll_mean = self.calculate_roll_mean(signal)
-        feats.append(roll_mean[-1])
-        feats_names.append(f"{signal_name}_roll_mean")
 
         # Sample Entropy
         samp_ent = self.calculate_sample_entropy(signal)
@@ -975,10 +971,10 @@ class StatisticalFeatures:
 
     def calculate_area_under_curve(self, signal):
         # https://www.researchgate.net/publication/324936696_Enhancing_EEG_Signals_Recognition_Using_ROC_Curve
-        return simps(np.abs(signal), dx=1)
+        return simpson(np.abs(signal), dx=1)
 
     def calculate_area_under_squared_curve(self, signal):
-        return simps(signal**2, dx=1)
+        return simpson(signal**2, dx=1)
 
     def calculate_autoregressive_model_coefficients(self, signal, order=4):
         # https://doi.org/10.1109/IEMBS.2008.4650379

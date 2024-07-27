@@ -118,15 +118,16 @@ class TimeFrequencyFeatures:
 
         return np.array(feats), feats_names
 
-    def extract_wavelet_features(self, signal_name, wavelet_coefficients):
+    def extract_wavelet_features(self,signal_name, wavelet_coefficients):
         # https://doi.org/10.1016/B978-012047141-6/50006-9
         feats = []
         feats_names = []
 
         for i_level in range(len(wavelet_coefficients)):
             coeffs = wavelet_coefficients[i_level]
-            feats.extend(self.statistical_feature_extractor.calculate_statistical_features(coeffs))
-            feats_names.extend([f"{signal_name}_wavelet_lvl_{i_level}_{name}" for name in self.statistical_feature_extractor.feature_names])
+            statistical_features, statistical_feature_names = self.statistical_feature_extractor.calculate_statistical_features(coeffs, signal_name)
+            feats.extend(statistical_features)
+            feats_names.extend([f"{signal_name}_wavelet_lvl_{i_level}_{name}" for name in statistical_feature_names])
 
         return feats, feats_names
 

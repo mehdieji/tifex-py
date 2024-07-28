@@ -567,7 +567,8 @@ class StatisticalFeatures:
         feats.append(zero_crossing_rate)
         feats_names.append(f"{signal_name}_zero_crossing_rate")
 
-        return np.array(feats), feats_names
+        # return np.array(feats), feats_names
+        return feats, feats_names
 
     def calculate_mean(self, signal):
         # Manolopoulos et al., 2001, https://www.researchgate.net/publication/234800113
@@ -579,7 +580,11 @@ class StatisticalFeatures:
 
     def calculate_harmonic_mean(self, signal):
         # Chaddad et al., 2014, DOI: 10.1117/12.2062143
-        return np.array([hmean(signal)])
+        
+        # Filter out non-positive values
+        positive_signal = signal[signal > 0]
+        
+        return np.array([hmean(positive_signal)])
 
     def calculate_trimmed_mean(self, signal):
         # Chaddad et al., 2014, DOI: 10.1117/12.2062143

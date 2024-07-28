@@ -131,14 +131,6 @@ class TimeFrequencyFeatures:
 
         return feats, feats_names
 
-    # def extract_tkeo_features(self, signal_name, signal_tkeo):
-    #     feats = []
-    #     feats_names = []
-
-    #     feats.extend(self.statistical_feature_extractor.calculate_statistical_features(signal_tkeo))
-    #     feats_names.extend([f"{signal_name}_tkeo_{name}" for name in self.statistical_feature_extractor.feature_names])
-
-        # return feats, feats_names
 
     def extract_spectrogram_features(self, signal_name, signal):
         # https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.spectrogram.html
@@ -148,8 +140,9 @@ class TimeFrequencyFeatures:
         f, t, Sxx = spectrogram(signal, window=self.stft_window, nperseg=self.nperseg)
         Sxx_flat = Sxx.flatten()
 
-        feats.extend(self.statistical_feature_extractor.calculate_statistical_features(Sxx_flat))
-        feats_names.extend([f"{signal_name}_spectrogram_{name}" for name in self.statistical_feature_extractor.feature_names])
+        statistical_features, statistical_feature_names = self.statistical_feature_extractor.calculate_statistical_features(Sxx_flat, signal_name)
+        feats.extend(statistical_features)
+        feats_names.extend(statistical_feature_names)
 
         return feats, feats_names
 
@@ -161,8 +154,9 @@ class TimeFrequencyFeatures:
         f, t, Zxx = stft(signal, window=self.stft_window, nperseg=self.nperseg)
         Zxx_magnitude = np.abs(Zxx).flatten()
 
-        feats.extend(self.statistical_feature_extractor.calculate_statistical_features(Zxx_magnitude))
-        feats_names.extend([f"{signal_name}_stft_{name}" for name in self.statistical_feature_extractor.feature_names])
+        statistical_features, statistical_feature_names = self.statistical_feature_extractor.calculate_statistical_features(Zxx_magnitude, signal_name)
+        feats.extend(statistical_features)
+        feats_names.extend(statistical_feature_names)
 
     def teager_kaiser_energy_operator(self, signal):
         # https://doi.org/10.1016/j.dsp.2018.03.010
@@ -174,6 +168,14 @@ class TimeFrequencyFeatures:
         tkeo[-1] = 0
         return tkeo
 
+    # def extract_tkeo_features(self, signal_name, signal_tkeo):
+    #     feats = []
+    #     feats_names = []
+
+    #     feats.extend(self.statistical_feature_extractor.calculate_statistical_features(signal_tkeo))
+    #     feats_names.extend([f"{signal_name}_tkeo_{name}" for name in self.statistical_feature_extractor.feature_names])
+
+        # return feats, feats_names
 
 
 # Hilbert-Huang Transform

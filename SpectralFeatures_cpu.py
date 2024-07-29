@@ -1,15 +1,15 @@
 import numpy as np
 from scipy.signal import welch, find_peaks
-from scipy.integrate import simps
+from scipy.integrate import simpson
 from scipy.stats import entropy, skew, kurtosis, trim_mean, mode
 import librosa
 
 class SpectralFeatures:
     def __init__(self,
-                 fs,
-                 f_bands,
-                 n_dom_freqs=5,
-                 cumulative_power_thresholds=None):
+                fs,
+                f_bands,
+                n_dom_freqs=5,
+                cumulative_power_thresholds=None):
         self.fs = fs
         self.f_bands = f_bands
         self.n_dom_freqs = n_dom_freqs
@@ -87,7 +87,7 @@ class SpectralFeatures:
         # Spectral linear slope for spectrum
         # https://doi.org/10.1016/j.softx.2020.100456
         feats.extend(self.calculate_spectral_slope_linear(freqs_spectrum, spectrum_magnitudes))
-        feats_names.append(f"{signal_name}_spectrum_linear_slope")
+        feats_names.append(f"{signal_name}_spectral_linear_slope")
 
         # Spectral logarithmic slope for spectrum
         # https://doi.org/10.1016/j.softx.2020.100456
@@ -199,8 +199,8 @@ class SpectralFeatures:
 
         # Inharmonicity: Measures the deviation of the frequencies of the overtones from whole number multiples of the fundamental frequency.
         # https://zenodo.org/badge/latestdoi/6309729
-        feats.extend(self.calculate_inharmonicity(signal))
-        feats_names.append(f"{signal_name}_inharmonicity")
+        # feats.extend(self.calculate_inharmonicity(signal))
+        # feats_names.append(f"{signal_name}_inharmonicity")
 
         # Tristimulus: Measures the relative amplitude of the first few harmonics.
         # https://zenodo.org/badge/latestdoi/6309729
@@ -219,7 +219,7 @@ class SpectralFeatures:
 
         # Spectral Auto-correlation: The auto-correlation of the spectrum.
         # https://doi.org/10.48550/arXiv.1702.00105
-        feats.extend(self.calculate_spectral_autocorrelation(spectrum_magnitudes))
+        feats.append(self.calculate_spectral_autocorrelation(spectrum_magnitudes))
         feats_names.append(f"{signal_name}_spectral_autocorrelation")
 
         # Spectral Variability: Measures the variability of the spectrum.
@@ -254,8 +254,8 @@ class SpectralFeatures:
 
         # Spectral Even to Odd Harmonic Energy Ratio: The ratio of even harmonic energy to odd harmonic energy.
         # https://zenodo.org/badge/latestdoi/6309729
-        feats.extend(self.calculate_spectral_even_to_odd_harmonic_energy_ratio(signal))
-        feats_names.append(f"{signal_name}_spectral_even_to_odd_harmonic_energy_ratio")
+        # feats.extend(self.calculate_spectral_even_to_odd_harmonic_energy_ratio(signal))
+        # feats_names.append(f"{signal_name}_spectral_even_to_odd_harmonic_energy_ratio")
 
         # Spectral Strongest Frequency Phase: The phase of the strongest frequency component.
         # https://mriquestions.com/phase-v-frequency.html
@@ -398,7 +398,8 @@ class SpectralFeatures:
 
 
         # Returning the spectral features and the feature names
-        return np.array(feats), feats_names
+        # return np.array(feats), feats_names
+        return feats, feats_names
 
     def calculate_spectral_centroid(self, freqs, magnitudes, order=1):
         spectral_centroid = np.sum(magnitudes * (freqs ** order)) / np.sum(magnitudes)
@@ -459,7 +460,7 @@ class SpectralFeatures:
         freq_res = freqs[1] - freqs[0]  # Frequency resolution
         # Calculate the total power of the signal
         try:
-            feats.append(simps(psd, dx=freq_res))
+            feats.append(simpson(psd, dx=freq_res))
         except:
             feats.append(np.nan)
         # Calculate band absolute and relative power
@@ -468,7 +469,7 @@ class SpectralFeatures:
                 # Keeping the frequencies within the band
                 idx_band = np.logical_and(freqs >= f_band[0], freqs < f_band[1])
                 # Absolute band power by integrating PSD over frequency range of interest
-                feats.append(simps(psd[idx_band], dx=freq_res))
+                feats.append(simpson(psd[idx_band], dx=freq_res))
                 # Relative band power
                 feats.append(feats[-1] / feats[0])
             except:
@@ -571,12 +572,12 @@ class SpectralFeatures:
         thd = harmonic_power / total_power
         return np.array([thd])
 
-    def calculate_inharmonicity(self, signal):
-        f0 = librosa.yin(signal, fmin=librosa.note_to_hz('C1'), fmax=librosa.note_to_hz('C8'))
-        fundamental_freq = np.mean(f0)
-        harmonics = [(i+1) * fundamental_freq for i in range(1, int(self.fs/(2*fundamental_freq)))]
-        inharmonicity = sum([np.abs(harmonic - fundamental_freq * (i+1)) for i, harmonic in enumerate(harmonics)]) / len(harmonics)
-        return np.array([inharmonicity])
+    # def calculate_inharmonicity(self, signal):
+    #     f0 = librosa.yin(signal, fmin=librosa.note_to_hz('C1'), fmax=librosa.note_to_hz('C8'))
+    #     fundamental_freq = np.mean(f0)
+    #     harmonics = [(i+1) * fundamental_freq for i in range(1, int(self.fs/(2*fundamental_freq)))]
+    #     inharmonicity = sum([np.abs(harmonic - fundamental_freq * (i+1)) for i, harmonic in enumerate(harmonics)]) / len(harmonics)
+    #     return np.array([inharmonicity])
 
     def calculate_tristimulus(self, magnitudes):
         if len(magnitudes) < 3:
@@ -635,15 +636,15 @@ class SpectralFeatures:
         noise_to_harmonics_ratio = noise_energy / harmonic_energy
         return np.array([noise_to_harmonics_ratio])
 
-    def calculate_spectral_even_to_odd_harmonic_energy_ratio(self, signal):
-        f0 = librosa.yin(signal, fmin=librosa.note_to_hz('C1'), fmax=librosa.note_to_hz('C8'))
-        fundamental_freq = np.mean(f0)
-        even_harmonics = [(2 * i + 2) * fundamental_freq for i in range(int(self.fs / (2 * fundamental_freq)))]
-        odd_harmonics = [(2 * i + 1) * fundamental_freq for i in range(int(self.fs / (2 * fundamental_freq)))]
-        even_energy = sum([np.sum(np.abs(np.fft.rfft(signal * np.sin(2 * np.pi * harmonic * np.arange(len(signal)) / self.fs)))) for harmonic in even_harmonics])
-        odd_energy = sum([np.sum(np.abs(np.fft.rfft(signal * np.sin(2 * np.pi * harmonic * np.arange(len(signal)) / self.fs)))) for harmonic in odd_harmonics])
-        even_to_odd_ratio = even_energy / odd_energy
-        return np.array([even_to_odd_ratio])
+    # def calculate_spectral_even_to_odd_harmonic_energy_ratio(self, signal):
+    #     f0 = librosa.yin(signal, fmin=librosa.note_to_hz('C1'), fmax=librosa.note_to_hz('C8'))
+    #     fundamental_freq = np.mean(f0)
+    #     even_harmonics = [(2 * i + 2) * fundamental_freq for i in range(int(self.fs / (2 * fundamental_freq)))]
+    #     odd_harmonics = [(2 * i + 1) * fundamental_freq for i in range(int(self.fs / (2 * fundamental_freq)))]
+    #     even_energy = sum([np.sum(np.abs(np.fft.rfft(signal * np.sin(2 * np.pi * harmonic * np.arange(len(signal)) / self.fs)))) for harmonic in even_harmonics])
+    #     odd_energy = sum([np.sum(np.abs(np.fft.rfft(signal * np.sin(2 * np.pi * harmonic * np.arange(len(signal)) / self.fs)))) for harmonic in odd_harmonics])
+    #     even_to_odd_ratio = even_energy / odd_energy
+    #     return np.array([even_to_odd_ratio])
 
     def calculate_spectral_strongest_frequency_phase(self, freqs, spectrum):
         strongest_frequency_index = np.argmax(np.abs(spectrum))
@@ -726,7 +727,8 @@ class SpectralFeatures:
         if len(valleys) < 2:
             return np.array([np.nan])
         valley_widths = np.diff(valleys)
-        valley_width_mode = mode(valley_widths).mode[0]
+        # valley_width_mode = mode(valley_widths).mode[0]
+        valley_width_mode = mode(valley_widths)[0]
         return np.array([valley_width_mode])
 
     def calculate_spectral_valley_width_std(self, magnitudes):

@@ -1097,6 +1097,9 @@ class StatisticalFeatures:
 
     def calculate_log_return(self, signal):
         # https://pypi.org/project/stockstats/
+        
+        # Filter out non-positive values
+        signal = signal[signal > 0]
         return np.log(signal[-1] / signal[0]) if signal[0] != 0 else float('inf')
 
     def calculate_longest_strike_above_mean(self, signal):

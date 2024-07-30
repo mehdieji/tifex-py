@@ -573,13 +573,17 @@ class StatisticalFeatures:
 
     def calculate_mean(self, signal):
         """
-        Calculate the mean of the given signal.
+        Calculates the mean of the given signal.
 
-        Args:
-            signal (array-like): The input signal.
+        Parameters:
+        ---------
+        signal: np.array
+            An array of values corresponding to the signal.
 
         Returns:
-            array: An array containing the mean of the signal.
+        -------
+        np.array
+            An array containing the mean of the signal.
         
         References:
             Manolopoulos et al., 2001, https://www.researchgate.net/publication/234800113
@@ -589,15 +593,20 @@ class StatisticalFeatures:
 
     def calculate_geometric_mean(self, signal):
         """
-        Calculate the geometric mean of the given signal.
+        Calculates the geometric mean of the given signal.
 
-        Args:
-            signal (array-like): The input signal.
+        Parameters:
+        ----------
+        signal : np.array
+            An array of values corresponding to the input signal.
 
         Returns:
-            array: An array containing the geometric mean of the signal.
+        -------
+            np.array
+                An array containing the geometric mean of the signal.
         
         References:
+        ----------
             Chaddad et al., 2014, DOI: 10.1117/12.2062143
         """
         return np.array([gmean(signal)])
@@ -605,16 +614,21 @@ class StatisticalFeatures:
 
     def calculate_harmonic_mean(self, signal):
         """
-        Calculate the harmonic mean of the given signal.
+        Calculates the harmonic mean of the given signal.
         Only positive values in the signal are considered.
 
-        Args:
-            signal (array-like): The input signal.
+        Parameters:
+        ----------
+        signal : np.array
+            An array of values corresponding to the input signal.
 
         Returns:
-            array: An array containing the harmonic mean of the signal.
+        -------
+        np.array
+            An array containing the harmonic mean of the signal.
         
         References:
+        ----------
             Chaddad et al., 2014, DOI: 10.1117/12.2062143
         """
         # Filter out non-positive values
@@ -629,15 +643,19 @@ class StatisticalFeatures:
         The trimmed mean excludes a fraction of the smallest and largest values 
         from the signal.
 
-        Args:
-            signal (array-like): The input signal.
-            self.trimmed_mean_thresholds (list): List of proportions to cut 
-                from each end of the signal.
+        Parameters:
+        ----------
+        signal : np.array
+            An array of values corresponding to the signal.
+        self.trimmed_mean_thresholds (list): 
+            List of proportions to cut from each end of the signal.
 
         Returns:
-            array: An array containing the trimmed means for each proportion.
+        -------
+            np.array: An array containing the trimmed means for each proportion.
         
         References:
+        ----------
             Chaddad et al., 2014, DOI: 10.1117/12.2062143
         """
         feats = []
@@ -649,13 +667,18 @@ class StatisticalFeatures:
         """
         Calculate the mean of the absolute values of the given signal.
 
-        Args:
-            signal (array-like): The input signal.
+        Parameters:
+        ----------
+        signal : np.array
+            An array of values corresponding to the input signal.
 
         Returns:
-            array: An array containing the mean of the absolute values of the signal.
+        -------
+            np.array
+                An array containing the mean of the absolute values of the signal.
         
         References:
+        ----------
             Myroniv et al., 2017, https://www.researchgate.net/publication/323935725
             Phinyomark et al., 2012, DOI: 10.1016/j.eswa.2012.01.102
             Purushothaman et al., 2018, DOI: 10.1007/s13246-018-0646-7
@@ -667,11 +690,17 @@ class StatisticalFeatures:
         """
         Calculate the geometric mean of the absolute values of the given signal.
 
-        Args:
-            signal (array-like): The input signal.
+        Parameters:
+        ----------
+        signal : np.array
+            An array of values corresponding to the input signal.
 
         Returns:
-            array: An array containing the geometric mean of the absolute values of the signal.
+        -------
+            np.array
+                An array containing the geometric mean of the absolute values of the signal.
+        References:
+        ----------
         """
         return np.array([gmean(np.abs(signal))])
 
@@ -680,29 +709,44 @@ class StatisticalFeatures:
         """
         Calculate the harmonic mean of the absolute values of the given signal.
 
-        Args:
-            signal (array-like): The input signal.
+        Parameters:
+        ----------
+        signal : np.array
+            An array of values corresponding to the input signal.
 
         Returns:
-            array: An array containing the harmonic mean of the absolute values of the signal.
+        -------
+            np.array
+                An array containing the harmonic mean of the absolute values of the signal.
+        Reference:
+        ---------
+        ---------
         """
         return np.array([hmean(np.abs(signal))])
 
 
     def calculate_trimmed_mean_abs(self, signal):
         """
-        Calculate the trimmed mean of the absolute values of the given signal for different proportions.
+        Calculate the trimmed mean of the absolute values of the given signal for 
+        different proportions.
         
         The trimmed mean excludes a fraction of the smallest and largest values 
         from the absolute values of the signal.
 
-        Args:
-            signal (array-like): The input signal.
-            self.trimmed_mean_thresholds (list): List of proportions to cut 
-                from each end of the absolute values of the signal.
+        Parameters:
+        ----------
+        signal : np.array
+            An array of values corresponding to the signal.
+        self.trimmed_mean_thresholds: list
+            List of proportions to cut from each end of the absolute values of the signal.
 
         Returns:
-            array: An array containing the trimmed means for each proportion.
+        -------
+            np.array
+                An array containing the trimmed means for each proportion.
+        Reference:
+        ---------
+        ---------
         """
         feats = []
         for proportiontocut in self.trimmed_mean_thresholds:
@@ -714,13 +758,18 @@ class StatisticalFeatures:
         """
         Calculates the standard deviation of the signal.
 
-        Args:
-            signal (array-like): The input signal.
+        Parameters:
+        ----------
+        signal : np.array
+            An array of values corresponding to the input signal.
             
         Returns:
-            array: An array containing the standard deviation of the signal.
+        -------
+            np.array
+                An array containing the standard deviation of the signal.
             
         Reference:
+        ---------
             Manolopoulos et al., 2001, https://www.researchgate.net/publication/234800113
         """
         return np.array([np.std(signal)])
@@ -729,14 +778,18 @@ class StatisticalFeatures:
         """
         Calculates the standard deviation of the absolute values of the signal.
 
-        Args:
-            signal (array-like): The input signal.
+        Parameters:
+        ----------
+        signal : np.array
+            An array of values corresponding to the input signal.
             
         Returns:
-            array: An array containing the standard deviation of the absolute values of the signal.
+        -------
+            np.array
+                An array containing the standard deviation of the absolute values of the signal.
             
         Reference:
-
+        ---------
         """
         return np.array([np.std(np.abs(signal))])
 
@@ -744,13 +797,18 @@ class StatisticalFeatures:
         """
         Calculates the skewness of the signal.
 
-        Args:
-            signal (array-like): The input signal.
+        Parameters:
+        ----------
+        signal : np.array
+            An array of values corresponding to the input signal.
             
         Returns:
-            array: An array containing the skewness of the signal.
+        -------
+            np.array
+                An array containing the skewness of the signal.
             
-        Reference:
+        References:
+        ----------
             Manolopoulos et al., 2001, https://www.researchgate.net/publication/234800113
             Khorshidtalab et al., 2013 , DOI: 10.1088/0967-3334/34/11/1563
         """        
@@ -760,13 +818,18 @@ class StatisticalFeatures:
         """
         Calculates the skewness of the absolute values of the signal.
 
-        Args:
-            signal (array-like): The input signal.
+        Parameters:
+        ----------
+        signal : np.array
+            An array of values corresponding to the input signal.
             
         Returns:
-            array: An array containing the skewness of the absolute values of the signal.
+        -------
+            np.array 
+                An array containing the skewness of the absolute values of the signal.
             
         Reference:
+        ---------
         """
         return np.array([skew(np.abs(signal))])
 
@@ -774,13 +837,18 @@ class StatisticalFeatures:
         """
         Calculates the kurtosis of the signal.
 
-        Args:
-            signal (array-like): The input signal.
+        Parameters:
+        ----------
+        signal : np.array
+            An array of values corresponding to the input signal.
             
         Returns:
-            array: An array containing the kurtosis of the signal.
+        -------
+            np.array:
+                An array containing the kurtosis of the signal.
             
-        Reference:
+        References:
+        ----------
             Manolopoulos et al., 2001, https://www.researchgate.net/publication/234800113
             Khorshidtalab et al., 2013 , DOI: 10.1088/0967-3334/34/11/1563
         """
@@ -790,11 +858,15 @@ class StatisticalFeatures:
         """
         Calculates the kurtosis of the absolute values of the signal.
 
-        Args:
-            signal (array-like): The input signal.
+        Parameters:
+        ----------
+        signal : np.array
+            An array of values corresponding to the input signal.
             
         Returns:
-            array: An array containing the kurtosis of the absolute values of the signal.
+        -------
+            np.array
+                An array containing the kurtosis of the absolute values of the signal.
             
         Reference:
         """
@@ -804,13 +876,18 @@ class StatisticalFeatures:
         """
         Calculates the median of the signal.
 
-        Args:
-            signal (array-like): The input signal.
+        Parameters:
+        ----------
+        signal : np.array
+            An array of values corresponding to the input signal.
             
         Returns:
-            array: An array containing the median  of the signal.
+        -------
+            np.array:
+                An array containing the median  of the signal.
             
         Reference:
+        ---------
             Banos et al., 2012, DOI: 10.1016/j.eswa.2012.01.164
         """
         
@@ -820,13 +897,18 @@ class StatisticalFeatures:
         """
         Calculates the median of the absolute values of the signal.
 
-        Args:
-            signal (array-like): The input signal.
+        Parameters:
+        ----------
+        signal : np.array
+            An array of values corresponding to the input signal.
             
         Returns:
-            array: An array containing the median of the absolute values of the signal.
+        -------
+            np.array
+                An array containing the median of the absolute values of the signal.
             
         Reference:
+        ---------
         """
         return np.array([np.median(np.abs(signal))])
 
@@ -834,13 +916,18 @@ class StatisticalFeatures:
         """
         Calculates the minimum value of the signal.
 
-        Args:
-            signal (array-like): The input signal.
+        Parameters:
+        ----------
+        signal : np.array
+            An array of values corresponding to the input signal.
             
         Returns:
-            array: An array containing the minimum value of the signal.
+        -------
+            np.array
+                An array containing the minimum value of the signal.
             
         Reference:
+        ---------
             18th International Conference on Computer Communications and Networks, DOI: 10.1109/ICCCN15201.2009
         """
         
@@ -851,13 +938,18 @@ class StatisticalFeatures:
         """
         Calculates the minimum value of the absolute values of the signal.
 
-        Args:
-            signal (array-like): The input signal.
+        Parameters:
+        ----------
+        signal : np.array
+            An array of values corresponding to the input signal.
             
         Returns:
-            array: An array containing the minimum value of the absolute values of the signal.
+        -------
+            np.array
+                An array containing the minimum value of the absolute values of the signal.
             
         Reference:
+        ---------
         """
         min_abs_val = np.min(np.abs(signal))
         return np.array([min_abs_val])
@@ -866,13 +958,18 @@ class StatisticalFeatures:
         """
         Calculates the maximum value of the signal.
 
-        Args:
-            signal (array-like): The input signal.
+        Parameters:
+        ----------
+        signal : np.array
+            An array of values corresponding to the input signal.
             
         Returns:
-            array: An array containing the maximum value of the signal.
+        -------
+            np.array
+                An array containing the maximum value of the signal.
             
         Reference:
+        ---------
             Khorshidtalab et al., 2013 , DOI: 10.1088/0967-3334/34/11/1563
         """
         
@@ -883,13 +980,18 @@ class StatisticalFeatures:
         """
         Calculates the maximum value of the absolute values of the signal.
 
-        Args:
-            signal (array-like): The input signal.
+        Parameters:
+        ----------
+        signal : np.array
+            An array of values corresponding to the input signal.
             
         Returns:
-            array: An array containing the maximum value of the absolute values of the signal.
+        -------
+            np.array
+                An array containing the maximum value of the absolute values of the signal.
             
         Reference:
+        ---------
         """
         max_abs_val = np.max(np.abs(signal))
         return np.array([max_abs_val])
@@ -898,13 +1000,18 @@ class StatisticalFeatures:
         """
         Calculates the range of the signal.
 
-        Args:
-            signal (array-like): The input signal.
+        Parameters:
+        ----------
+        signal : np.array
+            An array of values corresponding to the input signal.
             
         Returns:
-            array: An array containing the range of the signal.
+        -------
+            np.array
+                An array containing the range of the signal.
             
         Reference:
+        ---------
             Khorshidtalab et al., 2013 , DOI: 10.1088/0967-3334/34/11/1563
         """
         return np.array([np.max(signal) - np.min(signal)])
@@ -913,13 +1020,18 @@ class StatisticalFeatures:
         """
         Calculates the range of the absolute values of the signal.
 
-        Args:
-            signal (array-like): The input signal.
+        Parameters:
+        ----------
+        signal : np.array
+            An array of values corresponding to the input signal.
             
         Returns:
-            array: An array containing the range of the absolute values of the signal.
+        -------
+            np.array
+                An array containing the range of the absolute values of the signal.
             
         Reference:
+        ---------
         """
         abs_signal = np.abs(signal)
         return np.array([np.max(abs_signal) - np.min(abs_signal)])
@@ -928,13 +1040,17 @@ class StatisticalFeatures:
         """
         Calculates the variance of the signal.
 
-        Args:
+        Parameters:
+        ----------
             signal (array-like): The input signal.
             
         Returns:
-            array: An array containing the variance of the signal.
+        -------
+            np.array
+                An array containing the variance of the signal.
             
         Reference:
+        ---------
             Khorshidtalab et al., 2013 , DOI: 10.1088/0967-3334/34/11/1563
         """
         return np.array([np.var(signal)])
@@ -943,13 +1059,17 @@ class StatisticalFeatures:
         """
         Calculates the variance of the absolute values of the signal.
 
-        Args:
+        Parameters:
+        ----------
             signal (array-like): The input signal.
             
         Returns:
-            array: An array containing the variance of the absolute values of the  signal.
+        -------
+            np.array
+                An array containing the variance of the absolute values of the  signal.
             
         Reference:
+        ---------
         """
         return np.array([np.var(np.abs(signal))])
 
@@ -959,13 +1079,17 @@ class StatisticalFeatures:
         
         The IQR is the difference between the 75th percentile (Q3) and the 25th percentile (Q1) of the signal.
 
-        Args:
+        Parameters:
+        ----------
             signal (array-like): The input signal.
 
         Returns:
-            array: An array containing the interquartile range of the signal.
+        -------
+            np.array
+                An array containing the interquartile range of the signal.
         
         References:
+        ----------
             Bedeeuzzaman et al., 2012, DOI: 10.5120/6304-8614
         """
         return np.array([np.percentile(signal, 75) - np.percentile(signal, 25)])
@@ -976,11 +1100,14 @@ class StatisticalFeatures:
         
         The MAD is the average of the absolute deviations from the mean of the signal.
 
-        Args:
+        Parameters:
+        ----------
             signal (array-like): The input signal.
 
         Returns:
-            array: An array containing the mean absolute deviation of the signal.
+        -------
+            np.array
+                An array containing the mean absolute deviation of the signal.
         
         References:
             Khair et al., 2017, DOI: 10.1088/1742-6596/930/1/012002
@@ -994,11 +1121,14 @@ class StatisticalFeatures:
         
         The RMS is the square root of the mean of the squares of the signal values.
 
-        Args:
+        Parameters:
+        ----------
             signal (array-like): The input signal.
 
         Returns:
-            array: An array containing the root mean square of the signal.
+        -------
+            np.array
+                An array containing the root mean square of the signal.
         
         References:
             Khorshidtalab et al., 2013, DOI: 10.1088/0967-3334/34/11/1563
@@ -1013,11 +1143,14 @@ class StatisticalFeatures:
         
         The energy of the signal is the sum of the squares of its values.
 
-        Args:
+        Parameters:
+        ----------
             signal (array-like): The input signal.
 
         Returns:
-            array: An array containing the energy of the signal.
+        -------
+            np.array
+                An array containing the energy of the signal.
         
         References:
             Rafiuddin et al., 2011, DOI: 10.1109/MSPCT.2011.6150470
@@ -1031,11 +1164,14 @@ class StatisticalFeatures:
         
         The log energy is the natural logarithm of the sum of the squares of the signal values.
 
-        Args:
+        Parameters:
+        ----------
             signal (array-like): The input signal.
 
         Returns:
-            array: An array containing the logarithm of the energy of the signal.
+        -------
+            np.array:
+                An array containing the logarithm of the energy of the signal.
         """
         return np.array([np.log(np.sum(signal**2))])
 
@@ -1047,13 +1183,17 @@ class StatisticalFeatures:
         The entropy is a measure of the uncertainty or randomness in the signal,
         calculated from its histogram.
 
-        Args:
+        Parameters:
+        ----------
             signal (array-like): The input signal.
 
         Returns:
-            array: An array containing the entropy of the signal.
+        -------
+            np.array:
+                An array containing the entropy of the signal.
         
         References:
+        ----------
             Guido, 2018, DOI: 10.1016/j.inffus.2017.09.006
         """
         try:
@@ -1652,3 +1792,51 @@ class StatisticalFeatures:
 # Detrended Fluctuation Analysis
 # Higuchi Fractal Dimension
 # Hurst Exponent
+    def calculate_conditional_entropy(self, signal):
+        """
+        Calculates the conditional entropy of the signal
+
+        Args:
+            signal (array-like): The input signal.
+            
+        Returns:
+            array: An array containing the conditional entropy of the signal.
+            
+        Reference:
+        ---------
+        
+        """
+        pass
+    
+    def calculate_detrended_fluctuation_analysis(self, signal):
+        """
+        Calculate the detrended fluctuation of the given signal.
+        
+        
+
+        Args:
+            signal (array-like): The input signal.
+
+        Returns:
+            array: An array containing the detrended analysis of the signal.
+        
+        References:
+            
+        """
+        pass
+
+    def calculate_hurst_exponent(self, signal):
+        """
+        Calculate the hurst exponent of the given signal.
+        
+
+        Args:
+            signal (array-like): The input signal.
+
+        Returns:
+            array: An array containing the entropy of the signal.
+        
+        References:
+            Guido, 2018, DOI: 10.1016/j.inffus.2017.09.006
+        """
+        pass

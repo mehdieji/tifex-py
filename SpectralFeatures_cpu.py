@@ -36,29 +36,24 @@ class SpectralFeatures:
         psd_normalized = psd / np.sum(psd)
 
         # Calculating the spectral features.
-        # Spectral centroid (order 1-4)
-        # https://doi.org/10.1016/j.softx.2020.100456
+        # Spectral centroid (order 1-4)        
         for order in range(1, 5):
             feats.extend(self.calculate_spectral_centroid(freqs_spectrum, spectrum_magnitudes, order=order))
             feats_names.append(f"{signal_name}_spectral_centroid_order_{order}")
         
         # Spectral variance / spectral spread
-        # https://doi.org/10.1016/j.softx.2020.100456
         feats.extend(self.calculate_spectral_variance(freqs_spectrum, spectrum_magnitudes))
         feats_names.append(f"{signal_name}_spectral_var")
 
         # Spectral skewness
-        # https://doi.org/10.1016/j.softx.2020.100456
         feats.extend(self.calculate_spectral_skewness(freqs_spectrum, spectrum_magnitudes))
         feats_names.append(f"{signal_name}_spectral_skewness")
 
         # Spectral kurtosis
-        # https://doi.org/10.1016/j.softx.2020.100456
         feats.extend(self.calculate_spectral_kurtosis(freqs_spectrum, spectrum_magnitudes))
         feats_names.append(f"{signal_name}_spectral_kurtosis")
 
         # Median frequency of the power spectrum of a signal
-        # https://doi.org/10.1109/iembs.2008.4649357
         feats.extend(self.calculate_median_frequency(freqs_psd, psd))
         feats_names.append(f"{signal_name}_median_frequency")
 
@@ -90,7 +85,6 @@ class SpectralFeatures:
         feats_names.append(f"{signal_name}_spectral_linear_slope")
 
         # Spectral logarithmic slope for spectrum
-        # https://doi.org/10.1016/j.softx.2020.100456
         feats.extend(self.calculate_spectral_slope_logarithmic(freqs_spectrum, spectrum_magnitudes))
         feats_names.append(f"{signal_name}_spectrum_logarithmic_slope")
 
@@ -105,7 +99,6 @@ class SpectralFeatures:
         feats_names.append(f"{signal_name}_power_spectrum_logarithmic_slope")
 
         # Spectral flatness
-        # https://doi.org/10.1016/B978-0-12-398499-9.00012-1
         feats.extend(self.calculate_spectral_flatness(spectrum_magnitudes))
         feats_names.append(f"{signal_name}_spectral_flatness")
 
@@ -402,39 +395,192 @@ class SpectralFeatures:
         return feats, feats_names
 
     def calculate_spectral_centroid(self, freqs, magnitudes, order=1):
+        """
+        Calculate the spectral centroid of a given spectrum.
+
+        The spectral centroid is a measure that indicates where the center of mass of the spectrum is located.
+        It is often associated with the perceived brightness of a sound. This function computes the spectral
+        centroid by taking the weighted mean of the frequencies, with the magnitudes as weights.
+
+        Parameters:
+        ----------
+        freqs : np.array
+            An array of frequencies corresponding to the spectrum bins.
+        magnitudes : np.array
+            An array of magnitude values of the spectrum at the corresponding frequencies.
+        order : int, optional
+            The order of the centroid calculation. Default is 1, which calculates the standard spectral centroid.
+            Higher orders can be used for other types of spectral centroid calculations.
+
+        Returns:
+        -------
+        np.array
+            An array containing the calculated spectral centroid. The array is of length 1 for consistency in return type.
+            
+        Reference:
+        ---------
+            https://doi.org/10.1016/j.softx.2020.100456
+        """
+                
         spectral_centroid = np.sum(magnitudes * (freqs ** order)) / np.sum(magnitudes)
         return np.array([spectral_centroid])
 
     def calculate_spectral_variance(self, freqs, magnitudes):
-        # AKA spectral spread
+        """
+        Calculate the spectral variance (also known as spectral spread) of a given spectrum.
+
+        The spectral variance is a measure of the spread of the spectrum around its centroid.
+        It quantifies how much the frequencies in the spectrum deviate from the spectral centroid.
+
+        Parameters:
+        ----------
+        freqs : np.array
+            An array of frequencies corresponding to the spectrum bins.
+        magnitudes : np.array
+            An array of magnitude values of the spectrum at the corresponding frequencies.
+
+        Returns:
+        -------
+        np.array
+            An array containing the calculated spectral variance. The array is of length 1 for consistency in return type.
+        
+        Reference:
+        ---------
+            https://doi.org/10.1016/j.softx.2020.100456
+        """
         mean_frequency = self.calculate_spectral_centroid(freqs, magnitudes)
         spectral_variance = np.sum(((freqs - mean_frequency) ** 2) * magnitudes) / np.sum(magnitudes)
         return np.array([spectral_variance])
 
     def calculate_spectral_skewness(self, freqs, magnitudes):
+        """
+        Calculate the spectral skewness of a given spectrum.
+
+        Spectral skewness is a measure of the asymmetry of the distribution of frequencies in the spectrum
+        around the spectral centroid. It indicates whether the spectrum is skewed towards higher or lower
+        frequencies.
+
+        Parameters:
+        ----------
+        freqs : np.ndarray
+            An array of frequencies corresponding to the spectrum bins.
+        magnitudes : np.ndarray
+            An array of magnitude values of the spectrum at the corresponding frequencies.
+
+        Returns:
+        -------
+        float
+            The calculated spectral skewness.
+        
+        Reference:
+        ---------
+            https://doi.org/10.1016/j.softx.2020.100456
+        """
         mu1 = self.calculate_spectral_centroid(freqs, magnitudes, order=1)
         mu2 = self.calculate_spectral_centroid(freqs, magnitudes, order=2)
         spectral_skewness = np.sum(magnitudes * (freqs - mu1) ** 3) / (np.sum(magnitudes) * mu2 ** 3)
         return spectral_skewness
 
     def calculate_spectral_kurtosis(self, freqs, magnitudes):
+        """
+        Calculate the spectral kurtosis of a given spectrum.
+
+        Spectral kurtosis measures the "tailedness" or peakiness of the frequency distribution around the spectral centroid.
+        It quantifies how outlier-prone the spectrum is and reflects the degree of concentration of the spectral energy.
+        A higher kurtosis value indicates a more peaked distribution with heavy tails.
+
+        Parameters:
+        ----------
+        freqs : np.ndarray
+            An array of frequencies corresponding to the spectrum bins.
+        magnitudes : np.ndarray
+            An array of magnitude values of the spectrum at the corresponding frequencies.
+
+        Returns:
+        -------
+        float
+            The calculated spectral kurtosis.
+        
+        Reference:
+        ---------
+            https://doi.org/10.1016/j.softx.2020.100456
+        """
         mu1 = self.calculate_spectral_centroid(freqs, magnitudes, order=1)
         mu2 = self.calculate_spectral_centroid(freqs, magnitudes, order=2)
         spectral_kurtosis = np.sum(magnitudes * (freqs - mu1) ** 4) / (np.sum(magnitudes) * mu2 ** 4)
         return spectral_kurtosis
 
     def calculate_median_frequency(self, freqs, psd):
-        # Calculate the cumulative distribution function (CDF) of the PSD
+        """
+        Calculate the cumulative distribution function (CDF) of the PSD
+
+        Parameters:
+        ----------
+        freqs : np.ndarray
+            An array of frequencies corresponding to the PSD bins.
+        psd : np.ndarray
+            An array of power spectral density values at the corresponding frequencies.
+
+        Returns:
+        -------
+        np.ndarray
+            An array containing the calculated median frequency.
+            
+        Reference:
+        ---------
+                https://doi.org/10.1109/iembs.2008.4649357
+        """
         cdf = np.cumsum(psd)
         median_freq = freqs[np.searchsorted(cdf, cdf[-1] / 2)]
         return np.array([median_freq])
 
     def calculate_spectral_flatness(self, magnitudes):
-        # AKA Wiener's entropy.
+        """
+        Calculate the spectral flatness of a given spectrum.
+
+        Spectral flatness quantifies how flat or peaky a spectrum is, indicating how noise-like or tonal a signal is.
+        It is often used to distinguish between noise and tonal signals. It can also be referred to as Wiener's entropy.
+
+        Parameters:
+        ----------
+        magnitudes : np.ndarray
+            An array of magnitude values of the spectrum.
+
+        Returns:
+        -------
+        np.ndarray
+            An array containing the calculated spectral flatness.
+
+        Reference:
+        --------
+            https://doi.org/10.1016/B978-0-12-398499-9.00012-1
+        """
         spectral_flatness = np.exp(np.mean(np.log(magnitudes))) / np.mean(magnitudes)
         return np.array([spectral_flatness])
 
     def calculate_spectral_slope_logarithmic(self, freqs, magnitudes):
+        """
+        Calculate the logarithmic spectral slope of a given spectrum.
+
+        The logarithmic spectral slope provides a measure of the rate at which the spectrum's magnitude changes
+        across frequencies on a logarithmic scale.
+
+        Parameters:
+        ----------
+        freqs : np.ndarray
+            An array of frequencies corresponding to the magnitude spectrum bins.
+        magnitudes : np.ndarray
+            An array of magnitude values of the spectrum at the corresponding frequencies.
+
+        Returns:
+        -------
+        np.ndarray
+            An array containing the calculated logarithmic spectral slope. The array is of length 1 for consistency in return type.
+
+        Reference:
+        ---------
+            https://doi.org/10.1016/j.softx.2020.100456
+        """
         slope = np.polyfit(freqs, np.log(magnitudes), 1)[0]
         return np.array([slope])
 

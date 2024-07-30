@@ -570,131 +570,492 @@ class StatisticalFeatures:
         # return np.array(feats), feats_names
         return feats, feats_names
 
+
     def calculate_mean(self, signal):
-        # Manolopoulos et al., 2001, https://www.researchgate.net/publication/234800113
+        """
+        Calculate the mean of the given signal.
+
+        Args:
+            signal (array-like): The input signal.
+
+        Returns:
+            array: An array containing the mean of the signal.
+        
+        References:
+            Manolopoulos et al., 2001, https://www.researchgate.net/publication/234800113
+        """
         return np.array([np.mean(signal)])
 
+
     def calculate_geometric_mean(self, signal):
-        # Chaddad et al., 2014, DOI: 10.1117/12.2062143
+        """
+        Calculate the geometric mean of the given signal.
+
+        Args:
+            signal (array-like): The input signal.
+
+        Returns:
+            array: An array containing the geometric mean of the signal.
+        
+        References:
+            Chaddad et al., 2014, DOI: 10.1117/12.2062143
+        """
         return np.array([gmean(signal)])
 
+
     def calculate_harmonic_mean(self, signal):
-        # Chaddad et al., 2014, DOI: 10.1117/12.2062143
+        """
+        Calculate the harmonic mean of the given signal.
+        Only positive values in the signal are considered.
+
+        Args:
+            signal (array-like): The input signal.
+
+        Returns:
+            array: An array containing the harmonic mean of the signal.
         
+        References:
+            Chaddad et al., 2014, DOI: 10.1117/12.2062143
+        """
         # Filter out non-positive values
-        positive_signal = signal[signal > 0]
-        
-        return np.array([hmean(positive_signal)])
+        signal = signal[signal > 0]
+        return np.array([hmean(signal)])
+
 
     def calculate_trimmed_mean(self, signal):
-        # Chaddad et al., 2014, DOI: 10.1117/12.2062143
+        """
+        Calculate the trimmed mean of the given signal for different proportions.
+        
+        The trimmed mean excludes a fraction of the smallest and largest values 
+        from the signal.
+
+        Args:
+            signal (array-like): The input signal.
+            self.trimmed_mean_thresholds (list): List of proportions to cut 
+                from each end of the signal.
+
+        Returns:
+            array: An array containing the trimmed means for each proportion.
+        
+        References:
+            Chaddad et al., 2014, DOI: 10.1117/12.2062143
+        """
         feats = []
         for proportiontocut in self.trimmed_mean_thresholds:
             feats.append(trim_mean(signal, proportiontocut=proportiontocut))
         return np.array(feats)
 
     def calculate_mean_abs(self, signal):
-        # Myroniv et al., 2017, https://www.researchgate.net/publication/323935725
-        # Phinyomark et al., 2012, DOI: 10.1016/j.eswa.2012.01.102
-        # Purushothaman et al., 2018, DOI: 10.1007/s13246-018-0646-7
+        """
+        Calculate the mean of the absolute values of the given signal.
+
+        Args:
+            signal (array-like): The input signal.
+
+        Returns:
+            array: An array containing the mean of the absolute values of the signal.
+        
+        References:
+            Myroniv et al., 2017, https://www.researchgate.net/publication/323935725
+            Phinyomark et al., 2012, DOI: 10.1016/j.eswa.2012.01.102
+            Purushothaman et al., 2018, DOI: 10.1007/s13246-018-0646-7
+        """
         return np.array([np.mean(np.abs(signal))])
 
+
     def calculate_geometric_mean_abs(self, signal):
+        """
+        Calculate the geometric mean of the absolute values of the given signal.
+
+        Args:
+            signal (array-like): The input signal.
+
+        Returns:
+            array: An array containing the geometric mean of the absolute values of the signal.
+        """
         return np.array([gmean(np.abs(signal))])
 
+
     def calculate_harmonic_mean_abs(self, signal):
+        """
+        Calculate the harmonic mean of the absolute values of the given signal.
+
+        Args:
+            signal (array-like): The input signal.
+
+        Returns:
+            array: An array containing the harmonic mean of the absolute values of the signal.
+        """
         return np.array([hmean(np.abs(signal))])
 
+
     def calculate_trimmed_mean_abs(self, signal):
+        """
+        Calculate the trimmed mean of the absolute values of the given signal for different proportions.
+        
+        The trimmed mean excludes a fraction of the smallest and largest values 
+        from the absolute values of the signal.
+
+        Args:
+            signal (array-like): The input signal.
+            self.trimmed_mean_thresholds (list): List of proportions to cut 
+                from each end of the absolute values of the signal.
+
+        Returns:
+            array: An array containing the trimmed means for each proportion.
+        """
         feats = []
         for proportiontocut in self.trimmed_mean_thresholds:
             feats.append(trim_mean(np.abs(signal), proportiontocut=proportiontocut))
         return np.array(feats)
 
+
     def calculate_std(self, signal):
-        # Manolopoulos et al., 2001, https://www.researchgate.net/publication/234800113
+        """
+        Calculates the standard deviation of the signal.
+
+        Args:
+            signal (array-like): The input signal.
+            
+        Returns:
+            array: An array containing the standard deviation of the signal.
+            
+        Reference:
+            Manolopoulos et al., 2001, https://www.researchgate.net/publication/234800113
+        """
         return np.array([np.std(signal)])
 
     def calculate_std_abs(self, signal):
+        """
+        Calculates the standard deviation of the absolute values of the signal.
+
+        Args:
+            signal (array-like): The input signal.
+            
+        Returns:
+            array: An array containing the standard deviation of the absolute values of the signal.
+            
+        Reference:
+
+        """
         return np.array([np.std(np.abs(signal))])
 
     def calculate_skewness(self, signal):
-        # Manolopoulos et al., 2001, https://www.researchgate.net/publication/234800113
-        # Khorshidtalab et al., 2013 , DOI: 10.1088/0967-3334/34/11/1563
+        """
+        Calculates the skewness of the signal.
+
+        Args:
+            signal (array-like): The input signal.
+            
+        Returns:
+            array: An array containing the skewness of the signal.
+            
+        Reference:
+            Manolopoulos et al., 2001, https://www.researchgate.net/publication/234800113
+            Khorshidtalab et al., 2013 , DOI: 10.1088/0967-3334/34/11/1563
+        """        
         return np.array([skew(signal)])
 
     def calculate_skewness_abs(self, signal):
+        """
+        Calculates the skewness of the absolute values of the signal.
+
+        Args:
+            signal (array-like): The input signal.
+            
+        Returns:
+            array: An array containing the skewness of the absolute values of the signal.
+            
+        Reference:
+        """
         return np.array([skew(np.abs(signal))])
 
     def calculate_kurtosis(self, signal):
-        # Manolopoulos et al., 2001, https://www.researchgate.net/publication/234800113
-        # Khorshidtalab et al., 2013 , DOI: 10.1088/0967-3334/34/11/1563
+        """
+        Calculates the kurtosis of the signal.
+
+        Args:
+            signal (array-like): The input signal.
+            
+        Returns:
+            array: An array containing the kurtosis of the signal.
+            
+        Reference:
+            Manolopoulos et al., 2001, https://www.researchgate.net/publication/234800113
+            Khorshidtalab et al., 2013 , DOI: 10.1088/0967-3334/34/11/1563
+        """
         return np.array([kurtosis(signal)])
 
     def calculate_kurtosis_abs(self, signal):
+        """
+        Calculates the kurtosis of the absolute values of the signal.
+
+        Args:
+            signal (array-like): The input signal.
+            
+        Returns:
+            array: An array containing the kurtosis of the absolute values of the signal.
+            
+        Reference:
+        """
         return np.array([kurtosis(np.abs(signal))])
 
     def calculate_median(self, signal):
-        # Banos et al., 2012, DOI: 10.1016/j.eswa.2012.01.164
+        """
+        Calculates the median of the signal.
+
+        Args:
+            signal (array-like): The input signal.
+            
+        Returns:
+            array: An array containing the median  of the signal.
+            
+        Reference:
+            Banos et al., 2012, DOI: 10.1016/j.eswa.2012.01.164
+        """
+        
         return np.array([np.median(signal)])
 
     def calculate_median_abs(self, signal):
+        """
+        Calculates the median of the absolute values of the signal.
+
+        Args:
+            signal (array-like): The input signal.
+            
+        Returns:
+            array: An array containing the median of the absolute values of the signal.
+            
+        Reference:
+        """
         return np.array([np.median(np.abs(signal))])
 
     def calculate_min(self, signal):
-        # 18th International Conference on Computer Communications and Networks, DOI: 10.1109/ICCCN15201.2009
+        """
+        Calculates the minimum value of the signal.
+
+        Args:
+            signal (array-like): The input signal.
+            
+        Returns:
+            array: An array containing the minimum value of the signal.
+            
+        Reference:
+            18th International Conference on Computer Communications and Networks, DOI: 10.1109/ICCCN15201.2009
+        """
+        
         min_val = np.min(signal)
         return np.array([min_val])
 
     def calculate_min_abs(self, signal):
+        """
+        Calculates the minimum value of the absolute values of the signal.
+
+        Args:
+            signal (array-like): The input signal.
+            
+        Returns:
+            array: An array containing the minimum value of the absolute values of the signal.
+            
+        Reference:
+        """
         min_abs_val = np.min(np.abs(signal))
         return np.array([min_abs_val])
 
     def calculate_max(self, signal):
-        # Khorshidtalab et al., 2013 , DOI: 10.1088/0967-3334/34/11/1563
+        """
+        Calculates the maximum value of the signal.
+
+        Args:
+            signal (array-like): The input signal.
+            
+        Returns:
+            array: An array containing the maximum value of the signal.
+            
+        Reference:
+            Khorshidtalab et al., 2013 , DOI: 10.1088/0967-3334/34/11/1563
+        """
+        
         max_val = np.max(signal)
         return np.array([max_val])
 
     def calculate_max_abs(self, signal):
+        """
+        Calculates the maximum value of the absolute values of the signal.
+
+        Args:
+            signal (array-like): The input signal.
+            
+        Returns:
+            array: An array containing the maximum value of the absolute values of the signal.
+            
+        Reference:
+        """
         max_abs_val = np.max(np.abs(signal))
         return np.array([max_abs_val])
 
     def calculate_range(self, signal):
+        """
+        Calculates the range of the signal.
+
+        Args:
+            signal (array-like): The input signal.
+            
+        Returns:
+            array: An array containing the range of the signal.
+            
+        Reference:
+            Khorshidtalab et al., 2013 , DOI: 10.1088/0967-3334/34/11/1563
+        """
         return np.array([np.max(signal) - np.min(signal)])
 
     def calculate_range_abs(self, signal):
+        """
+        Calculates the range of the absolute values of the signal.
+
+        Args:
+            signal (array-like): The input signal.
+            
+        Returns:
+            array: An array containing the range of the absolute values of the signal.
+            
+        Reference:
+        """
         abs_signal = np.abs(signal)
         return np.array([np.max(abs_signal) - np.min(abs_signal)])
 
     def calculate_variance(self, signal):
-        # Khorshidtalab et al., 2013 , DOI: 10.1088/0967-3334/34/11/1563
+        """
+        Calculates the variance of the signal.
+
+        Args:
+            signal (array-like): The input signal.
+            
+        Returns:
+            array: An array containing the variance of the signal.
+            
+        Reference:
+            Khorshidtalab et al., 2013 , DOI: 10.1088/0967-3334/34/11/1563
+        """
         return np.array([np.var(signal)])
 
     def calculate_variance_abs(self, signal):
+        """
+        Calculates the variance of the absolute values of the signal.
+
+        Args:
+            signal (array-like): The input signal.
+            
+        Returns:
+            array: An array containing the variance of the absolute values of the  signal.
+            
+        Reference:
+        """
         return np.array([np.var(np.abs(signal))])
 
     def calculate_interquartile_range(self, signal):
-        # Formula from Bedeeuzzaman et al., 2012, DOI: 10.5120/6304-8614
-        # Bedeeuzzaman et al., 2012, DOI: 10.5120/6304-8614
+        """
+        Calculate the interquartile range (IQR) of the given signal.
+        
+        The IQR is the difference between the 75th percentile (Q3) and the 25th percentile (Q1) of the signal.
+
+        Args:
+            signal (array-like): The input signal.
+
+        Returns:
+            array: An array containing the interquartile range of the signal.
+        
+        References:
+            Bedeeuzzaman et al., 2012, DOI: 10.5120/6304-8614
+        """
         return np.array([np.percentile(signal, 75) - np.percentile(signal, 25)])
 
     def calculate_mean_absolute_deviation(self, signal):
-        # Formula from Khair et al., 2017, DOI: 10.1088/1742-6596/930/1/012002
+        """
+        Calculate the mean absolute deviation (MAD) of the given signal.
+        
+        The MAD is the average of the absolute deviations from the mean of the signal.
+
+        Args:
+            signal (array-like): The input signal.
+
+        Returns:
+            array: An array containing the mean absolute deviation of the signal.
+        
+        References:
+            Khair et al., 2017, DOI: 10.1088/1742-6596/930/1/012002
+        """
         return np.array([np.mean(np.abs(signal - np.mean(signal)))])
 
+
     def calculate_root_mean_square(self, signal):
-        # Formula from Khorshidtalab et al., 2013, DOI: 10.1088/0967-3334/34/11/1563
-        # 18th International Conference on Computer Communications and Networks, DOI: 10.1109/ICCCN15201.2009
+        """
+        Calculate the root mean square (RMS) of the given signal.
+        
+        The RMS is the square root of the mean of the squares of the signal values.
+
+        Args:
+            signal (array-like): The input signal.
+
+        Returns:
+            array: An array containing the root mean square of the signal.
+        
+        References:
+            Khorshidtalab et al., 2013, DOI: 10.1088/0967-3334/34/11/1563
+            18th International Conference on Computer Communications and Networks, DOI: 10.1109/ICCCN15201.2009
+        """
         return np.array([np.sqrt(np.mean(signal**2))])
 
+
     def calculate_signal_energy(self, signal):
-        # Formula from Rafiuddin et al., 2011, DOI: 10.1109/MSPCT.2011.6150470
+        """
+        Calculate the energy of the given signal.
+        
+        The energy of the signal is the sum of the squares of its values.
+
+        Args:
+            signal (array-like): The input signal.
+
+        Returns:
+            array: An array containing the energy of the signal.
+        
+        References:
+            Rafiuddin et al., 2011, DOI: 10.1109/MSPCT.2011.6150470
+        """
         return np.array([np.sum(signal**2)])
 
+
     def calculate_log_energy(self, signal):
+        """
+        Calculate the logarithm of the energy of the given signal.
+        
+        The log energy is the natural logarithm of the sum of the squares of the signal values.
+
+        Args:
+            signal (array-like): The input signal.
+
+        Returns:
+            array: An array containing the logarithm of the energy of the signal.
+        """
         return np.array([np.log(np.sum(signal**2))])
 
+
     def calculate_entropy(self, signal):
+        """
+        Calculate the entropy of the given signal.
+        
+        The entropy is a measure of the uncertainty or randomness in the signal,
+        calculated from its histogram.
+
+        Args:
+            signal (array-like): The input signal.
+
+        Returns:
+            array: An array containing the entropy of the signal.
+        
+        References:
+            Guido, 2018, DOI: 10.1016/j.inffus.2017.09.006
+        """
         try:
             # Calculate the histogram
             hist, _ = np.histogram(signal, bins=self.window_size//2, density=True)

@@ -149,7 +149,7 @@ The return is a pd dataframe with columns: 'feature name', 'feature value gpu', 
 ## Time Frequency Features
 |Number| Feature    | Description | Reference |
 | -------- | ------- | ------- | ------- |
-1|extract_wavelet_features(params)||*|
+1|extract_wavelet_features(params)|||
 2|extract_spectrogram_features(params)||
 3|extract_stft_features(params)||
 4|teager_kaiser_energy_operator(X)|Generates new time series based on the Teager Kaiser energy operator|

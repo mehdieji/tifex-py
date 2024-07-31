@@ -26,7 +26,7 @@ The return is a pd dataframe with columns: 'feature name', 'feature value gpu', 
 2| calculate_geometric_mean(X) | Calculates the geometric mean of X |
 3| calculate_trimmed_mean(X) | Calculates the trimmed mean of X |
 4| calculate_mean_abs(X) | Calculates the mean of the absolute values of X |
-5| calculate_geometric_mean_abs(X) | Calculates the geometric mean of the absolute values of X | * |
+5| calculate_geometric_mean_abs(X) | Calculates the geometric mean of the absolute values of X ||
 6| calculate_harmonic_mean_abs(X)| Calculates the harmonic mean of the absolute values of X| * |
 7|calculate_trimmed_mean_abs(X)| Calculates the trimmed mean of absolute values of X| * |
 8|calculate_std(X) | Calculates the standard deviation of X |

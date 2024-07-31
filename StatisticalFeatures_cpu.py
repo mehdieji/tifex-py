@@ -701,6 +701,7 @@ class StatisticalFeatures:
                 An array containing the geometric mean of the absolute values of the signal.
         References:
         ----------
+            DOI:10.1134/S1064226917050060
         """
         return np.array([gmean(np.abs(signal))])
 
@@ -1792,21 +1793,6 @@ class StatisticalFeatures:
 # Detrended Fluctuation Analysis
 # Higuchi Fractal Dimension
 # Hurst Exponent
-    def calculate_conditional_entropy(self, signal):
-        """
-        Calculates the conditional entropy of the signal
-
-        Args:
-            signal (array-like): The input signal.
-            
-        Returns:
-            array: An array containing the conditional entropy of the signal.
-            
-        Reference:
-        ---------
-        
-        """
-        pass
     
     def calculate_detrended_fluctuation_analysis(self, signal):
         """
@@ -1838,5 +1824,22 @@ class StatisticalFeatures:
         
         References:
             Guido, 2018, DOI: 10.1016/j.inffus.2017.09.006
+        """
+        pass
+    
+    def calculate_conditional_entropy(self, signal):
+        """
+        Calculates the entropy of the signal X, given the entropy of X
+
+        Args:
+            signal: np.array
+                The input signal.
+            
+        Returns:
+            array: An array containing the conditional entropy of the signal.
+            
+        Reference:
+        ---------
+        
         """
         pass

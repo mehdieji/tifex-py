@@ -462,9 +462,9 @@ class SpectralFeatures:
 
         Parameters:
         ----------
-        freqs : np.ndarray
+        freqs : np.array
             An array of frequencies corresponding to the spectrum bins.
-        magnitudes : np.ndarray
+        magnitudes : np.array
             An array of magnitude values of the spectrum at the corresponding frequencies.
 
         Returns:
@@ -491,9 +491,9 @@ class SpectralFeatures:
 
         Parameters:
         ----------
-        freqs : np.ndarray
+        freqs : np.array
             An array of frequencies corresponding to the spectrum bins.
-        magnitudes : np.ndarray
+        magnitudes : np.array
             An array of magnitude values of the spectrum at the corresponding frequencies.
 
         Returns:
@@ -516,14 +516,14 @@ class SpectralFeatures:
 
         Parameters:
         ----------
-        freqs : np.ndarray
+        freqs : np.array
             An array of frequencies corresponding to the PSD bins.
-        psd : np.ndarray
+        psd : np.array
             An array of power spectral density values at the corresponding frequencies.
 
         Returns:
         -------
-        np.ndarray
+        np.array
             An array containing the calculated median frequency.
             
         Reference:
@@ -543,12 +543,12 @@ class SpectralFeatures:
 
         Parameters:
         ----------
-        magnitudes : np.ndarray
+        magnitudes : np.array
             An array of magnitude values of the spectrum.
 
         Returns:
         -------
-        np.ndarray
+        np.array
             An array containing the calculated spectral flatness.
 
         Reference:
@@ -567,14 +567,14 @@ class SpectralFeatures:
 
         Parameters:
         ----------
-        freqs : np.ndarray
+        freqs : np.array
             An array of frequencies corresponding to the magnitude spectrum bins.
-        magnitudes : np.ndarray
+        magnitudes : np.array
             An array of magnitude values of the spectrum at the corresponding frequencies.
 
         Returns:
         -------
-        np.ndarray
+        np.array
             An array containing the calculated logarithmic spectral slope. The array is of length 1 for consistency in return type.
 
         Reference:

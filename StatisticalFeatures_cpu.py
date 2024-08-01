@@ -1793,22 +1793,56 @@ class StatisticalFeatures:
 # Detrended Fluctuation Analysis
 # Higuchi Fractal Dimension
     
-    def calculate_detrended_fluctuation_analysis(self, signal):
+    def calculate_detrended_fluctuation_analysis(signal, order=1):
         """
-        Calculate the detrended fluctuation of the given signal.
+        Performs detrended fluctuation analysis (DFA) on the given signal.
         
+        Parameters:
+        ----------
+        signal: array
+            The input signal.
+        order: integer
+            The order of the polynomial fit for local detrending (default is 1 for linear detrending).
         
-
-        Args:
-            signal (array-like): The input signal.
-
         Returns:
-            array: An array containing the detrended analysis of the signal.
-        
-        References:
+        -------
+        segment_sizes: array
+            Array of segment sizes.
+        fluctuation_values: array
+            Fluctuation function values corresponding to segment sizes.
             
-        """
-        pass
+        References:
+        ----------
+        DOI 10.1038/srep00315
+        """   
+        # Calculate the cumulative sum of the mean-shifted signal
+        signal_mean = np.mean(signal)
+        mean_shifted_signal = signal - signal_mean
+        cumulative_sum_signal = np.cumsum(mean_shifted_signal)
+        
+        # Generate range of segment sizes
+        N = len(signal)
+        segment_sizes = np.floor(np.logspace(np.log10(4), np.log10(N//4), num=20)).astype(int)
+        fluctuation_values = []
+        
+        # Detrended fluctuation calculation for each segment size
+        for n in segment_sizes:
+            segments = N // n
+            flucts = []
+
+            for i in range(segments):
+                segment = cumulative_sum_signal[i*n:(i+1)*n]
+                x = np.arange(n)
+                coeffs = np.polyfit(x, segment, order)
+                trend = np.polyval(coeffs, x)
+                flucts.append(np.sum((segment - trend) ** 2))
+            
+            F_n = np.sqrt(np.mean(flucts))
+            fluctuation_values.append(F_n)
+        
+        return segment_sizes, np.array(fluctuation_values)
+    
+
 
     def calculate_hurst_exponent(self, signal):
         """

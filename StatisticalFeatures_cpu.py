@@ -362,9 +362,9 @@ class StatisticalFeatures:
         feats_names.append(f"{signal_name}_local_minima")
 
         # Log Return
-        log_return = self.calculate_log_return(signal)
-        feats.append(log_return)
-        feats_names.append(f"{signal_name}_log_return")
+        # log_return = self.calculate_log_return(signal)
+        # feats.append(log_return)
+        # feats_names.append(f"{signal_name}_log_return")
 
         # Longest Strike Above Mean
         longest_above = self.calculate_longest_strike_above_mean(signal)
@@ -1792,7 +1792,6 @@ class StatisticalFeatures:
 # Conditional Entropy
 # Detrended Fluctuation Analysis
 # Higuchi Fractal Dimension
-# Hurst Exponent
     
     def calculate_detrended_fluctuation_analysis(self, signal):
         """

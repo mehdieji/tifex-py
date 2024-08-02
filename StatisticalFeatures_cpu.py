@@ -566,6 +566,11 @@ class StatisticalFeatures:
         zero_crossing_rate = self.calculate_zero_crossing_rate(signal)
         feats.append(zero_crossing_rate)
         feats_names.append(f"{signal_name}_zero_crossing_rate")
+        
+        # Hurst exponent
+        hurst_exponent = self.calculate_hurst_exponent(signal)
+        feats.append(hurst_exponent)
+        feats_names.append(f"{signal_name}_hurst_exponent")
 
         # return np.array(feats), feats_names
         return feats, feats_names
@@ -609,6 +614,7 @@ class StatisticalFeatures:
         ----------
             Chaddad et al., 2014, DOI: 10.1117/12.2062143
         """
+        signal = signal[signal > 0]
         return np.array([gmean(signal)])
 
 
@@ -721,7 +727,7 @@ class StatisticalFeatures:
                 An array containing the harmonic mean of the absolute values of the signal.
         Reference:
         ---------
-        ---------
+        
         """
         return np.array([hmean(np.abs(signal))])
 
@@ -1173,6 +1179,10 @@ class StatisticalFeatures:
         -------
             np.array:
                 An array containing the logarithm of the energy of the signal.
+            
+        Reference:
+        ---------
+        https://mathworks.com/help/audio/ref/mfcc.html
         """
         return np.array([np.log(np.sum(signal**2))])
 
@@ -1211,9 +1221,24 @@ class StatisticalFeatures:
         return np.array([entropy])
 
     def calculate_zero_crossings(self, signal):
-        # Myroniv et al., 2017, https://www.researchgate.net/publication/323935725_Analyzing_User_Emotions_via_Physiology_Signals
-        # Sharma et al., 2020, DOI: 10.1016/j.apacoust.2019.107020
-        # Purushothaman et al., 2018, DOI: 10.1007/s13246-018-0646-7
+        """
+        Calculates the number of times the signal crosses zero
+        
+        Parameters:
+        ----------
+            signal (array-like): The input signal.
+
+        Returns:
+        -------
+            np.array
+                An array containing the number of times(integer) the signal crosses zero
+        
+        References:
+            Myroniv et al., 2017, https://www.researchgate.net/publication/323935725_Analyzing_User_Emotions_via_Physiology_Signals
+            Sharma et al., 2020, DOI: 10.1016/j.apacoust.2019.107020
+            Purushothaman et al., 2018, DOI: 10.1007/s13246-018-0646-7
+        """
+        
 
         # Compute the difference in signbit (True if number is negative)
         zero_cross_diff = np.diff(np.signbit(signal))
@@ -1222,14 +1247,50 @@ class StatisticalFeatures:
         return np.array([num_zero_crossings])
 
     def calculate_crest_factor(self, signal):
-        # Formula from Cempel, 1980, DOI: 10.1016/0022-460X(80)90667-7
-        # DOI: 10.3390/S150716225
+        """
+        Calculate the crest factor of the given signal.
+        
+        Parameters:
+        ----------
+            signal (array-like): The input signal.
+
+        Returns:
+        -------
+            np.array
+                An array containing the crest factor(float) of the signal.
+        
+        References:
+        ----------
+            Formula from Cempel, 1980, DOI: 10.1016/0022-460X(80)90667-7
+            DOI: 10.3390/S150716225
+        """
         crest_factor = np.max(np.abs(signal)) / np.sqrt(np.mean(signal**2))
         return np.array([crest_factor])
 
     def calculate_clearance_factor(self, signal):
-        # Formula from The MathWorks Inc., 2022, Available: [Signal Features](https://www.mathworks.com)
-        # DOI: 10.3390/S150716225
+        """
+        Calculate the clearance factor of the given signal.
+        
+        The clearance factor is a measure used in signal processing to 
+        quantify the peakiness of a signal. It is defined as the ratio 
+        of the maximum absolute value of the signal to the square of 
+        the mean square root of the absolute values of the signal.
+        
+        Parameters:
+        ----------
+            signal (array-like): The input signal.
+
+        Returns:
+        -------
+            np.array
+                An array containing the clearance factor (float) of the signal.
+        
+        References:
+        ----------     
+            Formula from The MathWorks Inc., 2022, Available: [Signal Features](https://www.mathworks.com)
+            DOI: 10.3390/S150716225        
+        """
+        
         clearance_factor = np.max(np.abs(signal)) / (np.mean(np.sqrt(np.abs(signal))) ** 2)
         return np.array([clearance_factor])
 
@@ -1793,7 +1854,7 @@ class StatisticalFeatures:
 # Detrended Fluctuation Analysis
 # Higuchi Fractal Dimension
     
-    def calculate_detrended_fluctuation_analysis(signal, order=1):
+    def calculate_detrended_fluctuation_analysis(self, signal, order=1, minimal = 20):
         """
         Performs detrended fluctuation analysis (DFA) on the given signal.
         
@@ -1803,6 +1864,8 @@ class StatisticalFeatures:
             The input signal.
         order: integer
             The order of the polynomial fit for local detrending (default is 1 for linear detrending).
+        minimal: integer
+            The minimum segment size to consider
         
         Returns:
         -------
@@ -1810,55 +1873,76 @@ class StatisticalFeatures:
             Array of segment sizes.
         fluctuation_values: array
             Fluctuation function values corresponding to segment sizes.
-            
+        
         References:
         ----------
-        DOI 10.1038/srep00315
+        [1] Bryce, R. M., & Sprague, K. B. (2012). Revisiting detrended 
+            fluctuation analysis. Scientific Reports 2012 2:1, 2(1), 1–6. 
+            https://doi.org/10.1038/srep00315
+        [2] Zhang, H.-Y., Feng, Z.-Q., Feng, S.-Y., & Zhou, Y. (2023). 
+            A Survey of Methods for Estimating Hurst Exponent of Time 
+            Sequence. https://arxiv.org/abs/2310.19051v1
         """   
         # Calculate the cumulative sum of the mean-shifted signal
         signal_mean = np.mean(signal)
         mean_shifted_signal = signal - signal_mean
         cumulative_sum_signal = np.cumsum(mean_shifted_signal)
         
-        # Generate range of segment sizes
         N = len(signal)
-        segment_sizes = np.floor(np.logspace(np.log10(4), np.log10(N//4), num=20)).astype(int)
-        fluctuation_values = []
         
-        # Detrended fluctuation calculation for each segment size
-        for n in segment_sizes:
-            segments = N // n
-            flucts = []
+        def Divisors(N, minimal=20):
+            D = []
+            for i in range(minimal, N // minimal + 1):
+                if N % i == 0:
+                    D.append(i)
+            return D
+        
+        def findOptN(N, minimal=20):
+            """
+            Find such a natural number OptN that possesses the largest number of
+            divisors among all natural numbers in the interval [0.99*N, N]
+            """
+            N0 = int(0.99 * N)
+            # The best length is the one which have more divisiors
+            Dcount = [len(Divisors(i, minimal)) for i in range(N0, N + 1)]
+            OptN = N0 + Dcount.index(max(Dcount))
+            return OptN
+        
+        
+        OptN = findOptN(len(signal), minimal=minimal)
+        segment_sizes = Divisors(OptN, minimal=minimal)
+        fluctuation_values = []
 
-            for i in range(segments):
-                segment = cumulative_sum_signal[i*n:(i+1)*n]
-                x = np.arange(n)
-                coeffs = np.polyfit(x, segment, order)
-                trend = np.polyval(coeffs, x)
-                flucts.append(np.sum((segment - trend) ** 2))
-            
-            F_n = np.sqrt(np.mean(flucts))
-            fluctuation_values.append(F_n)
+        for m in segment_sizes:
+            k = OptN // m
+            Y = np.reshape(cumulative_sum_signal[N - OptN:], [m, k], order='F')
+            F = np.copy(Y)
+            # t = 1, 2, ..., m
+            t = np.linspace(1, m, m)
+            for i in range(k):
+                p = np.polyfit(t, Y[:, i], 1)
+                F[:, i] = Y[:, i] - t * p[0] - p[1]
+            fluctuation_values.append(np.mean(np.std(F)))
         
         return segment_sizes, np.array(fluctuation_values)
     
 
-
     def calculate_hurst_exponent(self, signal):
         """
-        Calculate the hurst exponent of the given signal.
-        
-
-        Args:
-            signal (array-like): The input signal.
-
-        Returns:
-            array: An array containing the entropy of the signal.
-        
         References:
-            Guido, 2018, DOI: 10.1016/j.inffus.2017.09.006
+        ----------
+        [1] Bryce, R. M., & Sprague, K. B. (2012). Revisiting detrended 
+            fluctuation analysis. Scientific Reports 2012 2:1, 2(1), 1–6. 
+            https://doi.org/10.1038/srep00315
+        [2] Zhang, H.-Y., Feng, Z.-Q., Feng, S.-Y., & Zhou, Y. (2023). 
+            A Survey of Methods for Estimating Hurst Exponent of Time 
+            Sequence. https://arxiv.org/abs/2310.19051v1
         """
-        pass
+        segment_size, fluctuation_values = self.calculate_detrended_fluctuation_analysis(signal)
+    
+        poly = np.polyfit(np.log(segment_size), np.log(fluctuation_values), 1)
+        hurst = poly[0]
+        return hurst
     
     def calculate_conditional_entropy(self, signal):
         """

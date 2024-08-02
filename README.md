@@ -49,7 +49,7 @@ The return is a pd dataframe with columns: 'feature name', 'feature value gpu', 
 25|calculate_mean_absolute_deviation(X)|Calculates the mean of the absolute deviation of X ** |
 26|calculate_root_mean_square(X)|Calculates the root mean square of X| * **|
 27|calculate_signal_energy(X)|Calculates the energy of X|
-28|calculate_log_energy(X)|Calculates the log of the energy of X| *|
+28|calculate_log_energy(X)|Calculates the log of the energy of X||
 29|calculate_entropy(X)|Calculates the entropy of X|
 30|calculate_zero_crossings(X)|Calculates the number of times X crosses zero|
 31|calculate_crest_factor(X)|Calculates the crest factor of X|

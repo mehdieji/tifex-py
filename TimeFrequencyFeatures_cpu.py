@@ -124,11 +124,6 @@ class TimeFrequencyFeatures:
         feats_names.extend(feats_names_extract_wavelet_features)
         feats_names.extend(feats_names_extract_spectrogram_features)
         feats_names.extend(feats_names_extract_stft_features)
-        
-        # feats.extend(self.extract_wavelet_features(signal_name, wavelet_coefficients))
-        # #feats.extend(self.extract_tkeo_features(signal_name, signal_tkeo))
-        # feats.extend(self.extract_spectrogram_features(signal_name, signal))
-        # feats.extend(self.extract_stft_features(signal_name, signal))
 
         # return np.array(feats), feats_names
         return feats, feats_names

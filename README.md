@@ -167,5 +167,177 @@ Number| Feature    | Reason |
 | -------- | ------- | ------- |
 1|calculate_first_quartile | calculate_percentile(signal, percentiles=[25, 50, 75]) returns the first, second, and third quartiles|
 2|calculate_third_quartile | calculate_percentile(signal, percentiles=[25, 50, 75]) returns the first, second, and third quartiles |
+3| calculate_histogram_bins|
+<br>
+
+
+## NOT in tsfresh
+<br>
+
+# Spectral Features
+<br>
+
+1. Median frequency
+2. Spectral bandwidth
+3. Spectral absolute deviation
+4. Spectral slope linear
+5. Spectral slope logarithmic
+6. Spectral flatness
+7. Peak frequencies
+8. Spectral edge frequency
+8. Band power
+9. Spectral entropy
+10. Spectral contrast
+11. Spectral coefficient variation
+12. Spectral flux
+13. Spectral rolloff
+14. Harmonic ratio
+15. Fundamental frequency
+16. Spectral crest factor
+17. Spectral decrease
+18. Spectral irregularity
+19. Mean frequency
+20. Frequency winsorized mean
+21. Total harmonic distortion
+22. Inharmonicity
+23. Tristimulus
+24. Spectral rollon
+25. Spectral hole count
+26. Spectral autocorrelation
+27. Spectral variability
+28. Spectral spread ratio
+29. Spectral skewness ratio
+30. Spectral kurtosis ratio
+31. Spectral tonal power ratio
+32. Spectral noise to harmonics ratio
+33. Spectral even to odd harmonic energy ratio
+34. Spectral strongest frequency phase
+35. Spectral frequency below peak
+36. Spectral frequency above peak
+37. Spectral cumulative frequency
+38. Spectral cumulative frequency
+39. Spectral cumulative frequency above
+40. Spectral spread shift
+41. Spectral entropy shift
+42. Spectral change vector magnitude
+43. Spectral low frequency content
+44. Spectral mid frequency content
+45. Spectral peak-to-valley ratio
+46. Spectral valley depth mean
+47. Spectral valley depth std
+48. Spectral valley depth variance
+49. Spectral valley width mode
+50. Spectral valley width standard deviation
+51. Spectral subdominant valley
+52. Spectral valley count
+53. Spectral peak broadness
+54. Spectral valley broadness
+55. Frequency variance
+56. Frequency standard deviation
+57. Frequency Range
+58. Frequency Trimmed mean
+59. Harmonic product spectrum
+60. Smoothness
+61. Roughness
+
+<br>
+
+# Time-Frequency Features
+Statistical features from wavelets, spectrogram and short-time fourier transform
+
+
+# Statistical Features
+62. Hurst exponent from detrended fluctuation analysis
+62. Winsorized mean
+63. Weighted moving average
+64. Sum of positive values
+65. Sum of negative values
+66. Stochastic oscillator value
+67. Smoothing by binomial filter
+68. Signal-to-noise ratio
+69. Signal resultant
+70. Second order difference
+71. Ratio value number to sequence length 
+72. Ratio beyond r signal
+73. Petrosian fractal dimension
+74. Percentage of positive values
+75. Percentage of negative values
+76. Pearson correlation coefficient
+77. Peak-to-peak distance
+78. Number of inflection points
+79. Moving average
+80. Mode
+81. Median second derivative central
+82. Mean relative change
+83. Mean crossings
+84. Lower complete moment
+85. Log return 
+86. Katz fractal dimension
+87. Intercept of linear fit
+88. Histogram bin frequencies
+89. Fisher information
+90. First quartile
+91. First order difference
+92. Exponential moving average
+93. Energy ratio by chunks
+94. Differential entropy
+95. Cumulative sum
+96. Covariance
+97. Count
+98. Area under curve
+99. Area under squared curve
+100. Renyi entropy
+101. Tsallis entropy
+102. Root mean squared to mean absolute
+103. Cardinality
+104. Hjorth mobility and complexity
+105. Singular value decomposition (SVD) entropy
+106. Higuchi fractal dimensions
+107. Slope sign change
+108. Average amplitude change
+109. Signal magnitude area
+110. Median absolute deviation
+111. Coefficient of variation
+112. Higher order moments
+113. Mean auto correlation
+114. Impulse factor
+115. Shape factor
+116. Clearance factor
+117. Crest factor
+118. Zero crossings
+119. Entropy
+120. Log energy
+121. Mean absolute deviation
+122. Interquartile range
+123. Variance absolute
+124. Maximum absolute
+125. Minimum absolute
+125. Range absolute
+126. Range
+127. Median absolute
+128. Kurtosis absolute
+129. Skewness absolute
+130. Standard deviation absolute
+131. Trimmed mean absolute
+132. Trimmed mean
+133. Harmonic Mean
+134. Harmonic mean absolute
+135. Geometric mean 
+136. Geometric mean absolute
+137. Mean absolute
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

@@ -419,7 +419,9 @@ class SpectralFeatures:
             
         Reference:
         ---------
-            https://doi.org/10.1016/j.softx.2020.100456
+            [1] Barandas, M., Folgado, D., Fernandes, L., Santos, S., Abreu, M., Bota, P., Liu, H., Schultz, 
+                T., & Gamboa, H. (2020). TSFEL: Time Series Feature Extraction Library. SoftwareX, 11. 
+                https://doi.org/10.1016/j.softx.2020.100456
         """
                 
         spectral_centroid = np.sum(magnitudes * (freqs ** order)) / np.sum(magnitudes)

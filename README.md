@@ -58,7 +58,7 @@ The return is a pd dataframe with columns: 'feature name', 'feature value gpu', 
 34|calculate_mean_crossing(X)|Calculates the number of times X crosses the mean|
 35|calculate_impulse_factor(X)|Calculates the impulse factor of X|
 36|calculate_mean_auto_correlation(X)|Calculates the mean of the autocorrelation of X|
-37|calculate_higher_order_moments(X)|Calculates the higher order moments of X| * |
+37|calculate_higher_order_moments(X)|Calculates the higher order moments of X| |
 38|calculate_coefficient_of_variation(X)|Calculates the coefficient of X|
 39|calculate_median_absolute_deviation(X)|Calculates the median deviation of absolute X|
 40|calculate_signal_magnitude_area(X)|Calculates the magnitude area of X. The sum of the absolute values of X|
@@ -70,7 +70,7 @@ The return is a pd dataframe with columns: 'feature name', 'feature value gpu', 
 46|calculate_hjorth_mobility_and_complexity(X)|Calculates mobility and complexity of X which are bases on the first and second derivatives of X|
 47|calculate_cardinality(X)||*|
 48|calculate_rms_to_mean_abs(X)|Computes the ratio of the RMS value to mean absolute value of X|
-49|calculate_tsallis_entropy(X)|Tsallis entropy estimates the information X|*|
+49|calculate_tsallis_entropy(X)|Tsallis entropy estimates the information X||
 50|calculate_renyi_entropy(X)|Computes the Renyi entropy of X|
 51|calculate_absolute_energy(X)|Calculates the absolute energy of X|
 52|calculate_approximate_entropy(X)|Computes the approximate entropy of X|
@@ -146,7 +146,7 @@ The return is a pd dataframe with columns: 'feature name', 'feature value gpu', 
 <br>
 <br>
 
-## Time Frequency Features
+## Time-f Frequency Features
 |Number| Feature    | Description | Reference |
 | -------- | ------- | ------- | ------- |
 1|extract_wavelet_features(params)|||
@@ -154,7 +154,13 @@ The return is a pd dataframe with columns: 'feature name', 'feature value gpu', 
 3|extract_stft_features(params)||
 4|teager_kaiser_energy_operator(X)|Generates new time series based on the Teager Kaiser energy operator|
 
+<br>
+<br>
 
+## Spectral Features without references
+|Number| Feature    | Description |
+| -------- | ------- | ------- |
+1
 
 ### Deleted features
 Number| Feature    | Reason |
@@ -325,6 +331,16 @@ Statistical features from wavelets, spectrogram and short-time fourier transform
 135. Geometric mean 
 136. Geometric mean absolute
 137. Mean absolute
+
+
+
+<br>
+
+## Observations
+1. **calculate_higher_order_moments** does not always produce the same result as mean, variance, skew and kurtosis when moment order is set to [1,2,3,4]
+2. **calculate_rms_to_mean_abs** has no direct reference yet
+3. **calculate_exponential_moving_average** returns the last value in the array. Is there a reason?
+4. 
 
 
 

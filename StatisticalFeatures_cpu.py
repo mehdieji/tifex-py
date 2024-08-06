@@ -152,6 +152,34 @@ class StatisticalFeatures:
         # Entropy
         feats.extend(self.calculate_entropy(signal))
         feats_names.append(f"{signal_name}_entropy")
+        # Permutation entropy
+        feats.extend(self.calculate_permutation_entropy(signal))
+        feats_names.append(f"{signal_name}_permutation_entropy")
+        # Singular Value Decomposition entropy
+        feats.extend(self.calculate_svd_entropy(signal))
+        feats_names.append(f"{signal_name}_svd_entropy")
+        # Tsallis entropy
+        feats.extend(self.calculate_tsallis_entropy(signal))
+        feats_names.append(f"{signal_name}_tsallis_entropy")
+        # Renyi entropy
+        feats.extend(self.calculate_renyi_entropy(signal))
+        feats_names.append(f"{signal_name}_renyi_entropy")
+        # Approximate Entropy
+        app_entropy = self.calculate_approximate_entropy(signal)
+        feats.append(app_entropy)
+        feats_names.append(f"{signal_name}_approximate_entropy")
+        # Differential Entropy
+        diff_entropy = self.calculate_differential_entropy(signal)
+        feats.append(diff_entropy)
+        feats_names.append(f"{signal_name}_differential_entropy")
+        # Sample Entropy
+        samp_ent = self.calculate_sample_entropy(signal)
+        feats.append(samp_ent)
+        feats_names.append(f"{signal_name}_sample_entropy")
+        # Sample Entropy
+        samp_ent = self.calculate_sample_entropy(signal)
+        feats.append(samp_ent)
+        feats_names.append(f"{signal_name}_sample_entropy")
         # Number of zero-crossings
         feats.extend(self.calculate_zero_crossings(signal))
         feats_names.append(f"{signal_name}_no._of_zero_crossings")
@@ -193,12 +221,7 @@ class StatisticalFeatures:
         feats.extend(self.calculate_higuchi_fractal_dimensions(signal))
         for k in self.higuchi_k_values:
             feats_names.append(f"{signal_name}_higuchi_fractal_dimensions_k={k}")
-        # Permutation entropy
-        feats.extend(self.calculate_permutation_entropy(signal))
-        feats_names.append(f"{signal_name}_permutation_entropy")
-        # Singular Value Decomposition entropy
-        feats.extend(self.calculate_svd_entropy(signal))
-        feats_names.append(f"{signal_name}_svd_entropy")
+
         # Hjorth parameters
         feats.extend(self.calculate_hjorth_mobility_and_complexity(signal))
         feats_names.append(f"{signal_name}_hjorth_mobility")
@@ -209,22 +232,11 @@ class StatisticalFeatures:
         # RMS to mean absolute ratio
         feats.extend(self.calculate_rms_to_mean_abs(signal))
         feats_names.append(f"{signal_name}_rms_to_mean_of_abs")
-        # Tsallis entropy
-        feats.extend(self.calculate_tsallis_entropy(signal))
-        feats_names.append(f"{signal_name}_tsallis_entropy")
-        # Renyi entropy
-        feats.extend(self.calculate_renyi_entropy(signal))
-        feats_names.append(f"{signal_name}_renyi_entropy")
 
         # Absolute Energy
         energy = self.calculate_absolute_energy(signal)
         feats.append(energy)
         feats_names.append(f"{signal_name}_absolute_energy")
-
-        # Approximate Entropy
-        app_entropy = self.calculate_approximate_entropy(signal)
-        feats.append(app_entropy)
-        feats_names.append(f"{signal_name}_approximate_entropy")
 
         # Area Under the Curve
         area = self.calculate_area_under_curve(signal)
@@ -282,17 +294,22 @@ class StatisticalFeatures:
         feats.append(cum_sum)
         feats_names.append(f"{signal_name}_cumulative_sum")
 
-        # Differential Entropy
-        diff_entropy = self.calculate_differential_entropy(signal)
-        feats.append(diff_entropy)
-        feats_names.append(f"{signal_name}_differential_entropy")
-
         # Energy Ratio by Chunks
         energy_ratio = self.calculate_energy_ratio_by_chunks(signal)
         for i, ratio in enumerate(energy_ratio):
             feats.append(ratio)
             feats_names.append(f"{signal_name}_energy_ratio_chunk_{i+1}")
 
+        # Moving Average
+        moving_average = self.calculate_moving_average(signal, window_size=10)  # Example window size
+        feats.append(moving_average)
+        feats_names.append(f"{signal_name}_moving_average")
+        
+        # Weighted Moving Average
+        weighted_ma = self.calculate_weighted_moving_average(signal)
+        feats.append(weighted_ma[-1])  # Assuming last value of WMA is of interest
+        feats_names.append(f"{signal_name}_weighted_moving_average")
+        
         # Exponential Moving Average
         ema = self.calculate_exponential_moving_average(signal)
         feats.append(ema)
@@ -411,11 +428,6 @@ class StatisticalFeatures:
         feats.append(signal_mode)
         feats_names.append(f"{signal_name}_mode")
 
-        # Moving Average
-        moving_average = self.calculate_moving_average(signal, window_size=10)  # Example window size
-        feats.append(moving_average)
-        feats_names.append(f"{signal_name}_moving_average")
-
         # Number of Inflection Points
         inflection_points = self.calculate_number_of_inflection_points(signal)
         feats.append(inflection_points)
@@ -481,12 +493,6 @@ class StatisticalFeatures:
         feats.append(rvnsl)
         feats_names.append(f"{signal_name}_ratio_value_number_to_sequence_length")
 
-
-        # Sample Entropy
-        samp_ent = self.calculate_sample_entropy(signal)
-        feats.append(samp_ent)
-        feats_names.append(f"{signal_name}_sample_entropy")
-
         # Second Order Difference
         second_diff = self.calculate_second_order_difference(signal)
         feats.append(second_diff[-1])
@@ -551,11 +557,6 @@ class StatisticalFeatures:
         variance_abs_diffs = self.calculate_variance_of_absolute_differences(signal)
         feats.append(variance_abs_diffs)
         feats_names.append(f"{signal_name}_variance_of_absolute_differences")
-
-        # Weighted Moving Average
-        weighted_ma = self.calculate_weighted_moving_average(signal)
-        feats.append(weighted_ma[-1])  # Assuming last value of WMA is of interest
-        feats_names.append(f"{signal_name}_weighted_moving_average")
 
         # Winsorized Mean
         winsorized_mean = self.calculate_winsorized_mean(signal)
@@ -1019,7 +1020,6 @@ class StatisticalFeatures:
             
         Reference:
         ---------
-            Khorshidtalab et al., 2013 , DOI: 10.1088/0967-3334/34/11/1563
         """
         return np.array([np.max(signal) - np.min(signal)])
 
@@ -1213,12 +1213,155 @@ class StatisticalFeatures:
             # Replace zero values with a small epsilon
             epsilon = 1e-10
             hist = np.where(hist > 0, hist, epsilon)
-            # Calculate the entropy
-            # Guido, 2018, DOI: 10.1016/j.inffus.2017.09.006
             entropy = -np.sum(hist * np.log2(hist))
-        except:
+        except ValueError as e:
+            entropy = np.nan
+        except Exception as e:
             entropy = np.nan
         return np.array([entropy])
+    
+    def calculate_sample_entropy(self, signal):
+        # https://raphaelvallat.com/antropy/build/html/generated/antropy.sample_entropy.html
+        # https://doi.org/10.1109/SCEECS.2012.6184830
+        return entropy(np.histogram(signal, bins=10)[0])  # Simplified example
+
+    def calculate_differential_entropy(self, signal):
+        # https://www.frontiersin.org/articles/10.3389/fphy.2020.629620/full
+        probability, _ = np.histogram(signal, bins=10, density=True)
+        probability = probability[probability > 0]
+        return entropy(probability)
+
+    def calculate_approximate_entropy(self, signal):
+        # https://doi.org/10.3390%2Fe21060541
+        count, _ = np.histogram(signal, bins=10, density=True)
+        count = count[count > 0]  # Avoid log(0) issue
+        return -np.sum(count * np.log(count))
+    
+    def calculate_renyi_entropy(self, signal):
+        # Beadle et al., 2008, DOI: 10.1109/ACSSC.2008.5074715
+        try:
+            # Calculate the histogram
+            hist, _ = np.histogram(signal, bins=self.window_size//2, density=True)
+            # Replace zero values with a small epsilon
+            epsilon = 1e-10
+            hist = np.where(hist > 0, hist, epsilon)
+
+            if self.renyi_alpha_parameter == 1:
+                # Return the Shannon entropy
+                return np.array([-sum([p * (0 if p == 0 else np.log(p)) for p in hist])])
+            else:
+                return np.array([(1 / (1 - self.renyi_alpha_parameter)) * np.log(sum([p ** self.renyi_alpha_parameter for p in hist]))])
+        except:
+            return np.array([np.nan])
+        
+    def calculate_tsallis_entropy(self, signal):
+        """
+        Calculates the tsallis entropy of the signal.
+        Tsallis entropy generalized the Shannon entropy.
+
+        Parameters:
+        ----------
+            signal (array-like): The input signal.
+
+        Returns:
+        -------
+            np.array:
+                An array containing the Tsallis entropy of the signal.
+        Reference:
+        ---------
+            [1] Sneddon, R. (2007). The Tsallis entropy of natural information. 
+                Physica A: Statistical Mechanics and Its Applications, 386(1), 
+                101–118. https://doi.org/10.1016/J.PHYSA.2007.05.065
+        """
+        try:
+            # Calculate the histogram
+            hist, _ = np.histogram(signal, bins=self.window_size//2, density=True)
+            # Replace zero values with a small epsilon
+            epsilon = 1e-10
+            hist = np.where(hist > 0, hist, epsilon)
+            if self.tsallis_q_parameter == 1:
+                # Return the Boltzmann–Gibbs entropy
+                return np.array([-sum([p * (0 if p == 0 else np.log(p)) for p in hist])])
+            else:
+                return np.array([(1 - sum([p ** self.tsallis_q_parameter for p in hist])) / (self.tsallis_q_parameter - 1)])
+        except:
+            return np.array([np.nan])
+        
+    def calculate_svd_entropy(self, signal):
+        # Banerjee et al., 2014, DOI: 10.1016/j.ins.2013.12.029
+        # Strydom et al., 2021, DOI: 10.3389/fevo.2021.623141
+        try:
+            order = self.svd_entropy_order
+            delay = self.svd_entropy_delay
+            # Embedding function integrated directly for 1D signals
+            signal_length = len(signal)
+            if order * delay > signal_length:
+                raise ValueError("Error: order * delay should be lower than signal length.")
+            if delay < 1:
+                raise ValueError("Delay has to be at least 1.")
+            if order < 2:
+                raise ValueError("Order has to be at least 2.")
+            embedding_matrix = np.zeros((order, signal_length - (order - 1) * delay))
+            for i in range(order):
+                embedding_matrix[i] = signal[(i * delay): (i * delay + embedding_matrix.shape[1])]
+            embedded_signal = embedding_matrix.T
+
+            # Singular Value Decomposition
+            singular_values = np.linalg.svd(embedded_signal, compute_uv=False)
+
+            # Normalize the singular values
+            normalized_singular_values = singular_values / sum(singular_values)
+
+            base = 2
+            log_values = np.zeros(normalized_singular_values.shape)
+            log_values[normalized_singular_values < 0] = np.nan
+            valid = normalized_singular_values > 0
+            log_values[valid] = normalized_singular_values[valid] * np.log(normalized_singular_values[valid]) / np.log(
+                base)
+            svd_entropy_value = -log_values.sum()
+        except:
+            svd_entropy_value = np.nan
+        return np.array([svd_entropy_value])
+    
+    def calculate_permutation_entropy(self, signal):
+        # Bandt et al., 2002, DOI: 10.1103/PhysRevLett.88.174102
+        # Zanin et al., 2012, DOI: 10.3390/e14081553
+        try:
+            order = self.permutation_entropy_order
+            delay = self.permutation_entropy_delay
+
+            if order * delay > self.window_size:
+                raise ValueError("Error: order * delay should be lower than signal length.")
+            if delay < 1:
+                raise ValueError("Delay has to be at least 1.")
+            if order < 2:
+                raise ValueError("Order has to be at least 2.")
+            embedding_matrix = np.zeros((order, self.window_size - (order - 1) * delay))
+            for i in range(order):
+                embedding_matrix[i] = signal[(i * delay): (i * delay + embedding_matrix.shape[1])]
+            embedded_signal = embedding_matrix.T
+
+            # Continue with the permutation entropy calculation. If multiple delay are passed, return the average across all
+            if isinstance(delay, (list, np.ndarray, range)):
+                return np.mean([self.calculate_permutation_entropy(signal) for d in delay])
+
+            order_range = range(order)
+            hash_multiplier = np.power(order, order_range)
+
+            sorted_indices = embedded_signal.argsort(kind="quicksort")
+            hash_values = (np.multiply(sorted_indices, hash_multiplier)).sum(1)
+            _, counts = np.unique(hash_values, return_counts=True)
+            probabilities = np.true_divide(counts, counts.sum())
+
+            base = 2
+            log_values = np.zeros(probabilities.shape)
+            log_values[probabilities < 0] = np.nan
+            valid = probabilities > 0
+            log_values[valid] = probabilities[valid] * np.log(probabilities[valid]) / np.log(base)
+            entropy_value = -log_values.sum()
+        except:
+            entropy_value = np.nan
+        return np.array([entropy_value])
 
     def calculate_zero_crossings(self, signal):
         """
@@ -1234,6 +1377,7 @@ class StatisticalFeatures:
                 An array containing the number of times(integer) the signal crosses zero
         
         References:
+        ----------
             Myroniv et al., 2017, https://www.researchgate.net/publication/323935725_Analyzing_User_Emotions_via_Physiology_Signals
             Sharma et al., 2020, DOI: 10.1016/j.apacoust.2019.107020
             Purushothaman et al., 2018, DOI: 10.1007/s13246-018-0646-7
@@ -1262,7 +1406,7 @@ class StatisticalFeatures:
         References:
         ----------
             Formula from Cempel, 1980, DOI: 10.1016/0022-460X(80)90667-7
-            DOI: 10.3390/S150716225
+            Wang et al., 2015, DOI: 10.3390/S150716225, https://doi.org/10.3390/S150716225  
         """
         crest_factor = np.max(np.abs(signal)) / np.sqrt(np.mean(signal**2))
         return np.array([crest_factor])
@@ -1288,7 +1432,7 @@ class StatisticalFeatures:
         References:
         ----------     
             Formula from The MathWorks Inc., 2022, Available: [Signal Features](https://www.mathworks.com)
-            DOI: 10.3390/S150716225        
+            Wang et al., 2015, DOI: 10.3390/S150716225, https://doi.org/10.3390/S150716225       
         """
         
         clearance_factor = np.max(np.abs(signal)) / (np.mean(np.sqrt(np.abs(signal))) ** 2)
@@ -1317,6 +1461,22 @@ class StatisticalFeatures:
         return np.array([np.mean(auto_correlation_values)])
 
     def calculate_higher_order_moments(self, signal):
+        """
+        Calculates the higher order moments of the given signal
+
+        Parameters:
+        ---------
+            signal (array-like): The input signal.
+
+        Returns:
+        -------
+            np.array
+                An array containing the higher order moments of the signal.
+        
+        Reference:
+        ---------
+            Clerk et al., 2022, https://doi.org/10.1016/J.HELIYON.2022.E08833
+        """
         feats = []
         for order in self.moment_orders:
             feats.append(moment(signal, moment=order))
@@ -1378,82 +1538,6 @@ class StatisticalFeatures:
             feats.append(fractal_dimension)
         return np.array(feats)
 
-    def calculate_permutation_entropy(self, signal):
-        # Bandt et al., 2002, DOI: 10.1103/PhysRevLett.88.174102
-        # Zanin et al., 2012, DOI: 10.3390/e14081553
-        try:
-            order = self.permutation_entropy_order
-            delay = self.permutation_entropy_delay
-
-            if order * delay > self.window_size:
-                raise ValueError("Error: order * delay should be lower than signal length.")
-            if delay < 1:
-                raise ValueError("Delay has to be at least 1.")
-            if order < 2:
-                raise ValueError("Order has to be at least 2.")
-            embedding_matrix = np.zeros((order, self.window_size - (order - 1) * delay))
-            for i in range(order):
-                embedding_matrix[i] = signal[(i * delay): (i * delay + embedding_matrix.shape[1])]
-            embedded_signal = embedding_matrix.T
-
-            # Continue with the permutation entropy calculation. If multiple delay are passed, return the average across all
-            if isinstance(delay, (list, np.ndarray, range)):
-                return np.mean([self.calculate_permutation_entropy(signal) for d in delay])
-
-            order_range = range(order)
-            hash_multiplier = np.power(order, order_range)
-
-            sorted_indices = embedded_signal.argsort(kind="quicksort")
-            hash_values = (np.multiply(sorted_indices, hash_multiplier)).sum(1)
-            _, counts = np.unique(hash_values, return_counts=True)
-            probabilities = np.true_divide(counts, counts.sum())
-
-            base = 2
-            log_values = np.zeros(probabilities.shape)
-            log_values[probabilities < 0] = np.nan
-            valid = probabilities > 0
-            log_values[valid] = probabilities[valid] * np.log(probabilities[valid]) / np.log(base)
-            entropy_value = -log_values.sum()
-        except:
-            entropy_value = np.nan
-        return np.array([entropy_value])
-
-    def calculate_svd_entropy(self, signal):
-        # Banerjee et al., 2014, DOI: 10.1016/j.ins.2013.12.029
-        # Strydom et al., 2021, DOI: 10.3389/fevo.2021.623141
-        try:
-            order = self.svd_entropy_order
-            delay = self.svd_entropy_delay
-            # Embedding function integrated directly for 1D signals
-            signal_length = len(signal)
-            if order * delay > signal_length:
-                raise ValueError("Error: order * delay should be lower than signal length.")
-            if delay < 1:
-                raise ValueError("Delay has to be at least 1.")
-            if order < 2:
-                raise ValueError("Order has to be at least 2.")
-            embedding_matrix = np.zeros((order, signal_length - (order - 1) * delay))
-            for i in range(order):
-                embedding_matrix[i] = signal[(i * delay): (i * delay + embedding_matrix.shape[1])]
-            embedded_signal = embedding_matrix.T
-
-            # Singular Value Decomposition
-            singular_values = np.linalg.svd(embedded_signal, compute_uv=False)
-
-            # Normalize the singular values
-            normalized_singular_values = singular_values / sum(singular_values)
-
-            base = 2
-            log_values = np.zeros(normalized_singular_values.shape)
-            log_values[normalized_singular_values < 0] = np.nan
-            valid = normalized_singular_values > 0
-            log_values[valid] = normalized_singular_values[valid] * np.log(normalized_singular_values[valid]) / np.log(
-                base)
-            svd_entropy_value = -log_values.sum()
-        except:
-            svd_entropy_value = np.nan
-        return np.array([svd_entropy_value])
-
     def calculate_hjorth_mobility_and_complexity(self, signal):
         # Hjorth, 1970, DOI:10.1016/0013-4694(70)90143-4
         try:
@@ -1485,63 +1569,64 @@ class StatisticalFeatures:
         return np.array([cardinality])
 
     def calculate_rms_to_mean_abs(self, signal):
-        # Compute rms value
-        # Formula from Khorshidtalab et al., 2013, DOI: 10.1088/0967-3334/34/11/1563
+        """
+        Calculates the ratio of the root-mean-squared value to the mean
+        absolute value.
+
+        Parameters:
+        ---------
+            signal (array-like): The input signal.
+
+        Returns:
+        -------
+            np.array
+                An array containing the ratio of the root-mean-squared value to the mean
+                absolute value.
+        
+        Reference:
+        ---------
+            Khorshidtalab et al., 2013, DOI: 10.1088/0967-3334/34/11/1563
+        """
         rms_val = np.sqrt(np.mean(signal ** 2))
-        # Compute mean absolute value
-        # Formula from Khorshidtalab et al., 2013, DOI: 10.1088/0967-3334/34/11/1563
         mean_abs_val = np.mean(np.abs(signal))
-        # Compute ratio of RMS value to mean absolute value
         ratio = rms_val / mean_abs_val
         return np.array([ratio])
-
-    def calculate_tsallis_entropy(self, signal):
-        try:
-            # Calculate the histogram
-            hist, _ = np.histogram(signal, bins=self.window_size//2, density=True)
-            # Replace zero values with a small epsilon
-            epsilon = 1e-10
-            hist = np.where(hist > 0, hist, epsilon)
-            if self.tsallis_q_parameter == 1:
-                # Return the Boltzmann–Gibbs entropy
-                return np.array([-sum([p * (0 if p == 0 else np.log(p)) for p in hist])])
-            else:
-                return np.array([(1 - sum([p ** self.tsallis_q_parameter for p in hist])) / (self.tsallis_q_parameter - 1)])
-        except:
-            return np.array([np.nan])
-
-    def calculate_renyi_entropy(self, signal):
-        # Beadle et al., 2008, DOI: 10.1109/ACSSC.2008.5074715
-        try:
-            # Calculate the histogram
-            hist, _ = np.histogram(signal, bins=self.window_size//2, density=True)
-            # Replace zero values with a small epsilon
-            epsilon = 1e-10
-            hist = np.where(hist > 0, hist, epsilon)
-
-            if self.renyi_alpha_parameter == 1:
-                # Return the Shannon entropy
-                return np.array([-sum([p * (0 if p == 0 else np.log(p)) for p in hist])])
-            else:
-                return np.array([(1 / (1 - self.renyi_alpha_parameter)) * np.log(sum([p ** self.renyi_alpha_parameter for p in hist]))])
-        except:
-            return np.array([np.nan])
 
     def calculate_absolute_energy(self, signal):
         # https://tsfel.readthedocs.io/en/latest/descriptions/feature_list.html
         return np.sum(signal**2)
 
-    def calculate_approximate_entropy(self, signal):
-        # https://doi.org/10.3390%2Fe21060541
-        count, _ = np.histogram(signal, bins=10, density=True)
-        count = count[count > 0]  # Avoid log(0) issue
-        return -np.sum(count * np.log(count))
 
     def calculate_area_under_curve(self, signal):
-        # https://www.researchgate.net/publication/324936696_Enhancing_EEG_Signals_Recognition_Using_ROC_Curve
+        """
+        Calculates the area under the curve of the given signal
+
+        Parameters:
+        ----------
+            signal (array-like): The input signal.
+
+        Returns:
+        -------
+            float: area under curve
+        
+        Reference:
+        ---------
+            Kuremoto et al., 2018, https://doi.org/10.2991/JRNAL.2018.4.4.5
+        """
         return simpson(np.abs(signal), dx=1)
 
     def calculate_area_under_squared_curve(self, signal):
+        """
+        Calculates the area under the curve of the given signal squared
+
+        Parameters:
+        ----------
+            signal (array-like): The input signal.
+
+        Returns:
+        -------
+            float: area under curve of signal squared
+        """
         return simpson(signal**2, dx=1)
 
     def calculate_autoregressive_model_coefficients(self, signal, order=4):
@@ -1583,25 +1668,45 @@ class StatisticalFeatures:
         # https://docs.amd.com/r/2020.2-English/ug1483-model-composer-sys-gen-user-guide/Cumulative-Sum
         return np.cumsum(signal)[-1]
 
-    def calculate_differential_entropy(self, signal):
-        # https://www.frontiersin.org/articles/10.3389/fphy.2020.629620/full
-        probability, _ = np.histogram(signal, bins=10, density=True)
-        probability = probability[probability > 0]
-        return entropy(probability)
-
     def calculate_energy_ratio_by_chunks(self, signal, chunks=4):
         # https://github.com/blue-yonder/tsfresh/blob/main/tsfresh/feature_extraction/feature_calculators.py#L2212
         chunk_size = len(signal) // chunks
         energies = np.array([np.sum(signal[i*chunk_size:(i+1)*chunk_size]**2) for i in range(chunks)])
         total_energy = np.sum(signal**2)
         return energies / total_energy
+    
+    def calculate_moving_average(self, signal, window_size=10):
+        # https://cyclostationary.blog/2021/05/23/sptk-the-moving-average-filter/
+        if len(signal) < window_size:
+            return np.nan
+        return np.convolve(signal, np.ones(window_size) / window_size, mode='valid')
+    
+    def calculate_weighted_moving_average(self, signal, weights=None):
+        # https://www.mathworks.com/help/signal/ug/signal-smoothing.html
+        if weights is None:
+            weights = np.linspace(1, 0, num=len(signal))
+        weights = weights / np.sum(weights)
+        return np.convolve(signal, weights, 'valid')
 
     def calculate_exponential_moving_average(self, signal, alpha=0.3):
-        s = np.zeros_like(signal)
-        s[0] = signal[0]
+        """
+        Calculates the exponential moving average of the given signal
+
+        Parameters:
+        ---------
+            signal (array-like): The input signal.
+            alpha (float, optional): Defaults to 0.3.
+
+        Returns:
+        -------
+            float
+                last value in the array
+        """
+        ema = np.zeros_like(signal)
+        ema[0] = signal[0]
         for i in range(1, len(signal)):
-            s[i] = alpha * signal[i] + (1 - alpha) * s[i - 1]
-        return s[-1]
+            ema[i] = alpha * signal[i] + (1 - alpha) * ema[i - 1]
+        return ema[-1]
 
     def calculate_first_location_of_maximum(self, signal):
         # https://tsfresh.readthedocs.io/en/latest/api/tsfresh.feature_extraction.html#
@@ -1703,12 +1808,6 @@ class StatisticalFeatures:
     def calculate_mode(self, signal):
         return mode(signal)[0]
 
-    def calculate_moving_average(self, signal, window_size=10):
-        # https://cyclostationary.blog/2021/05/23/sptk-the-moving-average-filter/
-        if len(signal) < window_size:
-            return np.nan
-        return np.convolve(signal, np.ones(window_size) / window_size, mode='valid')
-
     def calculate_number_of_inflection_points(self, signal):
         # https://en.wikipedia.org/wiki/Inflection_point
         second_derivative = np.diff(signal, n=2)
@@ -1768,11 +1867,6 @@ class StatisticalFeatures:
         unique_values = len(np.unique(signal))
         return unique_values / len(signal)
 
-    def calculate_sample_entropy(self, signal):
-        # https://raphaelvallat.com/antropy/build/html/generated/antropy.sample_entropy.html
-        # https://doi.org/10.1109/SCEECS.2012.6184830
-        return entropy(np.histogram(signal, bins=10)[0])  # Simplified example
-
     def calculate_second_order_difference(self, signal):
         # https://numpy.org/doc/stable/reference/generated/numpy.diff.html
         return np.diff(signal, n=2)
@@ -1831,13 +1925,6 @@ class StatisticalFeatures:
         # https://doi.org/10.1080/00031305.2014.994712
         abs_diffs = np.abs(np.diff(signal))
         return np.var(abs_diffs)
-
-    def calculate_weighted_moving_average(self, signal, weights=None):
-        # https://www.mathworks.com/help/signal/ug/signal-smoothing.html
-        if weights is None:
-            weights = np.linspace(1, 0, num=len(signal))
-        weights = weights / np.sum(weights)
-        return np.convolve(signal, weights, 'valid')
 
     def calculate_winsorized_mean(self, signal, limits=[0.05, 0.05]):
         # https://www.investopedia.com/terms/w/winsorized_mean.asp

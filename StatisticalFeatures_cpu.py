@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.stats import skew, kurtosis, moment, gmean, hmean, trim_mean, entropy, linregress, mode, pearsonr
-from statsmodels.tsa.stattools import acf
+from statsmodels.tsa.stattools import acf, adfuller
 from scipy.integrate import simpson
 from statsmodels.tsa.ar_model import AutoReg
 from scipy import integrate
@@ -573,6 +573,11 @@ class StatisticalFeatures:
         feats.append(hurst_exponent)
         feats_names.append(f"{signal_name}_hurst_exponent")
 
+        # Augmented dickey fuller test
+        adf_test, adf_test_names = self.calculate_augmented_dickey_fuller_test(signal)
+        for i, value in enumerate(adf_test):
+            feats.append(value)
+            feats_names.append(f"{signal_name}_augmented_dickey_fuller_{adf_test_names[i]}")
         # return np.array(feats), feats_names
         return feats, feats_names
 
@@ -1935,12 +1940,6 @@ class StatisticalFeatures:
         zero_crossings = np.where(np.diff(np.signbit(signal)))[0]
         return len(zero_crossings) / len(signal)
 
-
-# features not impletement
-# Conditional Entropy
-# Detrended Fluctuation Analysis
-# Higuchi Fractal Dimension
-    
     def calculate_detrended_fluctuation_analysis(self, signal, order=1, minimal = 20):
         """
         Performs detrended fluctuation analysis (DFA) on the given signal.
@@ -2030,6 +2029,45 @@ class StatisticalFeatures:
         poly = np.polyfit(np.log(segment_size), np.log(fluctuation_values), 1)
         hurst = poly[0]
         return hurst
+    
+    def calculate_augmented_dickey_fuller_test(self, signal):
+        """
+        Perform the Augmented Dickey-Fuller (ADF) test to check for stationarity in a given time series signal.
+
+        The ADF test is a statistical test used to determine if a time series is stationary or has a unit root.
+        A stationary time series has constant mean and variance over time.
+
+        Parameters:
+        ----------
+        signal (array-like): 
+            The time series data to be tested for stationarity.
+
+        Returns:
+        -------
+        np.array or float:
+                    A numpy array containing the test statistic, p-value, and number of lags used in the test.
+                    If the test fails due to an exception, returns NaN.
+        Reference:
+        ---------
+            Christ et al., 2018, https://doi.org/10.1016/J.NEUCOM.2018.03.067
+        """
+        adf_vals_names = np.array(["teststats", "pvalue", "usedlag"])
+        try:
+            if len(signal) <= 9000:
+                test_stat, p_value, used_lag, _,_,_ = adfuller(signal)
+                adf_vals = np.array([test_stat, p_value, used_lag])
+            else: 
+                adf_vals = np.empty(3)
+        except:
+            return np.nan
+        return adf_vals, adf_vals_names
+
+    
+    
+    
+    
+    
+    
     
     def calculate_conditional_entropy(self, signal):
         """

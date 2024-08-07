@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.signal import spectrogram, stft
+from scipy.signal import spectrogram, stft, chirp
 from StatisticalFeatures_cpu import StatisticalFeatures
 import pywt
 
@@ -197,3 +197,5 @@ class TimeFrequencyFeatures:
 # Cepstrum Analysis  https://www.mathworks.com/help/signal/ug/cepstrum-analysis.html
 # Mel-Frequency Cepstral Coefficients  https://doi.org/10.1109/ACCESS.2022.3223444
 
+    def chirplet_transform(self, signal_name, signal):
+        pass

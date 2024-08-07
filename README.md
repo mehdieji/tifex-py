@@ -177,10 +177,10 @@ Number| Feature    | Reason |
 <br>
 
 
-## NOT in tsfresh
+# NOT in tsfresh
 <br>
 
-# Spectral Features
+## Spectral Features
 <br>
 
 1. Median frequency
@@ -333,6 +333,12 @@ Statistical features from wavelets, spectrogram and short-time fourier transform
 137. Mean absolute
 
 
+<br>
+
+# Added from TSFRESH
+|Number| Feature    | Description |
+| -------- | ------- | ------- |
+1| Augmented dickey fuller test| 
 
 <br>
 

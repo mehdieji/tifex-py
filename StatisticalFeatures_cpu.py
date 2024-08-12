@@ -3,7 +3,6 @@ from scipy.stats import skew, kurtosis, moment, gmean, hmean, trim_mean, entropy
 from statsmodels.tsa.stattools import acf, adfuller
 from scipy.integrate import simpson
 from statsmodels.tsa.ar_model import AutoReg
-from scipy import integrate
 from scipy.signal import detrend, argrelextrema, find_peaks
 from itertools import groupby
 from scipy.ndimage.filters import convolve
@@ -24,6 +23,7 @@ class StatisticalFeatures:
                  permutation_entropy_delay=1,
                  svd_entropy_order=3,
                  svd_entropy_delay=1,
+                 adjusted = False
                  ):
 
         self.window_size = window_size
@@ -33,6 +33,7 @@ class StatisticalFeatures:
         self.permutation_entropy_delay = permutation_entropy_delay
         self.svd_entropy_order = svd_entropy_order
         self.svd_entropy_delay = svd_entropy_delay
+        self.adjusted = adjusted
 
         if n_lags_auto_correlation is None:
             self.n_lags_auto_correlation = int(min(10 * np.log10(window_size), window_size - 1))
@@ -172,10 +173,6 @@ class StatisticalFeatures:
         diff_entropy = self.calculate_differential_entropy(signal)
         feats.append(diff_entropy)
         feats_names.append(f"{signal_name}_differential_entropy")
-        # Sample Entropy
-        samp_ent = self.calculate_sample_entropy(signal)
-        feats.append(samp_ent)
-        feats_names.append(f"{signal_name}_sample_entropy")
         # Sample Entropy
         samp_ent = self.calculate_sample_entropy(signal)
         feats.append(samp_ent)
@@ -671,8 +668,8 @@ class StatisticalFeatures:
             Chaddad et al., 2014, DOI: 10.1117/12.2062143
         """
         feats = []
-        for proportiontocut in self.trimmed_mean_thresholds:
-            feats.append(trim_mean(signal, proportiontocut=proportiontocut))
+        for proportion_to_cut in self.trimmed_mean_thresholds:
+            feats.append(trim_mean(signal, proportiontocut=proportion_to_cut))
         return np.array(feats)
 
     def calculate_mean_abs(self, signal):
@@ -1492,11 +1489,43 @@ class StatisticalFeatures:
         coefficient_of_variation = np.std(signal) / np.mean(signal)
         return np.array([coefficient_of_variation])
 
-    def calculate_median_absolute_deviation(self, signal):
-        # Formula from Pham-Gia, 2001, DOI: 10.1016/S0895-7177(01)00109-1
-        # Rafiuddin et al., 2011, DOI: 10.1109/MSPCT.2011.6150470
+    def calculate_median_absolute_deviation(self,signal):
+        """
+        Calculate the Median Absolute Deviation (MAD) of a time series signal.
+
+        The Median Absolute Deviation (MAD) is a robust measure of statistical dispersion. Unlike the standard deviation, 
+        which is influenced by outliers, MAD provides a more resilient measure of variability by focusing on the median rather 
+        than the mean.
+        
+        Parameters:
+        -----------
+        signal : array-like
+            The input time series data.
+        adjusted : bool, optional (default=False)
+            If True, returns the adjusted MAD, making it consistent with the standard deviation
+            for normally distributed data by multiplying by 1.4826.
+
+        Returns:
+        --------
+        np.ndarray
+            A single-element array containing the MAD (float) of the signal. This value represents the median of the absolute 
+            deviations from the median of the signal.
+
+        References:
+        -----------
+            - Rousseeuw, P. J., & Croux, C. (1993). Alternatives to the Median Absolute Deviation.
+            Journal of the American Statistical Association, 88(424), 1273–1283. https://doi.org/10.2307/2291267
+            - Leys, C., Ley, C., Klein, O., Bernard, P., & Licata, L. (2013). Detecting outliers: Do not use standard
+            deviation around the mean, use absolute deviation around the median. Journal of Experimental Social Psychology, 
+            49(4), 764–766. https://doi.org/10.1016/J.JESP.2013.03.013
+            - Pham-Gia, T., & Hung, T. L. (2001). The mean and median absolute deviations. Mathematical and Computer Modelling,
+            34(7–8), 921–936. https://doi.org/10.1016/S0895-7177(01)00109-1
+        """
         median_value = np.median(signal)
         mad = np.median(np.abs(signal - median_value))
+        
+        if self.adjusted:
+            mad *= 1.4826
         return np.array([mad])
 
     def calculate_signal_magnitude_area(self, signal):
@@ -2053,11 +2082,8 @@ class StatisticalFeatures:
         """
         adf_vals_names = np.array(["teststats", "pvalue", "usedlag"])
         try:
-            if len(signal) <= 9000:
-                test_stat, p_value, used_lag, _,_,_ = adfuller(signal)
-                adf_vals = np.array([test_stat, p_value, used_lag])
-            else: 
-                adf_vals = np.empty(3)
+            test_stat, p_value, used_lag, _,_,_ = adfuller(signal)
+            adf_vals = np.array([test_stat, p_value, used_lag])
         except:
             return np.nan
         return adf_vals, adf_vals_names

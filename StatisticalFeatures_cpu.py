@@ -23,7 +23,8 @@ class StatisticalFeatures:
                  permutation_entropy_delay=1,
                  svd_entropy_order=3,
                  svd_entropy_delay=1,
-                 adjusted = False
+                 adjusted = False,
+                 ssc_threshold = 0
                  ):
 
         self.window_size = window_size
@@ -34,6 +35,7 @@ class StatisticalFeatures:
         self.svd_entropy_order = svd_entropy_order
         self.svd_entropy_delay = svd_entropy_delay
         self.adjusted = adjusted
+        self.ssc_threshold = ssc_threshold
 
         if n_lags_auto_correlation is None:
             self.n_lags_auto_correlation = int(min(10 * np.log10(window_size), window_size - 1))
@@ -1539,37 +1541,95 @@ class StatisticalFeatures:
         return np.array([avg_amplitude_change])
 
     def calculate_slope_sign_change(self, signal):
-        # Purushothaman et al., 2018, DOI: 10.1007/s13246-018-0646-7
-        slope_sign_change = np.count_nonzero(np.abs(np.diff(np.sign(np.diff(signal)))))
+        """
+        Calculate the Slope Sign Change (SSC) of the signal, considering a threshold.
+
+        Parameters:
+        -----------
+        signal : array-like
+            The input time series signal.
+        ssc_threshold : float, optional
+            The threshold value to determine significant slope changes (default is 0).
+
+        Returns:
+        --------
+        np.ndarray
+            A single-element array containing the SSC value.
+            
+        Reference:
+        ----------
+            - Purushothaman, G., & Vikas, · Raunak. (2018). Identification of a feature selection
+            based pattern recognition scheme for finger movement recognition from multichannel EMG
+            signals. Australasian Physical & Engineering Sciences in Medicine, 41, 549–559. 
+            https://doi.org/10.1007/s13246-018-0646-7
+        """
+        # Calculate the first and second differences
+        diff1 = np.diff(signal[:-1])
+        diff2 = np.diff(signal[1:])
+
+        # Compute the product of the differences
+        product = diff1 * diff2
+
+        # Apply the threshold and count the number of valid slope sign changes
+        slope_sign_change = np.sum(product >= self.ssc_threshold)
         return np.array([slope_sign_change])
 
     def calculate_higuchi_fractal_dimensions(self, signal):
-        # Wanliss et al., 2022, DOI: 10.1007/s11071-022-07353-2
-        # Wijayanto et al., 2019, DOI: 10.1109/ICITEED.2019.8929940
+        """
+        Calculates the Higuchi Fractal Dimension for a given time series signal.
+        
+        Parameters:
+        -----------
+        signal : array-like
+            The input time series data.
+            
+        Returns:
+        --------
+        np.array
+            Array containing the Higuchi Fractal Dimension for each `k` in self.higuchi_k_values.
+            
+        References:
+        ----------
+        - Higuchi, T. (1988). Approach to an irregular time series on the basis of the fractal theory. 
+        Physica D: Nonlinear Phenomena, 31(2), 277–283. https://doi.org/10.1016/0167-2789(88)90081-4
+        - Wijayanto, I., Hartanto, R., & Nugroho, H. A. (2019). Higuchi and Katz Fractal Dimension for
+        Detecting Interictal and Ictal State in Electroencephalogram Signal. 2019 11th International
+        Conference on Information Technology and Electrical Engineering, ICITEE 2019. 
+        https://doi.org/10.1109/ICITEED.2019.8929940
+        - Wanliss, J. A., & Wanliss, G. E. (2022). Efficient calculation of fractal properties via
+        the Higuchi method. Nonlinear Dynamics, 109(4), 2893–2904. 
+        https://doi.org/10.1007/S11071-022-07353-2/FIGURES/8
+        """
+
         def compute_length_for_interval(data, interval, start_time):
             data_size = data.size
-            num_intervals = np.floor((data_size - start_time) / interval).astype(np.int64)
+            num_intervals = (data_size - start_time) // interval
             normalization_factor = (data_size - 1) / (num_intervals * interval)
             sum_difference = np.sum(np.abs(np.diff(data[start_time::interval], n=1)))
             length_for_time = (sum_difference * normalization_factor) / interval
             return length_for_time
 
         def compute_average_length(data, interval):
-            compute_length_series = np.frompyfunc(
-                lambda start_time: compute_length_for_interval(data, interval, start_time), 1, 1)
-            average_length = np.average(compute_length_series(np.arange(1, interval + 1)))
-            return average_length
+            lengths = [
+                compute_length_for_interval(data, interval, start_time)
+                for start_time in range(1, interval + 1)
+            ]
+            return np.mean(lengths)
 
         feats = []
         for max_interval in self.higuchi_k_values:
             try:
-                compute_average_length_series = np.frompyfunc(lambda interval: compute_average_length(signal, interval), 1, 1)
+                average_lengths = np.array([
+                    compute_average_length(signal, interval)
+                    for interval in range(1, max_interval + 1)
+                ])
                 interval_range = np.arange(1, max_interval + 1)
-                average_lengths = compute_average_length_series(interval_range).astype(np.float64)
-                fractal_dimension, _ = - np.polyfit(np.log2(interval_range), np.log2(average_lengths), 1)
-            except:
+                fractal_dimension, _ = -np.polyfit(np.log(interval_range), np.log(average_lengths), 1)
+            except Exception as e:
+                print(f"Error computing HFD for k={max_interval}: {e}")
                 fractal_dimension = np.nan
             feats.append(fractal_dimension)
+
         return np.array(feats)
 
     def calculate_hjorth_mobility_and_complexity(self, signal):

@@ -69,7 +69,7 @@ The return is a pd dataframe with columns: 'feature name', 'feature value gpu', 
 45|calculate_svd_entropy(X)|Singular Value Decomposition|
 46|calculate_hjorth_mobility_and_complexity(X)|Calculates mobility and complexity of X which are bases on the first and second derivatives of X|
 47|calculate_cardinality(X)||*|
-48|calculate_rms_to_mean_abs(X)|Computes the ratio of the RMS value to mean absolute value of X|
+48|calculate_rms_to_mean_abs(X)|Computes the ratio of the RMS value to mean absolute value of X|*|
 49|calculate_tsallis_entropy(X)|Tsallis entropy estimates the information X||
 50|calculate_renyi_entropy(X)|Computes the Renyi entropy of X|
 51|calculate_absolute_energy(X)|Calculates the absolute energy of X|
@@ -166,6 +166,7 @@ The return is a pd dataframe with columns: 'feature name', 'feature value gpu', 
 Number| Feature    | Reason |
 | -------- | ------- | ------- |
 1|calculate_roll_mean | Same implementation as *calculate_moving_average*
+2|calculate_absolute_energy | Same implementation as signal energy
 
 
 ## Features that should be deleted
@@ -174,6 +175,7 @@ Number| Feature    | Reason |
 1|calculate_first_quartile | calculate_percentile(signal, percentiles=[25, 50, 75]) returns the first, second, and third quartiles|
 2|calculate_third_quartile | calculate_percentile(signal, percentiles=[25, 50, 75]) returns the first, second, and third quartiles |
 3| calculate_histogram_bins|
+4| calculate_signal_magnitude_area| 
 <br>
 
 

@@ -1341,7 +1341,7 @@ def calculate_hjorth_mobility_and_complexity(signal):
     Parameter:
     ---------
         signal : array-like
-        The input time series data.
+            The input time series data.
 
     Returns:
     -------
@@ -1389,11 +1389,12 @@ def calculate_rms_to_mean_abs(signal):
 
         Parameters:
         ---------
-            signal (array-like): The input time series.
+            signal : array-like
+                The input time series data.
 
         Returns:
         -------
-            np.array
+            numpy.ndarray
                 An array containing the ratio of the root-mean-squared value to the mean
                 absolute value.
         
@@ -1411,7 +1412,8 @@ def calculate_area_under_curve(signal):
 
         Parameters:
         ----------
-            signal (array-like): The input time series.
+            signal : array-like
+                The input time series data.
 
         Returns:
         -------
@@ -1431,7 +1433,8 @@ def calculate_area_under_squared_curve(signal):
 
         Parameters:
         ----------
-            signal (array-like): The input time series.
+            signal : array-like
+                The input time series data.
 
         Returns:
         -------
@@ -1439,44 +1442,94 @@ def calculate_area_under_squared_curve(signal):
         """
         return simpson(signal**2, dx=1)
 
-def calculate_autoregressive_model_coefficients(signal, order=4):
-        # https://doi.org/10.1109/IEMBS.2008.4650379
-        model = AutoReg(signal, lags=order)
-        model_fitted = model.fit()
-        return model_fitted.params
+def calculate_autoregressive_model_coefficients(signal, ar_model_coefficients_order):
+    """
+    Calculates the autoregressive model coefficients of the time series
 
-def calculate_count(self, signal):
-        return len(signal)
+    Parameter:
+    ---------
+        signal : array-like
+            The input time series data.
+        ar_model_coefficients_order : (int, optional)
+            The number of lags to include in the model, defaults to 4.
 
-def calculate_count_above_mean(self, signal):
-        # https://tsfresh.readthedocs.io/en/latest/api/tsfresh.feature_extraction.html#
-        mean_val = np.mean(signal)
-        return np.sum(signal > mean_val)
+    Returns:
+    -------
+        numpy.ndarray
+            An array containing coefficients 
+        
+    Reference:
+    ---------
+        - Khan, A. M., Lee, Y. K., & Kim, T. S. (2008). Accelerometer signal-based human 
+        activity recognition using augmented autoregressive model coefficients and artificial 
+        neural nets. Proceedings of the 30th Annual International Conference of the IEEE Engineering 
+        in Medicine and Biology Society, EMBS’08 - “Personalized Healthcare through Technology,” 5172–5175. 
+        https://doi.org/10.1109/IEMBS.2008.4650379
+    """
+    model = AutoReg(signal, lags=ar_model_coefficients_order)
+    model_fitted = model.fit()
+    return model_fitted.params
 
-def calculate_count_below_mean(self, signal):
-        # https://tsfresh.readthedocs.io/en/latest/api/tsfresh.feature_extraction.html#
-        mean_val = np.mean(signal)
-        return np.sum(signal < mean_val)
+def calculate_count(signal):
+    """
+    Calculates the length of the time series.
 
-def calculate_count_of_negative_values(self, signal):
-        # https://tsfresh.readthedocs.io/en/latest/api/tsfresh.feature_extraction.html#
-        return np.sum(signal < 0)
+    Parameter:
+    ---------
+        signal : array-like
+            The input time series data.
 
-def calculate_count_of_positive_values(self, signal):
-        # https://tsfresh.readthedocs.io/en/latest/api/tsfresh.feature_extraction.html#
-        return np.sum(signal > 0)
+    Returns:
+    --------
+        int: The length of the time series
+    """
+    return len(signal)
 
-def calculate_covariance(self, signal, other_signal):
-        # https://support.ptc.com/help/mathcad/r9.0/en/index.html#page/PTC_Mathcad_Help/covariance.html
-        return np.cov(signal, other_signal)[0, 1]
+def calculate_count_above_mean(signal):
+    """
+    Reference:
+    ----------
+        https://tsfresh.readthedocs.io/en/latest/api/tsfresh.feature_extraction.html#
+    """
+    mean_val = np.mean(signal)
+    return np.sum(signal > mean_val)
 
-def calculate_cumulative_energy(self, signal):
-        # https://doi.org/10.1016/j.ijepes.2020.106192
-        return np.cumsum(np.square(signal))[-1]
+def calculate_count_below_mean(signal):
+    """
+    Reference:
+    ----------
+        https://tsfresh.readthedocs.io/en/latest/api/tsfresh.feature_extraction.html#
+    """
+    mean_val = np.mean(signal)
+    return np.sum(signal < mean_val)
 
-def calculate_cumulative_sum(self, signal):
-        # https://docs.amd.com/r/2020.2-English/ug1483-model-composer-sys-gen-user-guide/Cumulative-Sum
-        return np.cumsum(signal)[-1]
+def calculate_count_of_negative_values(signal):
+    """
+    Reference:
+    ----------
+        https://tsfresh.readthedocs.io/en/latest/api/tsfresh.feature_extraction.html#
+    """
+    return np.sum(signal < 0)
+
+def calculate_count_of_positive_values(signal):
+    """
+    Reference:
+    ----------
+        https://tsfresh.readthedocs.io/en/latest/api/tsfresh.feature_extraction.html#
+    """
+    return np.sum(signal > 0)
+
+def calculate_covariance(signal, other_signal):
+    """
+    Reference:
+    ----------
+        https://support.ptc.com/help/mathcad/r9.0/en/index.html#page/PTC_Mathcad_Help/covariance.html
+    """
+    return np.cov(signal, other_signal)[0, 1]
+
+def calculate_cumulative_sum(signal):
+    # https://docs.amd.com/r/2020.2-English/ug1483-model-composer-sys-gen-user-guide/Cumulative-Sum
+    return np.cumsum(signal)[-1]
 
 def calculate_energy_ratio_by_chunks(self, signal, chunks=4):
         # https://github.com/blue-yonder/tsfresh/blob/main/tsfresh/feature_extraction/feature_calculators.py#L2212

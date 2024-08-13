@@ -16,7 +16,8 @@ class StatisticalFeatures:
                 svd_entropy_order=3,
                 svd_entropy_delay=1,
                 adjusted = False,
-                ssc_threshold = 0
+                ssc_threshold = 0,
+                ar_model_coefficients_order = 4
                 ):
 
         self.window_size = window_size
@@ -28,6 +29,7 @@ class StatisticalFeatures:
         self.svd_entropy_delay = svd_entropy_delay
         self.adjusted = adjusted
         self.ssc_threshold = ssc_threshold
+        self.ar_model_coefficients_order = ar_model_coefficients_order
 
         if n_lags_auto_correlation is None:
             self.n_lags_auto_correlation = int(min(10 * np.log10(window_size), window_size - 1))

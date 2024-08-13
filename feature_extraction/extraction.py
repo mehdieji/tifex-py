@@ -189,40 +189,40 @@ def calculate_statistical_features(self, signal, signal_name):
         feats_names.append(f"{signal_name}_area_under_squared_curve")
 
         # Autoregressive Model Coefficients
-        ar_coeffs = calculate_autoregressive_model_coefficients(signal)
+        ar_coeffs = calculate_autoregressive_model_coefficients(signal, self.ar_model_coefficients_order)
         for i, coeff in enumerate(ar_coeffs):
             feats.append(coeff)
             feats_names.append(f"{signal_name}_ar_coefficient_{i+1}")
 
-        # # Count
-        # count = calculate_count(signal)
-        # feats.append(count)
-        # feats_names.append(f"{signal_name}_count")
+        # Count
+        count = calculate_count(signal)
+        feats.append(count)
+        feats_names.append(f"{signal_name}_count")
 
-        # # Count Above Mean
-        # count_above_mean = calculate_count_above_mean(signal)
-        # feats.append(count_above_mean)
-        # feats_names.append(f"{signal_name}_count_above_mean")
+        # Count Above Mean
+        count_above_mean = calculate_count_above_mean(signal)
+        feats.append(count_above_mean)
+        feats_names.append(f"{signal_name}_count_above_mean")
 
-        # # Count Below Mean
-        # count_below_mean = calculate_count_below_mean(signal)
-        # feats.append(count_below_mean)
-        # feats_names.append(f"{signal_name}_count_below_mean")
+        # Count Below Mean
+        count_below_mean = calculate_count_below_mean(signal)
+        feats.append(count_below_mean)
+        feats_names.append(f"{signal_name}_count_below_mean")
 
-        # # Count of Negative Values
-        # count_of_negative_values = calculate_count_of_negative_values(signal)
-        # feats.append(count_of_negative_values)
-        # feats_names.append(f"{signal_name}_count_of_negative_values")
+        # Count of Negative Values
+        count_of_negative_values = calculate_count_of_negative_values(signal)
+        feats.append(count_of_negative_values)
+        feats_names.append(f"{signal_name}_count_of_negative_values")
 
-        # # Count of Positive Values
-        # count_pos = calculate_count_of_positive_values(signal)
-        # feats.append(count_pos)
-        # feats_names.append(f"{signal_name}_count_of_positive_values")
+        # Count of Positive Values
+        count_pos = calculate_count_of_positive_values(signal)
+        feats.append(count_pos)
+        feats_names.append(f"{signal_name}_count_of_positive_values")
 
-        # # Covariance with a shifted version of the signal (for demonstration)
-        # cov = calculate_covariance(signal, np.roll(signal, 1))
-        # feats.append(cov)
-        # feats_names.append(f"{signal_name}_covariance")
+        # Covariance with a shifted version of the signal (for demonstration)
+        cov = calculate_covariance(signal, np.roll(signal, 1))
+        feats.append(cov)
+        feats_names.append(f"{signal_name}_covariance")
 
         # # Cumulative Energy
         # cum_energy = calculate_cumulative_energy(signal)

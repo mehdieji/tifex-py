@@ -167,6 +167,7 @@ Number| Feature    | Reason |
 | -------- | ------- | ------- |
 1|calculate_roll_mean | Same implementation as *calculate_moving_average*
 2|calculate_absolute_energy | Same implementation as signal energy
+3|calculate_cumulative_energy | Produces same result as the absolute energy and signal energy. These three will always be the same for a given signal.
 
 
 ## Features that should be deleted

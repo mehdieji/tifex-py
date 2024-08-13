@@ -278,11 +278,6 @@ class StatisticalFeatures:
         feats.append(cov)
         feats_names.append(f"{signal_name}_covariance")
 
-        # Cumulative Energy
-        cum_energy = self.calculate_cumulative_energy(signal)
-        feats.append(cum_energy)
-        feats_names.append(f"{signal_name}_cumulative_energy")
-
         # Cumulative Sum
         cum_sum = self.calculate_cumulative_sum(signal)
         feats.append(cum_sum)
@@ -1743,10 +1738,6 @@ class StatisticalFeatures:
     def calculate_covariance(self, signal, other_signal):
         # https://support.ptc.com/help/mathcad/r9.0/en/index.html#page/PTC_Mathcad_Help/covariance.html
         return np.cov(signal, other_signal)[0, 1]
-
-    def calculate_cumulative_energy(self, signal):
-        # https://doi.org/10.1016/j.ijepes.2020.106192
-        return np.cumsum(np.square(signal))[-1]
 
     def calculate_cumulative_sum(self, signal):
         # https://docs.amd.com/r/2020.2-English/ug1483-model-composer-sys-gen-user-guide/Cumulative-Sum

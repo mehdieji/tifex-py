@@ -290,7 +290,7 @@ class StatisticalFeatures:
             feats_names.append(f"{signal_name}_energy_ratio_chunk_{i+1}")
 
         # Moving Average
-        moving_average = self.calculate_moving_average(signal, window_size=10)  # Example window size
+        moving_average = self.calculate_moving_average(signal)  # Example window size
         feats.append(moving_average)
         feats_names.append(f"{signal_name}_moving_average")
         
@@ -1750,11 +1750,11 @@ class StatisticalFeatures:
         total_energy = np.sum(signal**2)
         return energies / total_energy
     
-    def calculate_moving_average(self, signal, window_size=10):
+    def calculate_moving_average(self, signal):
         # https://cyclostationary.blog/2021/05/23/sptk-the-moving-average-filter/
-        if len(signal) < window_size:
+        if len(signal) < self.window_size:
             return np.nan
-        return np.convolve(signal, np.ones(window_size) / window_size, mode='valid')
+        return np.convolve(signal, np.ones(self.window_size) / self.window_size, mode='valid')
     
     def calculate_weighted_moving_average(self, signal, weights=None):
         # https://www.mathworks.com/help/signal/ug/signal-smoothing.html

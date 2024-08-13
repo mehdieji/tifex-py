@@ -232,11 +232,6 @@ class StatisticalFeatures:
         feats.extend(self.calculate_rms_to_mean_abs(signal))
         feats_names.append(f"{signal_name}_rms_to_mean_of_abs")
 
-        # Absolute Energy
-        energy = self.calculate_absolute_energy(signal)
-        feats.append(energy)
-        feats_names.append(f"{signal_name}_absolute_energy")
-
         # Area Under the Curve
         area = self.calculate_area_under_curve(signal)
         feats.append(area)
@@ -1685,11 +1680,6 @@ class StatisticalFeatures:
         mean_abs_val = np.mean(np.abs(signal))
         ratio = rms_val / mean_abs_val
         return np.array([ratio])
-
-    def calculate_absolute_energy(self, signal):
-        # https://tsfel.readthedocs.io/en/latest/descriptions/feature_list.html
-        return np.sum(signal**2)
-
 
     def calculate_area_under_curve(self, signal):
         """

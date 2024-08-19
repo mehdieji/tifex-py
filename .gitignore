@@ -1,6 +1,7 @@
 # Files
 /glossary.md
 *.ipynb
+hurst.py
 
 
 # Folders

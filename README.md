@@ -10,8 +10,6 @@ The return is a pd dataframe with columns: 'feature name', 'feature value gpu', 
 #### X - Time series
 "*": No reference
 <br>
-"**": Reference but questionable
-<br>
 "* **": More than one reference and one is questionable
 <br>
 "~": Further research required on feature
@@ -37,17 +35,17 @@ The return is a pd dataframe with columns: 'feature name', 'feature value gpu', 
 13|calculate_kurtosis_abs(X)|Calculates the kurtosis of the absolute values of X| * |
 14|calculate_median(X)|Calculates median of X|
 15|calculate_median_abs|Calculates the median of the absolute values of X|*|
-16|calculate_min(X)|Calculates the minimum value of X| **|
+16|calculate_min(X)|Calculates the minimum value of X||
 17|calculate_min_abs(X)|Calculates the minimum value of the absolute values of X| *|
 18|calculate_max(X)|Calculates the maximum value of X|
-19|calculate_max_abs(X)|Calculates the maximum value of the absolute values of X| *|
-20|calculate_range(X)|Calculates the range of X| * |
+19|calculate_max_abs(X)|Calculates the maximum value of the absolute values of X| |
+20|calculate_range(X)|Calculates the range of X| |
 21|calculate_range_abs(X)|Calculates the range of the absolute values of X|*|
 22|calculate_variance(X)|Calculates the variance of X |
 23|calculate_variance_abs(X)|Calculates the variance of the absolute values of X|*|
 24|calculate_interquartile_range(X)|Calculates the interquartile range of X|
-25|calculate_mean_absolute_deviation(X)|Calculates the mean of the absolute deviation of X ** |
-26|calculate_root_mean_square(X)|Calculates the root mean square of X| * **|
+25|calculate_mean_absolute_deviation(X)|Calculates the mean of the absolute deviation of X |
+26|calculate_root_mean_square(X)|Calculates the root mean square of X||
 27|calculate_signal_energy(X)|Calculates the energy of X|
 28|calculate_log_energy(X)|Calculates the log of the energy of X||
 29|calculate_entropy(X)|Calculates the entropy of X|
@@ -69,7 +67,6 @@ The return is a pd dataframe with columns: 'feature name', 'feature value gpu', 
 45|calculate_svd_entropy(X)|Singular Value Decomposition|
 46|calculate_hjorth_mobility_and_complexity(X)|Calculates mobility and complexity of X which are bases on the first and second derivatives of X|
 47|calculate_cardinality(X)||*|
-48|calculate_rms_to_mean_abs(X)|Computes the ratio of the RMS value to mean absolute value of X|*|
 48|calculate_rms_to_mean_abs(X)|Computes the ratio of the RMS value to mean absolute value of X|*|
 49|calculate_tsallis_entropy(X)|Tsallis entropy estimates the information X||
 50|calculate_renyi_entropy(X)|Computes the Renyi entropy of X|
@@ -99,7 +96,7 @@ The return is a pd dataframe with columns: 'feature name', 'feature value gpu', 
 73|calculate_katz_fractal_dimension(X)|Computes the Katz fractal dimension of X|
 74|calculate_last_location_of_maximum(X)|Returns the last location of the maximum value of X|
 75|calculate_last_location_of_minimum(X)|Returns the last location of the minimum value of X|
-76|calculate_linear_trend_with_full_linear_regression_results(X)||~|
+76|calculate_linear_trend_with_full_linear_regression_results(X)|Calculate the linear trend of a signal and return the full set of linear regression results.||
 77|calculate_local_maxima_and_minima(X)|Calculates the local maxima and minima of X|
 78|calculate_log_return(X)|Returns the logarithm of the ratio between the last and first values of  which is a measure of the percentage change in X|~|
 79|calculate_longest_strike_above_mean(X)|Computes the length of the longest consecutive subsequence of X  that is greater than the mean of X|
@@ -128,7 +125,6 @@ The return is a pd dataframe with columns: 'feature name', 'feature value gpu', 
 102|calculate_second_order_difference(X)|Returns the second differential of X|**|
 103|calculate_signal_resultant(X)||*|
 104|calculate_signal_to_noise_ratio(X)|Calculates the signal to noise ratio of X|
-105|calculate_slope_of_linear_fit(X)|Returns the slope of X|
 106|calculate_smoothing_by_binomial_filter(X)||~|
 107|calculate_stochastic_oscillator_value(X)|Calculates the stochastic oscillator of X|~|
 108|calculate_sum(X)|Returns the overall sum of values in X|
@@ -147,38 +143,88 @@ The return is a pd dataframe with columns: 'feature name', 'feature value gpu', 
 <br>
 <br>
 
-## Time-f Frequency Features
-|Number| Feature    | Description | Reference |
-| -------- | ------- | ------- | ------- |
+## Time-Frequency Features
+|Number| Feature    | Reference |
+| -------- | ------- | ------- |
 1|extract_wavelet_features(params)|||
 2|extract_spectrogram_features(params)||
 3|extract_stft_features(params)||
-4|teager_kaiser_energy_operator(X)|Generates new time series based on the Teager Kaiser energy operator|
+4|teager_kaiser_energy_operator(X)|
 
 <br>
 <br>
 
-## Spectral Features without references
-|Number| Feature    | Description |
+## Spectral Features
+|Number| Feature    | Reference |
 | -------- | ------- | ------- |
-1
+1|calculate_spectral_centroid|
+2|calculate_spectral_variance|
+3|calculate_spectral_skewness|
+4|calculate_spectral_kurtosis|
+5|calculate_median_frequency
+6|calculate_spectral_bandwidth (from order 1-4)|
+7|calculate_spectral_absolute_deviation|
+8|calculate_spectral_slope_linear|
+9|calculate_spectral_slope_logarithmic|
+10|calculate_spectral_flatness|
+11|calculate_peak_frequencies|
+12|calculate_spectral_edge_frequency|
+13|calculate_band_power|
+14|calculate_spectral_entropy|
+15|calculate_spectral_contrast|
+16|calculate_spectral_cov|
+|calculate_spectral_flux
+|calculate_spectral_rolloff
+|calculate_harmonic_ratio
+|calculate_fundamental_frequency
+|calculate_spectral_crest_factor
+|calculate_spectral_decrease
+|calculate_spectral_irregularity
+|calculate_mean_frequency
+|calculate_frequency_winsorized_mean
+|calculate_total_harmonic_distortion
+|calculate_inharmonicity
+|calculate_tristimulus
+|calculate_spectral_rollon
+|calculate_spectral_hole_count
+|calculate_spectral_autocorrelation
+|calculate_spectral_variability
+|calculate_spectral_spread_ratio
+|calculate_spectral_skewness_ratio
+|calculate_spectral_kurtosis_ratio
+|calculate_spectral_tonal_power_ratio
+|calculate_spectral_noise_to_harmonics_ratio
+|calculate_spectral_even_to_odd_harmonic_energy_ratio
+|calculate_spectral_strongest_frequency_phase
+|calculate_spectral_frequency_below_peak
+|calculate_spectral_frequency_above_peak
+|calculate_spectral_cumulative_frequency
+|calculate_spectral_cumulative_frequency_above
+|calculate_spectral_spread_shift
+|calculate_spectral_entropy_shift
+|calculate_spectral_change_vector_magnitude
+|calculate_spectral_low_frequency_content
+|calculate_spectral_mid_frequency_content
+|calculate_spectral_peak_to_valley_ratio
+|calculate_spectral_valley_depth_mean
+|calculate_spectral_valley_depth_std
+|calculate_spectral_valley_depth_variance
+|calculate_spectral_valley_width_mode
+|calculate_spectral_valley_width_std
+|calculate_spectral_subdominant_valley| * |
+|calculate_spectral_valley_count
+|calculate_spectral_peak_broadness
+|calculate_spectral_valley_broadness
+|calculate_frequency_variance
+|calculate_frequency_std
+|calculate_frequency_range
+|calculate_frequency_trimmed_mean
+|calculate_harmonic_product_spectrum
+|calculate_smoothness|
+|calculate_roughness|*|
 
-### Deleted features
-Number| Feature    | Reason |
-| -------- | ------- | ------- |
-1|calculate_roll_mean | Same implementation as *calculate_moving_average*
-2|calculate_absolute_energy | Same implementation as signal energy
-3|calculate_cumulative_energy | Produces same result as the absolute energy and signal energy. These three will always be the same for a given signal.
 
 
-## Features that should be deleted
-Number| Feature    | Reason |
-| -------- | ------- | ------- |
-1|calculate_first_quartile | calculate_percentile(signal, percentiles=[25, 50, 75]) returns the first, second, and third quartiles|
-2|calculate_third_quartile | calculate_percentile(signal, percentiles=[25, 50, 75]) returns the first, second, and third quartiles |
-3| calculate_histogram_bins|
-4| calculate_signal_magnitude_area| 
-4| calculate_signal_magnitude_area| 
 <br>
 
 
@@ -186,8 +232,6 @@ Number| Feature    | Reason |
 <br>
 
 ## Spectral Features
-<br>
-
 1. Median frequency
 2. Spectral bandwidth
 3. Spectral absolute deviation
@@ -284,7 +328,6 @@ Statistical features from wavelets, spectrogram and short-time fourier transform
 84. Lower complete moment
 85. Log return 
 86. Katz fractal dimension
-87. Intercept of linear fit
 88. Histogram bin frequencies
 89. Fisher information
 90. First quartile
@@ -306,7 +349,7 @@ Statistical features from wavelets, spectrogram and short-time fourier transform
 106. Higuchi fractal dimensions
 107. Slope sign change
 108. Average amplitude change
-109. Signal magnitude area
+109. Signal magnitude area*
 110. Median absolute deviation
 111. Coefficient of variation
 112. Higher order moments
@@ -340,12 +383,54 @@ Statistical features from wavelets, spectrogram and short-time fourier transform
 
 <br>
 
-# Added from TSFRESH
+# Added features
 |Number| Feature    | Description |
 | -------- | ------- | ------- |
-1| Augmented dickey fuller test| 
+1| Augmented dickey fuller test| Perform the Augmented Dickey-Fuller (ADF) test to check for stationarity in a given time series signal.|
+2| Hurst exponent| Calculate the Hurst Exponent of a given time series using Detrended Fluctuation Analysis (DFA).|
 
 <br>
+
+### Deleted features
+Number| Feature    | Reason |
+| -------- | ------- | ------- |
+1|calculate_roll_mean | Same implementation as *calculate_moving_average*
+2|calculate_absolute_energy | Same implementation as signal energy
+3|calculate_cumulative_energy | Produces same result as the absolute energy and signal energy. These three will always be the same for a given signal.
+4|calculate_intercept_of_linear_fit| This feature is returned again in the calculate_linear_trend_with_full_linear_regression_results function  
+
+
+## Features that should be deleted
+Number| Feature    | Reason |
+| -------- | ------- | ------- |
+1|calculate_first_quartile | calculate_percentile(signal, percentiles=[25, 50, 75]) returns the first, second, and third quartiles|
+2|calculate_third_quartile | calculate_percentile(signal, percentiles=[25, 50, 75]) returns the first, second, and third quartiles |
+3| calculate_histogram_bins|
+4| calculate_signal_magnitude_area|
+
+## Features in Tsfresh but not in SCAI toolbox
+Number| Feature | Description|Added yet?|
+| -------- | ------- | ------- | -------|
+1|absolute sum of changes||✔️|
+2|ar_coefficient(x, param)| This feature calculator fits the unconditional maximum likelihood of an autoregressive AR(k) process|
+3|benford correlation|||
+4|c3| uses c3 statistics to measure non-linearity in the time series
+5|count_above(x, t)|Returns the percentage of values in x that are higher than t |✔️|
+6|count_below(x, t)| Returns the percentage of values in x that are lower than t|✔️|
+7|cid_ce(x, normalize) |This function calculator is an estimate for a time series complexity [1] (A more complex time series has more peaks, valleys etc.).|✔️|
+8|friedrich_coefficients(x, param)|Coefficients of polynomial h(x), which has been fitted to the deterministic dynamics of Langevin model
+9|has_duplicate(x)|Checks if any value in x occurs more than once| ✔️|
+10|has_duplicate_max(x)|Checks if the maximum value of x is observed more than once| ✔️|
+11|has_duplicate_min(x)|Checks if the minimal value of x is observed more than once| ✔️|
+12|index_mass_quantile(x, param)|Calculates the relative index i of time series x where q% of the mass of x lies left of i.
+13|mean_n_absolute_max(x, number_of_maxima)| Calculates the arithmetic mean of the n absolute maximum values of the time series.
+14|large_standard_deviation(x, r)|Does time series have large standard deviation| ✔️ |
+15|lempel_ziv_complexity(x, bins)|Calculate a complexity estimate based on the Lempel-Ziv compression algorithm.|✔️|
+16|matrix_profile(x, param)|Calculates the 1-D Matrix Profile[1] and returns Tukey's Five Number Set plus the mean of that Matrix Profile.
+17|max_langevin_fixed_point(x, r, m)|Largest fixed point of dynamics :math:argmax_x {h(x)=0}` estimated from polynomial h(x), which has been fitted to the deterministic dynamics of Langevin model
+18|binned entropy |
+19| symmetry looking|Boolean variable denoting if the distribution of x looks symmetric.
+
 
 ## Observations
 1. **calculate_higher_order_moments** does not always produce the same result as mean, variance, skew and kurtosis when moment order is set to [1,2,3,4]
@@ -353,9 +438,15 @@ Statistical features from wavelets, spectrogram and short-time fourier transform
 3. **calculate_exponential_moving_average** returns the last value in the array. Is there a reason?
 4. 
 
+<br>
+Corrections
 
-
-
+1. calculate_katz_fractal_dimensions
+2. calculate_sum_of_reoccurring_values
+3. calculate_sum_of_reoccurring_data_points
+4. calculate_petrosian_fractal_dimension
+5. calculate_sample_entropy
+6. calculate_approximate_entropy
 
 
 

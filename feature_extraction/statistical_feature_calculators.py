@@ -1,4 +1,5 @@
 import numpy as np
+import math
 from scipy.stats import skew, kurtosis, moment, gmean, hmean, trim_mean, entropy, linregress, mode, pearsonr
 from statsmodels.tsa.stattools import acf, adfuller
 from scipy.integrate import simpson
@@ -7,6 +8,7 @@ from scipy.signal import detrend, argrelextrema, find_peaks
 from itertools import groupby
 from scipy.ndimage.filters import convolve
 from scipy import stats
+
 
 
 
@@ -120,9 +122,11 @@ def calculate_mean_abs(signal):
         
         References:
         ----------
-            Myroniv et al., 2017, https://www.researchgate.net/publication/323935725
-            Phinyomark et al., 2012, DOI: 10.1016/j.eswa.2012.01.102
-            Purushothaman et al., 2018, DOI: 10.1007/s13246-018-0646-7
+            - Myroniv, B., Wu, C.-W., Ren, Y., Christian, A., Bajo, E., & Tseng, 
+            Y.-C. (2017). Analyzing User Emotions via Physiology Signals. 
+            https://www.researchgate.net/publication/323935725
+            - Phinyomark et al., 2012, DOI: 10.1016/j.eswa.2012.01.102
+            - Purushothaman et al., 2018, DOI: 10.1007/s13246-018-0646-7
         """
         return np.array([np.mean(np.abs(signal))])
 
@@ -370,7 +374,10 @@ def calculate_min(signal):
             
         Reference:
         ---------
-            18th International Conference on Computer Communications and Networks, DOI: 10.1109/ICCCN15201.2009
+            -Quanz, B., Fei, H., Huan, J., Evans, J., Frost, V., Minden, G., Deavours, D., Searl, L., 
+            Depardo, D., Kuehnhausen, M., Fokum, D., Zeets, M., & Oguna, A. (2009). Anomaly detection 
+            with sensor data for distributed security. Proceedings - International Conference on Computer 
+            Communications and Networks, ICCCN. https://doi.org/10.1109/ICCCN.2009.5235262
         """
         
         min_val = np.min(signal)
@@ -429,11 +436,14 @@ def calculate_max_abs(signal):
             
         Returns:
         -------
-            np.array
-                An array containing the maximum value of the absolute values of the signal.
+        np.array
+            An array containing the maximum value of the absolute values of the signal.
             
         Reference:
-        ---------
+        ----------
+            - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
+            basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
+            https://doi.org/10.1016/J.NEUCOM.2018.03.067
         """
         max_abs_val = np.max(np.abs(signal))
         return np.array([max_abs_val])
@@ -449,11 +459,14 @@ def calculate_range(signal):
             
         Returns:
         -------
-            np.array
-                An array containing the range of the signal.
+        np.array
+            An array containing the range of the signal.
             
         Reference:
         ---------
+            -Wan, X., Wang, W., Liu, J., & Tong, T. (2014). Estimating the sample mean and standard deviation from 
+            the sample size, median, range and/or interquartile range. BMC Medical Research Methodology, 14(1), 
+            1–13. https://doi.org/10.1186/1471-2288-14-135/TABLES/3
         """
         return np.array([np.max(signal) - np.min(signal)])
 
@@ -578,7 +591,6 @@ def calculate_root_mean_square(signal):
             Mohd Khan, S., Ali Khan, A., Farooq -, O., Khorshidtalab, A., E Salami, M. J., & 
             Hamedi, M. (2013). Robust classification of motor imagery EEG signals using statistical 
             time–domain features. Physiological Measurement, 34(11), 1563. https://doi.org/10.1088/0967-3334/34/11/1563
-            - 18th International Conference on Computer Communications and Networks, DOI: 10.1109/ICCCN15201.2009
         """
         return np.array([np.sqrt(np.mean(signal**2))])
 
@@ -679,10 +691,27 @@ def calculate_sample_entropy(signal):
 
     References:
     -----------
-    1. https://raphaelvallat.com/antropy/build/html/generated/antropy.sample_entropy.html
-    2. Kumar et al, 2012, https://doi.org/10.1109/SCEECS.2012.6184830
+        - antropy.sample_entropy — antropy 0.1.6 documentation. (n.d.). Retrieved July 22, 2024, from 
+        https://raphaelvallat.com/antropy/build/html/generated/antropy.sample_entropy.html
+        - Kumar, Y., Dewal, M. L., & Anand, R. S. (2012). Features extraction of EEG signals using approximate and sample entropy. 
+        2012 IEEE Students’ Conference on Electrical, Electronics and Computer Science: Innovation for Humanity, SCEECS 2012. 
+        https://doi.org/10.1109/SCEECS.2012.6184830
+        - Delgado-Bonal, A., & Marshak, A. (2019). Approximate Entropy and Sample Entropy: A Comprehensive Tutorial. 
+        Entropy 2019, Vol. 21, Page 541, 21(6), 541. https://doi.org/10.3390/E21060541
     """
-    return entropy(np.histogram(signal, bins=10)[0])
+    N = len(signal)
+    m = 2
+    r = 0.2 * np.std(signal)  # r known as the tolerance is typically set as a fraction of the standard deviation
+
+    def _phi(m):
+        X = np.array([signal[i:i + m] for i in range(N - m + 1)])
+        C = np.sum(np.max(np.abs(X[:, None] - X[None, :]), axis=2) <= r, axis=0) - 1
+        return np.sum(C) / (N - m + 1)
+    
+    A = _phi(m + 1)
+    B = _phi(m)
+
+    return -np.log(A / B)
 
 def calculate_differential_entropy(signal):
     """
@@ -730,11 +759,22 @@ def calculate_approximate_entropy(signal):
 
     References:
     -----------
-        Delgado-Bonal et al., 2019, https://doi.org/10.3390/E21060541
+        - Delgado-Bonal, A., & Marshak, A. (2019). Approximate Entropy and Sample Entropy: A Comprehensive Tutorial. 
+        Entropy 2019, Vol. 21, Page 541, 21(6), 541. https://doi.org/10.3390/E21060541
+        - Kumar, Y., Dewal, M. L., & Anand, R. S. (2012). Features extraction of EEG signals using approximate and sample entropy. 
+        2012 IEEE Students’ Conference on Electrical, Electronics and Computer Science: Innovation for Humanity, SCEECS 2012. 
+        https://doi.org/10.1109/SCEECS.2012.6184830
     """
-    count, _ = np.histogram(signal, bins=10, density=True)
-    count = count[count > 0]  # Avoid log(0) issue
-    return -np.sum(count * np.log(count))
+    N = len(signal)
+    m = 2
+    r = 0.2 * np.std(signal)  # r known as the tolerance is typically set as a fraction of the standard deviation
+
+    def _phi(m):
+        X = np.array([signal[i:i + m] for i in range(N - m + 1)])
+        C = np.sum(np.max(np.abs(X[:, None] - X[None, :]), axis=2) <= r, axis=0)
+        return np.sum(np.log(C / (N - m + 1))) / (N - m + 1)
+
+    return _phi(m) - _phi(m + 1)
     
 def calculate_renyi_entropy(signal, window_size, renyi_alpha_parameter):
     """
@@ -963,12 +1003,15 @@ def calculate_zero_crossings( signal):
         
         References:
         ----------
-            Myroniv et al., 2017, https://www.researchgate.net/publication/323935725_Analyzing_User_Emotions_via_Physiology_Signals
-            Sharma et al., 2020, DOI: 10.1016/j.apacoust.2019.107020
-            Purushothaman et al., 2018, DOI: 10.1007/s13246-018-0646-7
+            -Myroniv, B., Wu, C.-W., Ren, Y., Christian, A., Bajo, E., & Tseng, 
+            Y.-C. (2017). Analyzing User Emotions via Physiology Signals. https://www.researchgate.net/publication/323935725
+            - Sharma, G., Umapathy, K., & Krishnan, S. (2020). Trends in audio signal feature extraction methods.
+            Applied Acoustics, 158, 107020. https://doi.org/10.1016/J.APACOUST.2019.107020
+            - Purushothaman, G., & Vikas, · Raunak. (2018). Identification of a feature selection
+            based pattern recognition scheme for finger movement recognition from multichannel EMG
+            signals. Australasian Physical & Engineering Sciences in Medicine, 41, 549–559. 
+            https://doi.org/10.1007/s13246-018-0646-7
         """
-        
-
         # Compute the difference in signbit (True if number is negative)
         zero_cross_diff = np.diff(np.signbit(signal))
         # Sum the differences to get the number of zero-crossings
@@ -1062,7 +1105,8 @@ def calculate_mean_crossing(signal):
         
     Reference:
     ----------
-        Myroniv et al., 2017, https://www.researchgate.net/publication/323935725
+        -Myroniv, B., Wu, C.-W., Ren, Y., Christian, A., Bajo, E., & Tseng, 
+        Y.-C. (2017). Analyzing User Emotions via Physiology Signals. https://www.researchgate.net/publication/323935725
     """
     mean_value = np.mean(signal)
     mean_crossings = np.where(np.diff(np.sign(signal - mean_value)))[0]
@@ -1333,6 +1377,80 @@ def calculate_higuchi_fractal_dimensions(signal, higuchi_k_values):
 
     return np.array(feats)
 
+def calculate_katz_fractal_dimension(signal):
+    """
+    Calculate the Katz Fractal Dimension (KFD) of a given signal.
+
+    The Katz Fractal Dimension is a measure of the complexity of a signal, which takes into 
+    account the total length of the signal and the maximum distance between the first point 
+    and any other point in the signal.
+
+    Parameters:
+    -----------
+    signal : array-like
+        The input time series
+
+    Returns:
+    --------
+    float
+        The Katz Fractal Dimension of the signal.
+        
+    Reference:
+    ----------
+        - Li, Y. ;, Zhou, Y. ;, Jiao, S., Li, Y., Zhou, Y., & Jiao, S. (2023). Variable-Step Multiscale Katz Fractal Dimension: 
+        A New Nonlinear Dynamic Metric for Ship-Radiated Noise Analysis. Fractal and Fractional 2024, Vol. 8, Page 9, 8(1), 9. 
+        https://doi.org/10.3390/FRACTALFRACT8010009
+    """
+    N = len(signal)
+    distance = np.max(np.abs(signal - signal[0]))
+    length = np.sum(np.abs(np.diff(signal)))
+    return np.log10(N) / (np.log10(N) + np.log10(distance / length))
+
+def calculate_petrosian_fractal_dimension(signal):
+    """
+    Calculate the Petrosian Fractal Dimension (PFD) of a given signal.
+
+    The Petrosian Fractal Dimension is a measure used to quantify the complexity of a signal, 
+    often used in analyzing time series data. It is particularly useful for distinguishing 
+    between noise and structural patterns in the signal. The PFD is computed based on the number 
+    of zero-crossings in the signal's first derivative.
+
+    Parameters:
+    -----------
+    signal : array-like
+        The input time series
+
+    Returns:
+    --------
+    float
+        The Petrosian Fractal Dimension of the signal.
+
+    Example:
+    --------
+    >>> signal = [1, 2, 1, 2, 1, 2]
+    >>> calculate_petrosian_fractal_dimension(signal)
+    0.985756
+
+    Notes:
+    ------
+    - The 'calculate_zero_crossings' function is assumed to count the number of zero crossings 
+    in the first difference (derivative) of the signal.
+    - Petrosian Fractal Dimension is particularly useful for characterizing signals in the context 
+    of noise and structure.
+
+    References:
+    -----------
+    - Petrosian, A. (1995). Kolmogorov complexity of finite sequences and recognition of different
+    preictal EEG patterns. Proceedings of the IEEE Symposium on Computer-Based Medical Systems, 212–217. 
+    https://doi.org/10.1109/CBMS.1995.465426
+    - Alfredo, M. L., Marta, M., Alfredo, M. L., & Marta, M. (2020). Classification of low-density EEG for 
+    epileptic seizures by energy and fractal features based on EMD. The Journal of Biomedical Research, 
+    2020, Vol. 34,  Issue 3, Pages: 180-190, 34(3), 180–190. https://doi.org/10.7555/JBR.33.20190009
+    """
+    N = len(signal)
+    nzc = calculate_zero_crossings(np.diff(signal))[0]
+    return np.log10(N) / (np.log10(N) + np.log10(N / (N + 0.4 * nzc)))
+
 def calculate_hjorth_mobility_and_complexity(signal):
     """
     Calculates mobility and complexity of the time series which are based on 
@@ -1371,13 +1489,13 @@ def calculate_hjorth_mobility_and_complexity(signal):
         complexity = np.nan
     return np.array([mobility, complexity])
 
-def calculate_cardinality(self, signal):
+def calculate_cardinality(signal, window_size):
         # Parameter
         thresh = 0.05 * np.std(signal)  # threshold
         # Sort data
         sorted_values = np.sort(signal)
-        cardinality_array = np.zeros(self.window_size - 1)
-        for i in range(self.window_size - 1):
+        cardinality_array = np.zeros(window_size - 1)
+        for i in range(window_size - 1):
             cardinality_array[i] = np.abs(sorted_values[i] - sorted_values[i + 1]) > thresh
         cardinality = np.sum(cardinality_array)
         return np.array([cardinality])
@@ -1482,6 +1600,12 @@ def calculate_count(signal):
     Returns:
     --------
         int: The length of the time series
+    
+    Reference:
+    ----------
+        - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
+        basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
+        https://doi.org/10.1016/J.NEUCOM.2018.03.067
     """
     return len(signal)
 
@@ -1489,7 +1613,9 @@ def calculate_count_above_mean(signal):
     """
     Reference:
     ----------
-        https://tsfresh.readthedocs.io/en/latest/api/tsfresh.feature_extraction.html#
+        - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
+        basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
+        https://doi.org/10.1016/J.NEUCOM.2018.03.067
     """
     mean_val = np.mean(signal)
     return np.sum(signal > mean_val)
@@ -1498,26 +1624,61 @@ def calculate_count_below_mean(signal):
     """
     Reference:
     ----------
-        https://tsfresh.readthedocs.io/en/latest/api/tsfresh.feature_extraction.html#
+        - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
+        basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
+        https://doi.org/10.1016/J.NEUCOM.2018.03.067
     """
     mean_val = np.mean(signal)
     return np.sum(signal < mean_val)
 
-def calculate_count_of_negative_values(signal):
+def calculate_count_below(signal,x):
     """
+    Calculate the count of values below scalar x: default is 0
+    
+    Parameters:
+    -----------
+    signal : array-like
+        The input time series data.
+    x : int
+        Value of interest
+        
+    Return:
+    -------
+    int
+        number of values lower than x
+        
     Reference:
     ----------
-        https://tsfresh.readthedocs.io/en/latest/api/tsfresh.feature_extraction.html#
+        - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
+        basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
+        https://doi.org/10.1016/J.NEUCOM.2018.03.067
     """
-    return np.sum(signal < 0)
+    return np.sum(signal < x)
 
-def calculate_count_of_positive_values(signal):
+def calculate_count_above(signal,x):
     """
+    Calculate the count of values above scalar x: default is 0
+    
+    Parameters:
+    -----------
+    signal : array-like
+        The input time series data.
+    x : int
+        Value of interest
+        
+    Return:
+    -------
+    int
+        number of values higher than x
+        
     Reference:
     ----------
-        https://tsfresh.readthedocs.io/en/latest/api/tsfresh.feature_extraction.html#
+        - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
+        basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
+        https://doi.org/10.1016/J.NEUCOM.2018.03.067
     """
-    return np.sum(signal > 0)
+    return np.sum(signal > x)
+
 
 def calculate_covariance(signal, other_signal):
     """
@@ -1528,277 +1689,838 @@ def calculate_covariance(signal, other_signal):
     return np.cov(signal, other_signal)[0, 1]
 
 def calculate_cumulative_sum(signal):
-    # https://docs.amd.com/r/2020.2-English/ug1483-model-composer-sys-gen-user-guide/Cumulative-Sum
+    """
+    Reference:
+    ----------
+        https://docs.amd.com/r/2020.2-English/ug1483-model-composer-sys-gen-user-guide/Cumulative-Sum
+    """
     return np.cumsum(signal)[-1]
 
-def calculate_energy_ratio_by_chunks(self, signal, chunks=4):
-        # https://github.com/blue-yonder/tsfresh/blob/main/tsfresh/feature_extraction/feature_calculators.py#L2212
-        chunk_size = len(signal) // chunks
-        energies = np.array([np.sum(signal[i*chunk_size:(i+1)*chunk_size]**2) for i in range(chunks)])
-        total_energy = np.sum(signal**2)
-        return energies / total_energy
+def calculate_energy_ratio_by_chunks(signal, energy_ratio_chunks):
+    """
+    Calculate the energy ratio of a signal by dividing it into chunks.
+
+    The energy ratio by chunks is calculated by dividing the signal into a specified number of chunks. The energy of each chunk 
+    is computed as the sum of the squared values of the signal within that chunk. The ratio of the energy of each chunk to the 
+    total energy of the signal is then returned.
+
+    This feature can be useful in identifying where the energy of a signal is concentrated over different segments of the signal, 
+    which can help in analyzing periodicity, transient events, or the distribution of power in the signal over time.
+
+    Parameters:
+    -----------
+    signal : array-like
+        The input time series signal.
+    energy_ratio_chunks : int, optional
+        The number of chunks to divide the signal into (default is 4).
+
+    Returns:
+    --------
+    np.ndarray
+        An array containing the energy ratio of each chunk relative to the total energy of the signal.
+
+    Reference:
+    ----------
+        - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
+        basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
+        https://doi.org/10.1016/J.NEUCOM.2018.03.067
+    """
+    chunk_size = len(signal) // energy_ratio_chunks
+    energies = np.array([np.sum(signal[i*chunk_size:(i+1)*chunk_size]**2) for i in range(energy_ratio_chunks)])
+    total_energy = np.sum(signal**2)
+    return energies / total_energy
     
-def calculate_moving_average(self, signal, window_size=10):
-        # https://cyclostationary.blog/2021/05/23/sptk-the-moving-average-filter/
-        if len(signal) < window_size:
-            return np.nan
-        return np.convolve(signal, np.ones(window_size) / window_size, mode='valid')
+def calculate_moving_average(signal, window_size, mode):
+    """
+    Returns the moving average of a time series signal.
+
+    The moving average is a common technique used to smooth out short-term fluctuations and highlight longer-term trends 
+    or cycles in a time series. This implementation applies a simple moving average filter to the input signal.
+
+    Parameters:
+    -----------
+    signal : array-like
+        The input time series signal.
+    window_size : int, optional
+        The size of the moving window used to calculate the average. Default is 10.
+    mode : str, optional
+        The mode parameter determines the type of padding applied to the input signal. 
+        Options include:
+            - 'valid': Returns output of length max(M, N) - min(M, N) + 1. This means no padding is applied and 
+            the result is only calculated where the window fully overlaps with the signal.
+            - 'same': Returns output of the same length as the input signal. Padding may be applied to ensure the output 
+            has the same length as the input.
+            - 'full': Returns the convolution at each point of overlap, with padding. The output length is M + N - 1.
+        Default is 'valid'.
+
+    Return:
+    -------
+    np.ndarray or float
+        An array containing the moving average of the signal. If the signal length is shorter than the window size, 
+        NaN is returned.
+
+    Reference:
+    ----------
+    SPTK Moving Average Filter:
+        https://cyclostationary.blog/2021/05/23/sptk-the-moving-average-filter/
+    """
+    if len(signal) < window_size:
+        return np.nan
+    return np.convolve(signal, np.ones(window_size) / window_size, mode= mode)
     
-def calculate_weighted_moving_average(self, signal, weights=None):
+def calculate_weighted_moving_average(signal, weights, mode):
+    """
+    Calculate the weighted moving average of a time series signal.
+
+    The weighted moving average assigns different weights to different points within the moving window, allowing some 
+    points to contribute more heavily to the average than others. This can be useful for emphasizing more recent 
+    data points in the time series.
+
+    Parameters:
+    -----------
+    signal : array-like
+        The input time series signal.
+    weights : array-like, optional
+        The weights to apply to the signal. If not provided, a linearly decreasing set of weights is used.
+        The length of weights must be equal to or less than the length of the signal.
+    mode : str, optional
+        The mode parameter determines the type of padding applied to the input signal. 
+        Options include:
+            - 'valid': Returns output of length max(M, N) - min(M, N) + 1. This means no padding is applied and 
+            the result is only calculated where the window fully overlaps with the signal.
+            - 'same': Returns output of the same length as the input signal. Padding may be applied to ensure the output 
+            has the same length as the input.
+            - 'full': Returns the convolution at each point of overlap, with padding. The output length is M + N - 1.
+        Default is 'valid'.
+
+    Returns:
+    --------
+    np.ndarray
+        The weighted moving average of the signal. If the signal is shorter than the weights, NaN is returned.
+
+    """
         # https://www.mathworks.com/help/signal/ug/signal-smoothing.html
-        if weights is None:
-            weights = np.linspace(1, 0, num=len(signal))
-        weights = weights / np.sum(weights)
-        return np.convolve(signal, weights, 'valid')
+    if weights is None:
+        weights = np.linspace(1, 0, num=len(signal))
+    else:
+        weights = np.asarray(weights)
+        if len(weights) > len(signal):
+            raise ValueError("Length of weights must be less than or equal to the length of the signal.")
+        if np.any(weights < 0):
+            raise ValueError("Weights must be non-negative.")
 
-def calculate_exponential_moving_average(self, signal, alpha=0.3):
-        """
-        Calculates the exponential moving average of the given signal
+    # Normalize the weights
+    weights = weights / np.sum(weights)
 
-        Parameters:
-        ---------
-            signal (array-like): The input time series.
-            alpha (float, optional): Defaults to 0.3.
+    # If the signal is shorter than the weights, return NaN
+    if len(signal) < len(weights):
+        return np.nan
 
-        Returns:
-        -------
-            float
-                last value in the array
-        """
-        ema = np.zeros_like(signal)
-        ema[0] = signal[0]
-        for i in range(1, len(signal)):
-            ema[i] = alpha * signal[i] + (1 - alpha) * ema[i - 1]
-        return ema[-1]
+    # Apply the weighted moving average
+    return np.convolve(signal, weights, mode=mode)
+    
 
-def calculate_first_location_of_maximum(self, signal):
-        # https://tsfresh.readthedocs.io/en/latest/api/tsfresh.feature_extraction.html#
-        return np.argmax(signal)
 
-def calculate_first_location_of_minimum(self, signal):
-        # https://tsfresh.readthedocs.io/en/latest/api/tsfresh.feature_extraction.html#
-        return np.argmin(signal)
+def calculate_exponential_moving_average(signal, ema_alpha):
+    """
+    Calculates the exponential moving average of the given signal
 
-def calculate_first_order_difference(self, signal):
-        # https://cran.r-project.org/web/packages/doremi/vignettes/first-order.html
-        return np.diff(signal, n=1)
+    Parameters:
+    ---------
+        signal (array-like): The input time series.
+        ema_alpha (float, optional): Defaults to 0.3.
 
-def calculate_first_quartile(self, signal):
-        return np.percentile(signal, 25)
+    Return:
+    -------
+        float: last value in the array
+    """
+    ema = np.zeros_like(signal)
+    ema[0] = signal[0]
+    for i in range(1, len(signal)):
+        ema[i] = ema_alpha * signal[i] + (1 - ema_alpha) * ema[i - 1]
+    return ema[-1]
 
-def calculate_fisher_information(self, signal):
-        # https://www.researchgate.net/publication/311396939_Analysis_of_Signals_by_the_Fisher_Information_Measure
-        variance = np.var(signal)
-        return 1 / variance if variance != 0 else float('inf')
+def calculate_first_location_of_maximum(signal):
+    """
+    Returns the location of the first maximum value of the time series
+    
+    Parameter:
+    ---------
+    signal: 
+        The input time series
+    
+    Return:
+    -------
+        float: last value in the array
+        
+    Reference:
+    ----------
+        - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
+        basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
+        https://doi.org/10.1016/J.NEUCOM.2018.03.067
+    """
+    return np.argmax(signal)
 
-def calculate_histogram_bin_frequencies(self, signal, bins=10):
-        # https://doi.org/10.1016/B978-044452075-3/50032-7
-        hist, _ = np.histogram(signal, bins=bins)
-        return hist
+def calculate_first_location_of_minimum(signal):
+    """
+    Returns the location of the first minimum value of the time series
+    
+    Parameter:
+    ---------
+    signal: 
+        The input time series
+        
+    Return:
+    -------
+    
+    Reference:
+    ----------
+        - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
+        basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
+        https://doi.org/10.1016/J.NEUCOM.2018.03.067
+    """
+    return np.argmin(signal)
 
-def calculate_intercept_of_linear_fit(self, signal):
-        # https://www.mathworks.com/help/matlab/data_analysis/linear-regression.html
-        slope, intercept, _, _, _ = linregress(np.arange(len(signal)), signal)
-        return intercept
+def calculate_first_order_difference(signal):
+    """
+    Calculates the first-order difference of a given signal.
+    
+    Parameter:
+    --------
+        signal: 
+        The input time series
+    Return:
+    -------
+        np.ndarray
+            An array containing the first-order difference of the input signal. 
+            The length of this array is one less than the original signal.
+    
+    Reference:
+    ----------
+        https://cran.r-project.org/web/packages/doremi/vignettes/first-order.html    
+    """
+    return np.diff(signal, n=1)
 
-def calculate_katz_fractal_dimension(self, signal):
-        # https://doi.org/10.3390/fractalfract8010009
-        distance = np.max(np.abs(np.diff(signal)))
-        length = np.sum(np.abs(np.diff(signal)))
-        return np.log10(length / distance)
+def calculate_first_quartile(signal):
+    """
+    Returns the first quartile of the time series values
 
-def calculate_last_location_of_maximum(self, signal):
-        # https://tsfresh.readthedocs.io/en/latest/api/tsfresh.feature_extraction.html#
-        return np.max(np.where(signal == np.max(signal))[0])
+    Parameter:
+    ---------
+    signal: 
+        The input time series
 
-def calculate_last_location_of_minimum(self, signal):
-        # https://tsfresh.readthedocs.io/en/latest/api/tsfresh.feature_extraction.html#
-        return np.max(np.where(signal == np.min(signal))[0])
+    Returns:
+        _type_: _description_
+    """
+    return np.percentile(signal, 25)
 
-def calculate_linear_trend_with_full_linear_regression_results(self, signal):
-        # https://www.mathworks.com/help/matlab/data_analysis/linear-regression.html
-        slope, intercept, r_value, p_value, std_err = linregress(np.arange(len(signal)), signal)
-        return slope, intercept, r_value**2, p_value, std_err
+def calculate_fisher_information(signal):
+    # https://www.researchgate.net/publication/311396939_Analysis_of_Signals_by_the_Fisher_Information_Measure
+    variance = np.var(signal)
+    return 1 / variance if variance != 0 else float('inf')
 
-def calculate_local_maxima_and_minima(self, signal):
+def calculate_histogram_bin_frequencies(signal, hist_bins):
+    """
+    Calculate the frequency of values in a signal within specified histogram bins.
+
+    This function generates a histogram of the input signal by dividing the data into
+    the specified number of bins (default: 10) or using specified bin edges. It returns the count of
+    data points falling within each bin.
+
+    Parameters:
+    -----------
+    signal : array-like
+        The input time series
+    
+    hist_bins : int or sequence of scalars
+        It defines the number of equal-width bins in the range of the signal.        
+
+    Returns:
+    --------
+    np.ndarray
+        An array of integers where each value represents the number of occurrences of the signal's
+        values within each bin.
+        
+    Reference:
+    ----------
+        - Pizzi, N. J., Somorjai, R. L., & Pedrycz, W. (2006). Classifying Biomedical Spectra 
+        Using Stochastic Feature Selection and Parallelized Multi-Layer Perceptrons. Modern 
+        Information Processing, 383–393. https://doi.org/10.1016/B978-044452075-3/50032-7
+    """
+    hist, _ = np.histogram(signal, bins=hist_bins)
+    return hist
+
+
+def calculate_last_location_of_maximum(signal):
+    """
+    Returns the last location of the maximum value
+    
+    Parameter:
+    ----------
+    signal : array-like
+        The input time series
+        
+    Return:
+    -------
+    int:
+        last location of the maximum value in the time series
+        
+    Reference:
+    ----------
+        - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
+        basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
+        https://doi.org/10.1016/J.NEUCOM.2018.03.067
+    """
+    return np.max(np.where(signal == np.max(signal))[0])
+
+def calculate_last_location_of_minimum(signal):
+    """
+    Reference:
+    ----------
+        - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
+        basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
+        https://doi.org/10.1016/J.NEUCOM.2018.03.067
+    """
+    return np.max(np.where(signal == np.min(signal))[0])
+
+def calculate_linear_trend_with_full_linear_regression_results(signal):
+    """
+    Calculate the linear trend of a signal and return the full set of linear regression results.
+
+    This function performs a linear regression on the input signal, where the signal values are 
+    the dependent variable and their indices are the independent variable. It returns the slope 
+    of the best-fit line, the y-intercept, the coefficient of determination (R²), the p-value for 
+    the slope, and the standard error of the estimated slope.
+
+    Parameters:
+    -----------
+    signal : array-like
+        The input time series
+
+    Returns:
+    --------
+    tuple
+        A tuple containing the following elements:
+        - slope (float): The slope of the best-fit line.
+        - intercept (float): The y-intercept of the best-fit line.
+        - r_value**2 (float): The coefficient of determination (R²), which indicates the 
+        goodness of fit of the model.
+        - p_value (float): The p-value for the slope, indicating the significance of the slope.
+        - std_err (float): The standard error of the estimated slope.
+
+    Example:
+    --------
+    >>> signal = [1, 2, 3, 4, 5]
+    >>> calculate_linear_trend_with_full_linear_regression_results(signal)
+    (1.0, 1.0, 1.0, 1.2004217548761408e-30, 0.0)
+
+    Notes:
+    ------
+    - The function uses `scipy.stats.linregress` to perform the linear regression.
+    - The R² value is calculated as the square of the correlation coefficient (`r_value`).
+    - A low p-value suggests that the slope is significantly different from zero.
+
+    References:
+    -----------
+    - "Linear Regression", MATLAB Documentation: https://www.mathworks.com/help/matlab/data_analysis/linear-regression.html
+    """
+    # https://www.mathworks.com/help/matlab/data_analysis/linear-regression.html
+    slope, intercept, r_value, p_value, std_err = linregress(np.arange(len(signal)), signal)
+    return slope, intercept, r_value**2, p_value, std_err
+
+def calculate_local_maxima_and_minima(signal):
         # https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.find_peaks.html
         local_max = find_peaks(signal)[0]
         local_min = find_peaks(-signal)[0]
         return len(local_max), len(local_min)
 
-def calculate_log_return(self, signal):
-        # https://pypi.org/project/stockstats/
-        
-        # Filter out non-positive values
-        signal = signal[signal > 0]
-        return np.log(signal[-1] / signal[0]) if signal[0] != 0 else float('inf')
+import numpy as np
 
-def calculate_longest_strike_above_mean(self, signal):
-        # https://tsfresh.readthedocs.io/en/v0.8.1/api/tsfresh.feature_extraction.html
-        mean_val = np.mean(signal)
-        return max([sum(1 for i in g) for k, g in groupby(signal > mean_val) if k])
+def calculate_log_return(signal):
+    """
+    Calculate the logarithmic return of a time series efficiently.
 
-def calculate_longest_strike_below_mean(self, signal):
-        # https://tsfresh.readthedocs.io/en/v0.8.1/api/tsfresh.feature_extraction.html
-        mean_val = np.mean(signal)
-        return max([sum(1 for i in g) for k, g in groupby(signal < mean_val) if k])
+    The log return is a commonly used measure in finance that represents the rate of return 
+    of an asset over a period of time. It is computed as the natural logarithm of the 
+    ratio between the final and initial values of the time series.
 
-def calculate_lower_complete_moment(self, signal, order=2):
-        mean_val = np.mean(signal)
-        return np.mean([(x - mean_val)**order for x in signal if x < mean_val])
+    Parameters:
+    -----------
+    signal : array-like
+        A sequence of numerical values representing the time series or asset prices. 
+        The signal should contain only positive values for a valid logarithmic return.
 
-def calculate_mean_absolute_change(self, signal):
-        # https://en.wikipedia.org/wiki/Mean_absolute_difference
-        return np.mean(np.abs(np.diff(signal)))
+    Returns:
+    --------
+    float
+        The logarithmic return of the time series. If the initial or final value is non-positive, 
+        the function returns `NaN` to indicate an undefined log return.
 
-def calculate_mean_crossings(self, signal):
-        # https://sensiml.com/documentation/pipeline-functions/feature-generators.html
-        mean_val = np.mean(signal)
-        return np.sum(np.diff(signal > mean_val))
-
-def calculate_mean_relative_change(self, signal):
-        # https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/j.1365-2745.2007.01281.x
-        return np.mean(np.abs(np.diff(signal) / signal[:-1]))
-
-def calculate_mean_second_derivative_central(self, signal):
-        # https://tsfresh.readthedocs.io/en/latest/text/list_of_features.html
-        return np.mean(np.diff(signal, n=2))
-
-def calculate_median_second_derivative_central(self, signal):
-        second_derivative = np.diff(signal, n=2)
-        return np.median(second_derivative)
-
-def calculate_mode(self, signal):
-        return mode(signal)[0]
-
-def calculate_number_of_inflection_points(self, signal):
-        # https://en.wikipedia.org/wiki/Inflection_point
-        second_derivative = np.diff(signal, n=2)
-        return np.sum(np.diff(np.sign(second_derivative)) != 0)
-
-def calculate_peak_to_peak_distance(self, signal):
-        # https://www.mathworks.com/matlabcentral/fileexchange/20314-peak-to-peak-of-signal
-        return np.ptp(signal)
-
-def calculate_pearson_correlation_coefficient(self, signal):
-        # https://en.wikipedia.org/wiki/Pearson_correlation_coefficient
-        # https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.pearsonr.html
-        if len(signal) < 2:
-            return np.nan
-        return pearsonr(signal[:-1], signal[1:])[0]
-
-def calculate_percentage_of_negative_values(self, signal):
-        return np.mean(signal < 0) * 100
-
-def calculate_percentage_of_positive_values(self, signal):
-        return np.mean(signal > 0) * 100
-
-def calculate_percentage_of_reoccurring_datapoints_to_all_datapoints(self, signal):
-        # https://tsfresh.readthedocs.io/en/v0.8.1/api/tsfresh.feature_extraction.html
-        unique, counts = np.unique(signal, return_counts=True)
-        return 100 * np.sum(counts > 1) / len(signal)
-
-def calculate_percentage_of_reoccurring_values_to_all_values(self, signal):
-        # https://tsfresh.readthedocs.io/en/v0.8.1/api/tsfresh.feature_extraction.html
-        unique, counts = np.unique(signal, return_counts=True)
-        return 100 * np.sum(counts[counts > 1]) / np.sum(counts)
+    Notes:
+    ------
+    - This function assumes that the signal is clean and contains no non-positive values. 
+    If non-positive values are present, the function will return `NaN`.
     
-def calculate_percentile(self, signal, percentiles=[25, 50, 75]):
-        return np.percentile(signal, percentiles)
-
-def calculate_petrosian_fractal_dimension(self, signal):
-        # https://doi.org/10.7555%2FJBR.33.20190009
-        N = len(signal)
-        nzc = np.sum(np.diff(signal) != 0)
-        return np.log10(N) / (np.log10(N) + np.log10(N / (N + 0.4 * nzc)))
-
-def calculate_ratio_beyond_r_sigma(self, signal, r=2):
-        # https://tsfresh.readthedocs.io/en/latest/api/tsfresh.feature_extraction.html
-        std_dev = np.std(signal)
-        mean_val = np.mean(signal)
-        return np.sum(np.abs(signal - mean_val) > r * std_dev) / len(signal)
-
-def calculate_ratio_of_fluctuations(self, signal):
-        increases = np.sum(np.diff(signal) > 0)
-        decreases = np.sum(np.diff(signal) < 0)
-        total = increases + decreases
-        ratio_positive = increases / total if total != 0 else 0
-        ratio_negative = decreases / total if total != 0 else 0
-        return ratio_positive, ratio_negative, ratio_positive / ratio_negative if ratio_negative != 0 else float('inf')
-
-def calculate_ratio_value_number_to_sequence_length(self, signal):
-        unique_values = len(np.unique(signal))
-        return unique_values / len(signal)
-
-def calculate_second_order_difference(self, signal):
-        # https://numpy.org/doc/stable/reference/generated/numpy.diff.html
-        return np.diff(signal, n=2)
+    Reference:
+    ----------
+    Based on concepts from: https://pypi.org/project/stockstats/
+    """
+    # Ensure the signal is a numpy array
+    signal = np.asarray(signal)
     
-def calculate_signal_resultant(self, signal):
+    # Check if the initial or final value is non-positive
+    if signal[0] <= 0 or signal[-1] <= 0:
+        return float('NaN')
+    
+    # Calculate and return the log return
+    return np.log(signal[-1] / signal[0])
+
+
+def calculate_longest_strike_above_mean(signal):
+    """
+    Calculate the longest sequence (strike) of consecutive values in the time series that are above the mean.
+
+    This function computes the mean of the given signal and identifies the longest continuous sequence of 
+    values that are greater than the mean. This "strike" or sequence length is returned as the result.
+
+    Parameters:
+    -----------
+    signal : array-like
+        A sequence of numerical values representing the time series.
+
+    Returns:
+    --------
+    int
+        The length of the longest sequence of consecutive values in the time series that are above the mean value.
+
+    Reference:
+    ----------
+        - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on the basis 
+        of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77.
+        https://doi.org/10.1016/J.NEUCOM.2018.03.067
+    """
+    mean_val = np.mean(signal)
+    return max([sum(1 for i in g) for k, g in groupby(signal > mean_val) if k])
+
+
+def calculate_longest_strike_below_mean(signal):
+    """
+    Calculate the longest sequence (strike) of consecutive values in the time series that are below the mean.
+
+    This function computes the mean of the given signal and identifies the longest continuous sequence of 
+    values that are less than the mean. This "strike" or sequence length is returned as the result.
+
+    Parameters:
+    -----------
+    signal : array-like
+        A sequence of numerical values representing the time series.
+
+    Returns:
+    --------
+    int
+        The length of the longest sequence of consecutive values in the time series that are below the mean value.
+
+    Reference:
+    ----------
+        - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on the basis 
+        of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77.
+        https://doi.org/10.1016/J.NEUCOM.2018.03.067
+    """
+    mean_val = np.mean(signal)
+    return max([sum(1 for i in g) for k, g in groupby(signal < mean_val) if k])
+
+
+def calculate_lower_complete_moment(signal, order=2):
+    mean_val = np.mean(signal)
+    return np.mean([(x - mean_val)**order for x in signal if x < mean_val])
+
+def calculate_mean_absolute_change(signal):
+    """
+    Calculate the mean absolute change of a signal.
+
+    The mean absolute change is a measure of the average amount by which the 
+    values of the signal change from one point to the next. It is calculated 
+    as the mean of the absolute differences between consecutive elements in 
+    the signal.
+
+    Parameters:
+    ----------
+    signal : array-like
+        A 1D array or list of numerical values representing the signal.
+
+    Returns:
+    -------
+    float
+        The mean absolute change of the signal.
+
+    References:
+    ----------
+        - Mean absolute difference: https://en.wikipedia.org/wiki/Mean_absolute_difference
+    """
+    return np.mean(np.abs(np.diff(signal)))
+
+    
+def calculate_absolute_sum_of_changes(signal):
+    return np.sum(np.diff(signal))
+
+def calculate_mean_crossings(signal):
+    # https://sensiml.com/documentation/pipeline-functions/feature-generators.html
+    mean_val = np.mean(signal)
+    return np.sum(np.diff(signal > mean_val))
+
+def calculate_mean_relative_change(signal):
+    # https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/j.1365-2745.2007.01281.x
+    return np.mean(np.abs(np.diff(signal) / signal[:-1]))
+
+def calculate_mean_second_derivative_central(signal):
+    """
+    Calculate the mean value of the central approximation of the second derivative of a time series.
+    
+    Parameters:
+    -----------
+    signal : array-like
+        A sequence of numerical values representing the time series.
+
+    Returns:
+    --------
+    float
+        The mean value of the central approximations of the second derivative. 
+        If the input signal has fewer than three elements, the function returns `NaN`.
+    
+    Reference:
+    ----------
+        - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
+        basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
+        https://doi.org/10.1016/J.NEUCOM.2018.03.067
+    """
+    return np.mean(np.diff(signal, n=2)) / 2 if len(signal) > 2 else np.NaN
+
+def calculate_median_second_derivative_central(signal):
+    second_derivative = np.diff(signal, n=2)
+    return np.median(second_derivative)
+
+def calculate_mode(signal):
+    return mode(signal)[0]
+
+def calculate_number_of_inflection_points(signal):
+    # https://en.wikipedia.org/wiki/Inflection_point
+    second_derivative = np.diff(signal, n=2)
+    return np.sum(np.diff(np.sign(second_derivative)) != 0)
+
+def calculate_peak_to_peak_distance(signal):
+    # https://www.mathworks.com/matlabcentral/fileexchange/20314-peak-to-peak-of-signal
+    return np.ptp(signal)
+
+def calculate_pearson_correlation_coefficient(signal):
+    # https://en.wikipedia.org/wiki/Pearson_correlation_coefficient
+    # https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.pearsonr.html
+    if len(signal) < 2:
+        return np.nan
+    return pearsonr(signal[:-1], signal[1:])[0]
+
+def calculate_percentage_of_negative_values(signal):
+    return np.mean(signal < 0) * 100
+
+def calculate_percentage_of_positive_values(signal):
+    return np.mean(signal > 0) * 100
+
+def calculate_percentage_of_reoccurring_datapoints_to_all_datapoints(signal):
+    # - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
+    #         basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
+    #         https://doi.org/10.1016/J.NEUCOM.2018.03.067
+    unique, counts = np.unique(signal, return_counts=True)
+    return 100 * np.sum(counts > 1) / len(signal)
+
+def calculate_percentage_of_reoccurring_values_to_all_values(signal):
+    # - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
+    #         basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
+    #         https://doi.org/10.1016/J.NEUCOM.2018.03.067
+    unique, counts = np.unique(signal, return_counts=True)
+    return 100 * np.sum(counts[counts > 1]) / np.sum(counts)
+    
+def calculate_percentile(signal, percentiles=[25, 50, 75]):
+    return np.percentile(signal, percentiles)
+
+def calculate_ratio_beyond_r_sigma(signal, r=2):
+    # - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
+    #         basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
+    #         https://doi.org/10.1016/J.NEUCOM.2018.03.067
+    std_dev = np.std(signal)
+    mean_val = np.mean(signal)
+    return np.sum(np.abs(signal - mean_val) > r * std_dev) / len(signal)
+
+def calculate_ratio_of_fluctuations(signal):
+    increases = np.sum(np.diff(signal) > 0)
+    decreases = np.sum(np.diff(signal) < 0)
+    total = increases + decreases
+    ratio_positive = increases / total if total != 0 else 0
+    ratio_negative = decreases / total if total != 0 else 0
+    return ratio_positive, ratio_negative, ratio_positive / ratio_negative if ratio_negative != 0 else float('inf')
+
+def calculate_ratio_value_number_to_sequence_length(signal):
+    unique_values = len(np.unique(signal))
+    return unique_values / len(signal)
+
+def calculate_second_order_difference(signal):
+    # https://numpy.org/doc/stable/reference/generated/numpy.diff.html
+    return np.diff(signal, n=2)
+    
+def calculate_signal_resultant(signal):
         return np.sqrt(np.sum(signal**2))
 
-def calculate_signal_to_noise_ratio(self, signal):
-        # https://en.wikipedia.org/wiki/Signal-to-noise_ratio
-        # DOI:10.4249/SCHOLARPEDIA.2088
-        mean_signal = np.mean(signal)
-        std_noise = np.std(signal)
-        return mean_signal / std_noise if std_noise > 0 else float('inf')
+def calculate_signal_to_noise_ratio(signal):
+    # https://en.wikipedia.org/wiki/Signal-to-noise_ratio
+    # DOI:10.4249/SCHOLARPEDIA.2088
+    mean_signal = np.mean(signal)
+    std_noise = np.std(signal)
+    return mean_signal / std_noise if std_noise > 0 else float('inf')
 
-def calculate_slope_of_linear_fit(self, signal):
-        # https://www.mathworks.com/help/matlab/data_analysis/linear-regression.html
-        slope, _, _, _, _ = linregress(np.arange(len(signal)), signal)
-        return slope
+def calculate_slope_of_linear_fit(signal):
+    # https://www.mathworks.com/help/matlab/data_analysis/linear-regression.html
+    slope, _, _, _, _ = linregress(np.arange(len(signal)), signal)
+    return slope
 
-def calculate_smoothing_by_binomial_filter(self, signal):
-        # https://www.wavemetrics.com/products/igorpro/dataanalysis/signalprocessing/smoothing
-        kernel = np.array([1, 2, 1]) / 4.0
-        return convolve(signal, kernel, mode='reflect')
+def calculate_smoothing_by_binomial_filter(signal):
+    # https://www.wavemetrics.com/products/igorpro/dataanalysis/signalprocessing/smoothing
+    kernel = np.array([1, 2, 1]) / 4.0
+    return convolve(signal, kernel, mode='reflect')
 
-def calculate_stochastic_oscillator_value(self, signal):
-        # https://www.investopedia.com/terms/s/stochasticoscillator.asp
-        low_min = np.min(signal)
-        high_max = np.max(signal)
-        current_value = signal[-1]
-        return 100 * (current_value - low_min) / (high_max - low_min)
+def calculate_stochastic_oscillator_value(signal):
+    # https://www.investopedia.com/terms/s/stochasticoscillator.asp
+    low_min = np.min(signal)
+    high_max = np.max(signal)
+    current_value = signal[-1]
+    return 100 * (current_value - low_min) / (high_max - low_min)
 
-def calculate_sum(self, signal):
-        # https://tsfresh.readthedocs.io/en/latest/api/tsfresh.feature_extraction.html#
-        return np.sum(signal)
+def calculate_sum(signal):
+    """
+    Returns the sum of all values in the time series
 
-def calculate_sum_of_negative_values(self, signal):
-        return np.sum(signal[signal < 0])
+    Parameter"
+    ---------
+    signal: array-like
+        The input time series
 
-def calculate_sum_of_positive_values(self, signal):
-        return np.sum(signal[signal > 0])
+    Returns:
+    --------
+        float/int
+        
+    Reference:
+    ---------
+        - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
+        basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
+        https://doi.org/10.1016/J.NEUCOM.2018.03.067
+    """
+    return np.sum(signal)
 
-def calculate_sum_of_reoccurring_data_points(self, signal):
-        # https://tsfresh.readthedocs.io/en/latest/api/tsfresh.feature_extraction.html#
-        unique, counts = np.unique(signal, return_counts=True)
-        return np.sum(unique[counts > 1])
+def calculate_sum_of_negative_values(signal):
+    """
+    Returns the sum of all negative values in the time series.
+    
+    Parameter:
+    ----------
+    signal : array-like
+        The input time series
+        
+    Return:
+    -------
+    float
+    """
+    return np.sum(signal[signal < 0])
 
-def calculate_sum_of_reoccurring_values(self, signal):
-        # https://tsfresh.readthedocs.io/en/latest/api/tsfresh.feature_extraction.html#
-        unique, counts = np.unique(signal, return_counts=True)
-        return np.sum(counts[counts > 1])
+def calculate_sum_of_positive_values(signal):
+    """
+    Returns the sum of all positive values in the time series
+    
+    Parameter:
+    ----------
+    signal : array-like
+        The input time series
+        
+    Return:
+    -------
+    float
+    """
+    return np.sum(signal[signal > 0])
 
-def calculate_third_quartile(self, signal):
-        return np.percentile(signal, 75)
+def calculate_sum_of_reoccurring_values(signal):
+    """
+    Calculate the sum of all unique reoccurring values in the given signal.
 
-def calculate_variance_of_absolute_differences(self, signal):
-        # https://doi.org/10.1080/00031305.2014.994712
-        abs_diffs = np.abs(np.diff(signal))
-        return np.var(abs_diffs)
+    This function identifies the unique values in the input signal that appear 
+    more than once and returns the sum of these reoccurring values. It does not 
+    count how many times the values occur, but rather sums the values themselves 
+    if they occur more than once.
 
-def calculate_winsorized_mean(self, signal, limits=[0.05, 0.05]):
-        # https://www.investopedia.com/terms/w/winsorized_mean.asp
-        return stats.mstats.winsorize(signal, limits=limits).mean()
+    Parameters:
+    -----------
+    signal : array-like
+        The input time series
 
-def calculate_zero_crossing_rate(self, signal):
-        # https://librosa.org/doc/0.10.2/generated/librosa.feature.zero_crossing_rate.html#librosa-feature-zero-crossing-rate
-        zero_crossings = np.where(np.diff(np.signbit(signal)))[0]
-        return len(zero_crossings) / len(signal)
+    Returns:
+    --------
+    float or int
+        The sum of the unique values that appear more than once in the signal.
 
-def calculate_detrended_fluctuation_analysis(self, signal, order=1, minimal = 20):
+    Example:
+    --------
+    >>> import numpy as np
+    >>> signal = np.array([1, 2, 2, 3, 3, 3, 4])
+    >>> calculate_sum_of_reoccurring_values(signal)
+    5
+
+    Reference:
+    ----------
+        - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
+        basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
+        https://doi.org/10.1016/J.NEUCOM.2018.03.067
+    """
+    unique, counts = np.unique(signal, return_counts=True)
+    return np.sum(unique[counts > 1])
+
+
+def calculate_sum_of_reoccurring_data_points(signal):
+    """
+    Calculate the sum of all data points that correspond to reoccurring values in the signal.
+
+    This function identifies values in the input signal that occur more than once 
+    and calculates the sum of all data points that contribute to these reoccurring 
+    values. It multiplies each reoccurring value by its frequency and then sums 
+    the results.
+
+    Parameters:
+    -----------
+    signal : array-like
+        The input time series
+        is to be calculated. This is typically a 1D array representing the data points.
+
+    Returns:
+    --------
+    float or int
+        The sum of all data points associated with values that appear more than 
+        once in the signal.
+
+    Example:
+    --------
+    >>> import numpy as np
+    >>> signal = np.array([1, 2, 2, 3, 3, 3, 4])
+    >>> calculate_sum_of_reoccurring_data_points(signal)
+    13
+
+    Reference:
+    ----------
+        - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
+        basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
+        https://doi.org/10.1016/J.NEUCOM.2018.03.067
+    """
+    unique, counts = np.unique(signal, return_counts=True)
+    counts[counts < 2] = 0
+    return np.sum(np.sum(counts * unique))
+
+
+def calculate_third_quartile(signal):
+    """
+    Returns the third quartile of the time series
+    
+    Parameter:
+    ----------
+    signal : array-like
+        The input time series
+        
+    Return:
+    -------
+    float
+    """
+    return np.percentile(signal, 75)
+
+def calculate_variance_of_absolute_differences(signal):
+    """
+    Calculate the variance of the absolute differences between consecutive elements in a time series.
+
+    This measure provides insight into the variability or volatility of changes in the signal. 
+    It calculates the absolute difference between each consecutive pair of elements in the signal 
+    and then computes the variance of these absolute differences.
+
+    Parameters:
+    -----------
+    signal : array-like
+        A sequence of numerical values representing the time series.
+
+    Returns:
+    --------
+    float
+        The variance of the absolute differences between consecutive elements. If the signal has fewer than 
+        two elements, the function returns `NaN`.
+
+    Notes:
+    ------
+    - This function is particularly useful in analyzing the variability of changes in a time series, 
+    such as in financial data or other sequences where the magnitude of changes is of interest.
+    
+    Reference:
+    ----------
+    - Liang, H., & Hong, L. (2015). The Absolute Difference Law For Expectations. The American Statistician, 
+    69(1), 8–10. https://doi.org/10.1080/00031305.2014.994712
+    """
+    # Ensure the signal has at least two elements
+    if len(signal) < 2:
+        return float('NaN')
+
+    abs_diffs = np.abs(np.diff(signal))
+    return np.var(abs_diffs)
+
+def calculate_winsorized_mean(signal, wm_limits):
+    """
+    Calculate the Winsorized Mean of a given signal.
+
+    The Winsorized Mean is a robust measure of central tendency that involves 
+    limiting extreme values in the data. Specifically, the highest and lowest 
+    values are replaced with the nearest values that fall within a specified 
+    percentile range, reducing the effect of outliers.
+
+    Parameters:
+    -----------
+    signal : array-like
+        The input time series
+
+    wm_limits : list of two floats, optional
+        The proportions of data to Winsorize from the lower and upper ends of the 
+        distribution. The default is [0.05, 0.05], which means 5% of the data is 
+        Winsorized from both ends. The values should be between 0 and 0.5.
+        
+    Reference:
+    ----------
+        https://www.investopedia.com/terms/w/winsorized_mean.asp
+    """
+    return stats.mstats.winsorize(signal, limits=wm_limits).mean()
+
+def calculate_zero_crossing_rate(signal):
+    """
+    Calculate the Zero Crossing Rate (ZCR) of a given signal.
+
+    The Zero Crossing Rate is the rate at which the signal changes sign, 
+    i.e., from positive to negative or vice versa.
+    
+    Parameters:
+    -----------
+    signal : array-like
+        The input time series
+
+    Returns:
+    --------
+    float
+        The Zero Crossing Rate.
+        
+    Reference:
+    ---------
+        Based on the implementation from the librosa library: 
+            https://librosa.org/doc/0.10.2/generated/librosa.feature.zero_crossing_rate.html#librosa-feature-zero-crossing-rate
+    """
+    zero_crossings = np.where(np.diff(np.signbit(signal)))[0]
+    return len(zero_crossings) / len(signal)
+
+def calculate_detrended_fluctuation_analysis(signal, order=1, minimal = 20):
     """
     Performs detrended fluctuation analysis (DFA) on the given signal.
         
@@ -1834,32 +2556,32 @@ def calculate_detrended_fluctuation_analysis(self, signal, order=1, minimal = 20
         
     N = len(signal)
         
-    def Divisors(N, minimal=20):
-        D = []
+    def divisors(N, minimal=20):
+        d = []
         for i in range(minimal, N // minimal + 1):
             if N % i == 0:
-                D.append(i)
-        return D
+                d.append(i)
+        return d
         
-    def findOptN(N, minimal=20):
+    def find_opt_n(N, minimal=20):
         """
-        Find such a natural number OptN that possesses the largest number of
+        Find such a natural number opt_n that possesses the largest number of
             divisors among all natural numbers in the interval [0.99*N, N]
             """
         N0 = int(0.99 * N)
         # The best length is the one which have more divisiors
-        Dcount = [len(Divisors(i, minimal)) for i in range(N0, N + 1)]
-        OptN = N0 + Dcount.index(max(Dcount))
-        return OptN
+        d_count = [len(divisors(i, minimal)) for i in range(N0, N + 1)]
+        opt_n = N0 + d_count.index(max(d_count))
+        return opt_n
         
         
-    OptN = findOptN(len(signal), minimal=minimal)
-    segment_sizes = Divisors(OptN, minimal=minimal)
+    opt_n = find_opt_n(len(signal), minimal=minimal)
+    segment_sizes = divisors(opt_n, minimal=minimal)
     fluctuation_values = []
 
     for m in segment_sizes:
-        k = OptN // m
-        Y = np.reshape(cumulative_sum_signal[N - OptN:], [m, k], order='F')
+        k = opt_n // m
+        Y = np.reshape(cumulative_sum_signal[N - opt_n:], [m, k], order='F')
         F = np.copy(Y)
         # t = 1, 2, ..., m
         t = np.linspace(1, m, m)
@@ -1871,24 +2593,36 @@ def calculate_detrended_fluctuation_analysis(self, signal, order=1, minimal = 20
     return segment_sizes, np.array(fluctuation_values)
     
 
-def calculate_hurst_exponent(self, signal):
-        """
-        References:
-        ----------
-        [1] Bryce, R. M., & Sprague, K. B. (2012). Revisiting detrended 
-            fluctuation analysis. Scientific Reports 2012 2:1, 2(1), 1–6. 
-            https://doi.org/10.1038/srep00315
-        [2] Zhang, H.-Y., Feng, Z.-Q., Feng, S.-Y., & Zhou, Y. (2023). 
-            A Survey of Methods for Estimating Hurst Exponent of Time 
-            Sequence. https://arxiv.org/abs/2310.19051v1
-        """
-        segment_size, fluctuation_values = self.calculate_detrended_fluctuation_analysis(signal)
+def calculate_hurst_exponent(signal):
+    """
+    Calculate the Hurst Exponent of a given time series using Detrended Fluctuation Analysis (DFA).
+
+    The Hurst Exponent is a measure of the long-term memory of time series data, 
+    indicating whether the data is a random walk (H ≈ 0.5), a trending series (H > 0.5), 
+    or a mean-reverting series (H < 0.5). This function estimates the Hurst Exponent 
+    using the Detrended Fluctuation Analysis (DFA) method.
+        
+    Parameter:
+    ---------
+    signal: 
+        The input time series
+    References:
+    ----------
+    [1] Bryce, R. M., & Sprague, K. B. (2012). Revisiting detrended 
+        fluctuation analysis. Scientific Reports 2012 2:1, 2(1), 1–6. 
+        https://doi.org/10.1038/srep00315
+    [2] Zhang, H.-Y., Feng, Z.-Q., Feng, S.-Y., & Zhou, Y. (2023). 
+        A Survey of Methods for Estimating Hurst Exponent of Time 
+        Sequence. https://arxiv.org/abs/2310.19051v1
+    [3] https://github.com/GrAbsRD/HurstExponent
+    """
+    segment_size, fluctuation_values = calculate_detrended_fluctuation_analysis(signal)
     
-        poly = np.polyfit(np.log(segment_size), np.log(fluctuation_values), 1)
-        hurst = poly[0]
-        return hurst
+    poly = np.polyfit(np.log(segment_size), np.log(fluctuation_values), 1)
+    hurst = poly[0]
+    return hurst
     
-def calculate_augmented_dickey_fuller_test(self, signal):
+def calculate_augmented_dickey_fuller_test(signal):
         """
         Perform the Augmented Dickey-Fuller (ADF) test to check for stationarity in a given time series signal.
 
@@ -1918,12 +2652,225 @@ def calculate_augmented_dickey_fuller_test(self, signal):
         return adf_vals, adf_vals_names
 
     
+def calculate_duplicates(signal):
+    """
+    Checks if the time series has duplicate values.
     
+    Parameters:
+    ----------
+        signal (array-like): 
+            The input time series.
+
+    Returns:
+    --------
+    boolean
+        True: duplicates present
+        False: No duplicates
     
+    Reference:
+    ----------
+        - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
+        basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
+        https://doi.org/10.1016/J.NEUCOM.2018.03.067
+    """
+    unique, counts = np.unique(signal, return_counts=True)
+    result = True if len(counts[counts > 1]) else False
+    return result
     
+def calculate_max_duplicates(signal):
+    """
+    Checks if the maximum value of the time series occurs more than once.
     
+    Parameters:
+    ----------
+        signal (array-like): 
+            The input time series.
+
+    Returns:
+    --------
+    boolean
+        True: maximum value has duplicates 
+        False: maximum value has no duplicates
     
+    Reference:
+    ----------
+        - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
+        basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
+        https://doi.org/10.1016/J.NEUCOM.2018.03.067
+    """
+    max_value = np.max(signal)
+    unique, counts = np.unique(signal, return_counts=True)
+    result = True if counts[np.where(unique == max_value)[0][0]] > 1 else False
+    return result
     
+def calculate_min_duplicates(signal):
+    """
+    Checks if the minimum value of the time series occurs more than once.
+    
+    Parameters:
+    ----------
+        signal (array-like): 
+            The input time series.
+
+    Returns:
+    --------
+    boolean
+        True: minimum value has duplicates 
+        False: minimum value has no duplicates
+    
+    Reference:
+    ----------
+        - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
+        basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
+        https://doi.org/10.1016/J.NEUCOM.2018.03.067
+    """
+    max_value = np.min(signal)
+    unique, counts = np.unique(signal, return_counts=True)
+    result = True if counts[np.where(unique == max_value)[0][0]] > 1 else False
+    return result
+
+def calculate_large_std(signal):
+    """
+    Determines if the standard deviation of a signal is large relative to its range.
+
+    This function compares the standard deviation of the given signal to a threshold, which 
+    is calculated as a multiple of the signal's range. The multiplier (`r`) is determined 
+    based on the length of the signal (`N`). Specifically, if the length of the signal 
+    is between 15 and 70, `r` is set to 4; otherwise, it is set to 6.
+
+    Parameters:
+    -----------
+    signal : array-like
+        A sequence of numerical values representing the signal or time series data.
+
+    Returns:
+    --------
+    bool
+        `True` if the standard deviation of the signal is greater than the threshold 
+        (`r * range`), `False` otherwise.
+
+    Notes:
+    ------
+    - The `calculate_range` function is assumed to return the range of the signal as the 
+    first element of a tuple.
+    - The function is particularly useful for detecting whether the signal exhibits high 
+    variability relative to its range.
+
+    Reference:
+    ---------
+        - Wan, X., Wang, W., Liu, J., & Tong, T. (2014). Estimating the sample mean and standard 
+        deviation from the sample size, median, range and/or interquartile range. BMC Medical 
+        Research Methodology, 14(1), 1–13. https://doi.org/10.1186/1471-2288-14-135/TABLES/3
+        - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series Feature 
+        Extraction on basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 
+        307, 72–77. https://doi.org/10.1016/J.NEUCOM.2018.03.067
+    """
+    range = calculate_range(signal)[0]
+    N = len(signal)
+    r = 4 if 15 < N <=70 else 6
+    
+    return np.std(signal) > (r * range)
+
+def calculate_lempel_ziv_complexity(signal, bins):
+    """
+    Calculate the Lempel-Ziv complexity of a given time series.
+
+    Lempel-Ziv complexity is defined as the number of distinct patterns or sub-sequences 
+    required to represent the time series when scanned from left to right. The signal 
+    is first discretized into a specified number of bins. Then, the time series is 
+    converted into a sequence of sub-sequences, and the complexity is calculated as 
+    the ratio of the number of unique sub-sequences to the total length of the time series.
+
+    Parameters:
+    -----------
+    signal : array-like
+        The input time series
+    bins : int
+        The number of bins to discretize the time series into.
+
+    Returns:
+    --------
+    float
+        The Lempel-Ziv complexity estimate, representing the ratio of the number 
+        of unique sub-sequences to the length of the time series.
+
+    References:
+    ----------
+    Based on the implementation from:
+        - https://github.com/Naereen/Lempel-Ziv_Complexity/blob/master/src/lempel_ziv_complexity.py
+        - https://github.com/blue-yonder/tsfresh
+    """
+    signal = np.asarray(signal)
+
+    # Discretize the signal into bins
+    bin_edges = np.linspace(np.min(signal), np.max(signal), bins + 1)[1:]
+    discretized_sequence = np.searchsorted(bin_edges, signal, side="left")
+
+    unique_subsequences = set()
+    length = len(discretized_sequence)
+
+    ind = 0
+    inc = 1
+    while ind + inc <= length:
+        # Convert to tuple to make it hashable
+        subsequence = tuple(discretized_sequence[ind : ind + inc])
+        if subsequence in unique_subsequences:
+            inc += 1
+        else:
+            unique_subsequences.add(subsequence)
+            ind += inc
+            inc = 1
+            
+    return len(unique_subsequences) / length
+
+def calculate_cid_ce(signal, normalize):
+    """
+    Calculate the Complexity Estimate (CE) of a time series signal.
+
+    This function computes the complexity estimate of a given time series signal, which is a measure of 
+    the complexity or irregularity of the signal's behavior. The complexity estimate is calculated as the 
+    square root of the sum of squared differences of consecutive signal values. If the `normalize` parameter 
+    is set to True, the signal is first normalized by subtracting the mean and dividing by the standard deviation.
+
+    Parameters:
+    ----------
+    signal : array-like
+        The input time series.
+    
+    normalize : bool
+        If True, the signal is normalized before computing the complexity estimate. Normalization ensures that 
+        the signal has zero mean and unit variance. If the standard deviation is zero (i.e., the signal is constant), 
+        the function returns 0.0.
+
+    Returns:
+    -------
+    float
+        The complexity estimate of the signal. A higher value indicates a more complex signal.
+
+    Reference:
+    ---------
+    - Batista, G. E. A. P. A., Wang, X., & Keogh, E. J. (2011). A complexity-invariant distance measure 
+    for time series. Proceedings of the 11th SIAM International Conference on Data Mining, SDM 2011, 
+    699–710. https://doi.org/10.1137/1.9781611972818.60
+
+    Notes:
+    -----
+    - The CID-CE measure is useful in time series analysis for comparing the complexity of different 
+    time series, as it is invariant to linear transformations when normalized.
+    - If `normalize` is set to True, the signal is scaled to have zero mean and unit variance. This 
+    step is crucial when comparing signals of different scales.
+    """
+    if normalize:
+        s = np.std(signal)
+        if s != 0:
+            signal = (signal - np.mean(signal)) / s
+        else:
+            return 0.0
+        
+    signal = np.diff(signal)
+    return np.sqrt(np.dot(signal, signal))
+
+
 def calculate_conditional_entropy(self, signal):
         """
         Calculates the entropy of the signal X, given the entropy of X

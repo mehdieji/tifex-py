@@ -86,6 +86,15 @@ def calculate_statistical_features(self, signal, signal_name):
         # Inter-quartile range
         feats.extend(calculate_interquartile_range(signal))
         feats_names.append(f"{signal_name}_iqr")
+        # Quantiles
+        feats.extend(calculate_quantile(signal, self.q))
+        for i in (self.q):
+            if i == 0.25:
+                feats_names.append(f"{signal_name}_first_quartile")
+            elif i == 0.75:
+                feats_names.append(f"{signal_name}_third_quartile")
+            else:
+                feats_names.append(f"{signal_name}_quantile_{i}")
         # Mean absolute deviation
         feats.extend(calculate_mean_absolute_deviation(signal))
         feats_names.append(f"{signal_name}_mean_abs_deviation")
@@ -138,7 +147,7 @@ def calculate_statistical_features(self, signal, signal_name):
         feats.extend(calculate_shape_factor(signal))
         feats_names.append(f"{signal_name}_shape_factor")
         # Number of mean-crossings
-        feats.extend(calculate_mean_crossing(signal))
+        feats.append(calculate_mean_crossing(signal))
         feats_names.append(f"{signal_name}_no._of_mean_crossings")
         # Impulse factor
         feats.extend(calculate_impulse_factor(signal))
@@ -277,11 +286,6 @@ def calculate_statistical_features(self, signal, signal_name):
         feats.append(first_diff[-1])  # Assuming we want the last first order difference
         feats_names.append(f"{signal_name}_first_order_difference")
 
-        # First Quartile
-        first_quartile = calculate_first_quartile(signal)
-        feats.append(first_quartile)
-        feats_names.append(f"{signal_name}_first_quartile")
-
         # Fisher Information
         fisher_info = calculate_fisher_information(signal)
         feats.append(fisher_info)
@@ -340,11 +344,6 @@ def calculate_statistical_features(self, signal, signal_name):
         feats.append(mean_abs_change)
         feats_names.append(f"{signal_name}_mean_absolute_change")
 
-        # Mean Crossings
-        mean_crossings = calculate_mean_crossings(signal)
-        feats.append(mean_crossings)
-        feats_names.append(f"{signal_name}_mean_crossings")
-
         # Mean Relative Change
         mean_rel_change = calculate_mean_relative_change(signal)
         feats.append(mean_rel_change)
@@ -399,12 +398,6 @@ def calculate_statistical_features(self, signal, signal_name):
         percentage_reoccurring_values = calculate_percentage_of_reoccurring_values_to_all_values(signal)
         feats.append(percentage_reoccurring_values)
         feats_names.append(f"{signal_name}_percentage_of_reoccurring_values_to_all_values")
-
-        # Percentile
-        percentiles = calculate_percentile(signal)
-        for i, perc in enumerate([25, 50, 75]):
-            feats.append(percentiles[i])
-            feats_names.append(f"{signal_name}_percentile_{perc}")
 
         # Ratio Beyond r Sigma
         rbs = calculate_ratio_beyond_r_sigma(signal)
@@ -479,11 +472,6 @@ def calculate_statistical_features(self, signal, signal_name):
         sum_reoccurring_values = calculate_sum_of_reoccurring_values(signal)
         feats.append(sum_reoccurring_values)
         feats_names.append(f"{signal_name}_sum_of_reoccurring_values")
-
-        # Third Quartile
-        third_quartile = calculate_third_quartile(signal)
-        feats.append(third_quartile)
-        feats_names.append(f"{signal_name}_third_quartile")
 
         # Variance of Absolute Differences
         variance_abs_diffs = calculate_variance_of_absolute_differences(signal)

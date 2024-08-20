@@ -547,6 +547,28 @@ def calculate_interquartile_range(signal):
             Bedeeuzzaman et al., 2012, DOI: 10.5120/6304-8614
         """
         return np.array([np.percentile(signal, 75) - np.percentile(signal, 25)])
+    
+def calculate_quantile(signal, q):
+    """
+    Calculate the quantile of the time series. The first and third quartiles are highlighted. 
+    
+    Parameters:
+    -----------
+        signal : np.array
+            The input time series
+        q : array of float
+            
+    Return:
+    -------
+    np.array
+        An array containing the quantile values of the signal
+    
+    Reference:
+    ----------
+    """
+    if len(signal) == 0:
+        return np.NaN
+    return np.quantile(signal, q)
 
 def calculate_mean_absolute_deviation(signal):
         """
@@ -733,7 +755,9 @@ def calculate_differential_entropy(signal):
 
     References:
     -----------
-        Zhu et al., 2021, https://doi.org/10.3389/FPHY.2020.629620/BIBTEX
+        - Zhu, Y., & Zhong, Q. (2021). Differential Entropy Feature Signal Extraction Based on 
+        Activation Mode and Its Recognition in Convolutional Gated Recurrent Unit Network. Frontiers 
+        in Physics, 8, 629620. https://doi.org/10.3389/FPHY.2020.629620/BIBTEX
     """
     probability, _ = np.histogram(signal, bins=10, density=True)
     probability = probability[probability > 0]
@@ -807,7 +831,8 @@ def calculate_renyi_entropy(signal, window_size, renyi_alpha_parameter):
 
     References:
     -----------
-    1. Beadle et al., 2008, DOI: 10.1109/ACSSC.2008.5074715
+        - Beadle, E., Schroeder, J., Moran, B., & Suvorova, S. (2008). An overview of renyi entropy and some potential applications. 
+        Conference Record - Asilomar Conference on Signals, Systems and Computers, 1698–1704. https://doi.org/10.1109/ACSSC.2008.5074715
     """
     try:
         # Calculate the histogram
@@ -886,8 +911,11 @@ def calculate_svd_entropy(signal, svd_entropy_order, svd_entropy_delay):
 
     References:
     -----------
-    1. Banerjee et al., 2014, DOI: 10.1016/j.ins.2013.12.029
-    2. Strydom et al., 2021, DOI: 10.3389/fevo.2021.623141
+        - Banerjee, M., & Pal, N. R. (2014). Feature selection with SVD entropy. Information Sciences—Informatics 
+        and Computer Science, Intelligent Systems, Applications: An International Journal, 264, 118–134. 
+        https://doi.org/10.1016/J.INS.2013.12.029
+        - Strydom, T., Dalla Riva, G. v., & Poisot, T. (2021). SVD Entropy Reveals the High Complexity of Ecological 
+        Networks. Frontiers in Ecology and Evolution, 9, 623141. https://doi.org/10.3389/FEVO.2021.623141/BIBTEX
     """
     try:
         order = svd_entropy_order
@@ -988,6 +1016,12 @@ def calculate_permutation_entropy(signal, window_size,permutation_entropy_order,
         entropy_value = np.nan
     return np.array([entropy_value])
 
+def calculate_binned_entropy(signal, bins):
+    hist = calculate_histogram_bin_frequencies(signal, bins)
+    probs = hist / len(signal)
+    probs[probs == 0] = 1.0
+    return -np.sum(probs * np.log(probs))
+
 def calculate_zero_crossings( signal):
         """
         Calculates the number of times the signal crosses zero
@@ -1003,7 +1037,7 @@ def calculate_zero_crossings( signal):
         
         References:
         ----------
-            -Myroniv, B., Wu, C.-W., Ren, Y., Christian, A., Bajo, E., & Tseng, 
+            - Myroniv, B., Wu, C.-W., Ren, Y., Christian, A., Bajo, E., & Tseng, 
             Y.-C. (2017). Analyzing User Emotions via Physiology Signals. https://www.researchgate.net/publication/323935725
             - Sharma, G., Umapathy, K., & Krishnan, S. (2020). Trends in audio signal feature extraction methods.
             Applied Acoustics, 158, 107020. https://doi.org/10.1016/J.APACOUST.2019.107020
@@ -1106,11 +1140,11 @@ def calculate_mean_crossing(signal):
     Reference:
     ----------
         -Myroniv, B., Wu, C.-W., Ren, Y., Christian, A., Bajo, E., & Tseng, 
-        Y.-C. (2017). Analyzing User Emotions via Physiology Signals. https://www.researchgate.net/publication/323935725
+        Y.-C. (2017). Analyzing User Emotions via Physiology Signals. 
+        https://www.researchgate.net/publication/323935725
     """
-    mean_value = np.mean(signal)
-    mean_crossings = np.where(np.diff(np.sign(signal - mean_value)))[0]
-    return np.array([len(mean_crossings)])
+    mean_val = np.mean(signal)
+    return np.sum(np.diff(signal > mean_val))
 
 def calculate_impulse_factor(signal):
     """
@@ -1611,6 +1645,22 @@ def calculate_count(signal):
 
 def calculate_count_above_mean(signal):
     """
+    Calculate the number of data points in the signal that are above the mean.
+
+    This function computes the mean of the signal and returns the count of elements
+    in the signal that are strictly greater than the mean value.
+    
+    Parameters:
+    ----------
+    signal : array-like
+        The input time series.
+    
+    Returns:
+    -------
+    int
+        The number of data points in the signal that are above the mean.
+
+
     Reference:
     ----------
         - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
@@ -1622,6 +1672,21 @@ def calculate_count_above_mean(signal):
 
 def calculate_count_below_mean(signal):
     """
+    Calculate the number of data points in the signal that are below the mean.
+
+    This function computes the mean of the signal and returns the count of elements
+    in the signal that are strictly less than the mean value.
+
+    Parameters:
+    ----------
+    signal : array-like
+        The input time series.
+        
+    Returns:
+    -------
+    int
+        The number of data points in the signal that are below the mean.
+        
     Reference:
     ----------
         - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
@@ -1901,20 +1966,6 @@ def calculate_first_order_difference(signal):
     """
     return np.diff(signal, n=1)
 
-def calculate_first_quartile(signal):
-    """
-    Returns the first quartile of the time series values
-
-    Parameter:
-    ---------
-    signal: 
-        The input time series
-
-    Returns:
-        _type_: _description_
-    """
-    return np.percentile(signal, 25)
-
 def calculate_fisher_information(signal):
     # https://www.researchgate.net/publication/311396939_Analysis_of_Signals_by_the_Fisher_Information_Measure
     variance = np.var(signal)
@@ -2164,11 +2215,6 @@ def calculate_mean_absolute_change(signal):
 def calculate_absolute_sum_of_changes(signal):
     return np.sum(np.diff(signal))
 
-def calculate_mean_crossings(signal):
-    # https://sensiml.com/documentation/pipeline-functions/feature-generators.html
-    mean_val = np.mean(signal)
-    return np.sum(np.diff(signal > mean_val))
-
 def calculate_mean_relative_change(signal):
     # https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/j.1365-2745.2007.01281.x
     return np.mean(np.abs(np.diff(signal) / signal[:-1]))
@@ -2239,9 +2285,6 @@ def calculate_percentage_of_reoccurring_values_to_all_values(signal):
     unique, counts = np.unique(signal, return_counts=True)
     return 100 * np.sum(counts[counts > 1]) / np.sum(counts)
     
-def calculate_percentile(signal, percentiles=[25, 50, 75]):
-    return np.percentile(signal, percentiles)
-
 def calculate_ratio_beyond_r_sigma(signal, r=2):
     # - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
     #         basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
@@ -2418,21 +2461,6 @@ def calculate_sum_of_reoccurring_data_points(signal):
     counts[counts < 2] = 0
     return np.sum(np.sum(counts * unique))
 
-
-def calculate_third_quartile(signal):
-    """
-    Returns the third quartile of the time series
-    
-    Parameter:
-    ----------
-    signal : array-like
-        The input time series
-        
-    Return:
-    -------
-    float
-    """
-    return np.percentile(signal, 75)
 
 def calculate_variance_of_absolute_differences(signal):
     """

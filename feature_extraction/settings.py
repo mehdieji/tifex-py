@@ -28,7 +28,8 @@ class StatisticalFeatures:
                 bins = [2,3,4,10,100],
                 count_below_or_above_x = 0,
                 cid_ce_normalize = [True, False],
-                hist_bins = 10
+                hist_bins = 10,
+                q = [0.1, 0.2, 0.25, 0.3, 0.4, 0.6, 0.7, 0.75, 0.8, 0.9]
                 ):
 
         self.window_size = window_size
@@ -52,6 +53,7 @@ class StatisticalFeatures:
         self.count_below_or_above_x = count_below_or_above_x
         self.cid_ce_normalize = cid_ce_normalize
         self.hist_bins = hist_bins
+        self.q = q
 
         if n_lags_auto_correlation is None:
             self.n_lags_auto_correlation = int(min(10 * np.log10(window_size), window_size - 1))

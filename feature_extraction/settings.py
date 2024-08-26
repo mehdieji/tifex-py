@@ -1,5 +1,6 @@
 import numpy as np
 from feature_extraction.extraction import calculate_statistical_features
+from feature_extraction.extraction import calculate_frequency_features
 
 
 class StatisticalFeatures:
@@ -76,3 +77,20 @@ class StatisticalFeatures:
             self.higuchi_k_values = list(higuchi_k_values)
             
     calculate_statistical_features = calculate_statistical_features
+    
+
+class SpectralFeatures:
+    def __init__(self,
+                fs,
+                f_bands,
+                n_dom_freqs=5,
+                cumulative_power_thresholds=None):
+        self.fs = fs
+        self.f_bands = f_bands
+        self.n_dom_freqs = n_dom_freqs
+        if cumulative_power_thresholds is None:
+            self.cumulative_power_thresholds = np.array([.5, .75, .85, .9, 0.95])
+        else:
+            self.cumulative_power_thresholds = cumulative_power_thresholds
+            
+    calculate_frequency_features = calculate_frequency_features

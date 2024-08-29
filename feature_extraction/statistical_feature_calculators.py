@@ -2543,7 +2543,10 @@ def calculate_zero_crossing_rate(signal):
     Reference:
     ---------
         Based on the implementation from the librosa library: 
-            https://librosa.org/doc/0.10.2/generated/librosa.feature.zero_crossing_rate.html#librosa-feature-zero-crossing-rate
+        - McFee, B., Matt McVicar, Daniel Faronbi, Iran Roman, Matan Gover, Stefan Balke, Scott Seyfarth, Ayoub Malek, 
+        Colin Raffel, Vincent Lostanlen, Benjamin van Niekirk, Dana Lee, Frank Cwitkowitz, Frank Zalkow, Oriol Nieto, 
+        Dan Ellis, Jack Mason, Kyungyun Lee, Bea Steers, … Waldir Pimenta. (2024). librosa/librosa: 0.10.2.post1 (0.10.2.post1). 
+        Zenodo. https://doi.org/10.5281/zenodo.11192913
     """
     zero_crossings = np.where(np.diff(np.signbit(signal)))[0]
     return len(zero_crossings) / len(signal)
@@ -2880,6 +2883,9 @@ def calculate_cid_ce(signal, normalize):
     - Batista, G. E. A. P. A., Wang, X., & Keogh, E. J. (2011). A complexity-invariant distance measure 
     for time series. Proceedings of the 11th SIAM International Conference on Data Mining, SDM 2011, 
     699–710. https://doi.org/10.1137/1.9781611972818.60
+    - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series Feature 
+    Extraction on basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 
+    307, 72–77. https://doi.org/10.1016/J.NEUCOM.2018.03.067
 
     Notes:
     -----

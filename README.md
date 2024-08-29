@@ -240,21 +240,23 @@ The return is a pd dataframe with columns: 'feature name', 'feature value gpu', 
 6. Spectral flatness
 7. Peak frequencies
 8. Spectral edge frequency
-8. Band power
-9. Spectral entropy
-10. Spectral contrast
-11. Spectral coefficient variation
-12. Spectral flux
-13. Spectral rolloff
-14. Harmonic ratio
-15. Fundamental frequency
-16. Spectral crest factor
-17. Spectral decrease
-18. Spectral irregularity
-19. Mean frequency
-20. Frequency winsorized mean
-21. Total harmonic distortion
-22. Inharmonicity
+9. Band power
+10. Spectral entropy
+11. Spectral contrast
+12. Spectral coefficient variation
+13. Spectral flux
+14. Spectral rolloff
+15. Harmonic ratio
+16. Fundamental frequency
+17. Spectral crest factor
+18. Spectral decrease
+19. Spectral irregularity
+20. Mean frequency
+21. Frequency winsorized mean
+22. Total harmonic distortion
+23. Inharmonicity
+
+
 23. Tristimulus
 24. Spectral rollon
 25. Spectral hole count

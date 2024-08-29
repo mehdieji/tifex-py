@@ -29,13 +29,14 @@ def calculate_spectral_centroid(freqs, magnitudes, order=1):
             
         Reference:
         ---------
-            Barandas et al., 2020, https://doi.org/10.1016/j.softx.2020.100456
+            - Barandas, M., Folgado, D., Fernandes, L., Santos, S., Abreu, M., Bota, P., Liu, H., Schultz, T., & Gamboa, H. (2020). 
+            TSFEL: Time Series Feature Extraction Library. SoftwareX, 11. https://doi.org/10.1016/j.softx.2020.100456
         """
                 
         spectral_centroid = np.sum(magnitudes * (freqs ** order)) / np.sum(magnitudes)
         return np.array([spectral_centroid])
 
-def calculate_spectral_variance(self, freqs, magnitudes):
+def calculate_spectral_variance(freqs, magnitudes):
         """
         Calculates the spectral variance (also known as spectral spread) of the given spectrum.
 
@@ -56,13 +57,14 @@ def calculate_spectral_variance(self, freqs, magnitudes):
         
         Reference:
         ---------
-            Barandas et al., 2020, https://doi.org/10.1016/j.softx.2020.100456
+            - Barandas, M., Folgado, D., Fernandes, L., Santos, S., Abreu, M., Bota, P., Liu, H., Schultz, T., & Gamboa, H. (2020). 
+            TSFEL: Time Series Feature Extraction Library. SoftwareX, 11. https://doi.org/10.1016/j.softx.2020.100456
         """
-        mean_frequency = self.calculate_spectral_centroid(freqs, magnitudes)
+        mean_frequency = calculate_spectral_centroid(freqs, magnitudes)
         spectral_variance = np.sum(((freqs - mean_frequency) ** 2) * magnitudes) / np.sum(magnitudes)
         return np.array([spectral_variance])
 
-def calculate_spectral_skewness(self, freqs, magnitudes):
+def calculate_spectral_skewness(freqs, magnitudes):
         """
         Calculates the spectral skewness of the given spectrum.
 
@@ -84,14 +86,15 @@ def calculate_spectral_skewness(self, freqs, magnitudes):
         
         Reference:
         ---------
-            Barandas et al., 2020, https://doi.org/10.1016/j.softx.2020.100456
+            - Barandas, M., Folgado, D., Fernandes, L., Santos, S., Abreu, M., Bota, P., Liu, H., Schultz, T., & Gamboa, H. (2020). 
+            TSFEL: Time Series Feature Extraction Library. SoftwareX, 11. https://doi.org/10.1016/j.softx.2020.100456
         """
-        mu1 = self.calculate_spectral_centroid(freqs, magnitudes, order=1)
-        mu2 = self.calculate_spectral_centroid(freqs, magnitudes, order=2)
+        mu1 = calculate_spectral_centroid(freqs, magnitudes, order=1)
+        mu2 = calculate_spectral_centroid(freqs, magnitudes, order=2)
         spectral_skewness = np.sum(magnitudes * (freqs - mu1) ** 3) / (np.sum(magnitudes) * mu2 ** 3)
         return spectral_skewness
 
-def calculate_spectral_kurtosis(self, freqs, magnitudes):
+def calculate_spectral_kurtosis(freqs, magnitudes):
         """
         Calculate the spectral kurtosis of the given spectrum.
 
@@ -113,14 +116,15 @@ def calculate_spectral_kurtosis(self, freqs, magnitudes):
         
         Reference:
         ---------
-            Barandas et al., 2020, https://doi.org/10.1016/j.softx.2020.100456
+            - Barandas, M., Folgado, D., Fernandes, L., Santos, S., Abreu, M., Bota, P., Liu, H., Schultz, T., & Gamboa, H. (2020). 
+            TSFEL: Time Series Feature Extraction Library. SoftwareX, 11. https://doi.org/10.1016/j.softx.2020.100456
         """
-        mu1 = self.calculate_spectral_centroid(freqs, magnitudes, order=1)
-        mu2 = self.calculate_spectral_centroid(freqs, magnitudes, order=2)
+        mu1 = calculate_spectral_centroid(freqs, magnitudes, order=1)
+        mu2 = calculate_spectral_centroid(freqs, magnitudes, order=2)
         spectral_kurtosis = np.sum(magnitudes * (freqs - mu1) ** 4) / (np.sum(magnitudes) * mu2 ** 4)
         return spectral_kurtosis
 
-def calculate_median_frequency(self, freqs, psd):
+def calculate_median_frequency(freqs, psd):
         """
         Calculate the cumulative distribution function (CDF) of the PSD
 
@@ -138,13 +142,16 @@ def calculate_median_frequency(self, freqs, psd):
             
         Reference:
         ---------
-            Chung et al., 2008, https://doi.org/10.1109/iembs.2008.4649357
+            - Chung, W. Y., Purwar, A., & Sharma, A. (2008). Frequency domain approach for activity classification 
+            using accelerometer. Proceedings of the 30th Annual International Conference of the IEEE Engineering in 
+            Medicine and Biology Society, EMBS’08 - “Personalized Healthcare through Technology,” 1120–1123. 
+            https://doi.org/10.1109/IEMBS.2008.4649357
         """
         cdf = np.cumsum(psd)
         median_freq = freqs[np.searchsorted(cdf, cdf[-1] / 2)]
         return np.array([median_freq])
 
-def calculate_spectral_flatness(self, magnitudes):
+def calculate_spectral_flatness(magnitudes):
         """
         Calculate the spectral flatness of a given spectrum.
 
@@ -168,7 +175,7 @@ def calculate_spectral_flatness(self, magnitudes):
         spectral_flatness = np.exp(np.mean(np.log(magnitudes))) / np.mean(magnitudes)
         return np.array([spectral_flatness])
 
-def calculate_spectral_slope_logarithmic(self, freqs, magnitudes):
+def calculate_spectral_slope_logarithmic(freqs, magnitudes):
         """
         Calculate the logarithmic spectral slope of the given spectrum.
 
@@ -189,12 +196,13 @@ def calculate_spectral_slope_logarithmic(self, freqs, magnitudes):
 
         Reference:
         ---------
-            Barandas et al., 2020, https://doi.org/10.1016/j.softx.2020.100456
+            - Barandas, M., Folgado, D., Fernandes, L., Santos, S., Abreu, M., Bota, P., Liu, H., Schultz, T., & Gamboa, H. (2020). 
+            TSFEL: Time Series Feature Extraction Library. SoftwareX, 11. https://doi.org/10.1016/j.softx.2020.100456
         """
         slope = np.polyfit(freqs, np.log(magnitudes), 1)[0]
         return np.array([slope])
 
-def calculate_spectral_slope_linear(self, freqs, magnitudes):
+def calculate_spectral_slope_linear(freqs, magnitudes):
         """
         Calculate the spectral slope of a signal given its frequencies and magnitudes.
 
@@ -216,12 +224,13 @@ def calculate_spectral_slope_linear(self, freqs, magnitudes):
             
         Reference:
         ---------
-            Barandas et al., 2020, https://doi.org/10.1016/j.softx.2020.100456
+            Barandas, M., Folgado, D., Fernandes, L., Santos, S., Abreu, M., Bota, P., Liu, H., Schultz, T., & Gamboa, H. (2020). 
+            TSFEL: Time Series Feature Extraction Library. SoftwareX, 11. https://doi.org/10.1016/j.softx.2020.100456
         """
         slope = np.polyfit(freqs, magnitudes, 1)[0]
         return np.array([slope])
 
-def calculate_peak_frequencies(self, freqs, psd):
+def calculate_peak_frequencies(freqs, psd, n_dom_freqs):
         """
         Identifies the peak frequencies from the given Power Spectral Density (PSD) values.
 
@@ -241,10 +250,10 @@ def calculate_peak_frequencies(self, freqs, psd):
         ---------
             Murthy et al., 1971, https://doi.org/10.1016/0025-5564(71)90072-1
         """
-        peak_frequencies = freqs[np.argsort(psd)[-self.n_dom_freqs:][::-1]]
+        peak_frequencies = freqs[np.argsort(psd)[-n_dom_freqs:][::-1]]
         return np.array(peak_frequencies)
 
-def calculate_spectral_edge_frequency(self, freqs, psd):
+def calculate_spectral_edge_frequency(freqs, psd, cumulative_power_thresholds):
         """
         Calculate the spectral edge frequencies for given cumulative power thresholds.
 
@@ -272,11 +281,11 @@ def calculate_spectral_edge_frequency(self, freqs, psd):
         # A special case would be roll-off frequency (threshold = .85)
         feats = []
         cumulative_power = np.cumsum(psd) / np.sum(psd)
-        for threshold in self.cumulative_power_thresholds:
+        for threshold in cumulative_power_thresholds:
             feats.append(freqs[np.argmax(cumulative_power >= threshold)])
         return np.array(feats)
 
-def calculate_band_power(self, freqs, psd):
+def calculate_band_power(freqs, psd, f_bands):
         """
         Calculates the total power, band absolute powers and band relative powers in specified frequency bands.
         
@@ -306,7 +315,7 @@ def calculate_band_power(self, freqs, psd):
         except:
             feats.append(np.nan)
         # Calculate band absolute and relative power
-        for f_band in self.f_bands:
+        for f_band in f_bands:
             try:
                 # Keeping the frequencies within the band
                 idx_band = np.logical_and(freqs >= f_band[0], freqs < f_band[1])
@@ -318,7 +327,7 @@ def calculate_band_power(self, freqs, psd):
                 feats.extend([np.nan, np.nan])
         return np.array(feats)
 
-def calculate_spectral_entropy(self, psd):
+def calculate_spectral_entropy(psd):
         """
         Calculate the spectral entropy of a Power Spectral Density (PSD) array.
 
@@ -348,7 +357,7 @@ def calculate_spectral_entropy(self, psd):
             spectral_entropy = np.nan
         return np.array([spectral_entropy])
 
-def calculate_spectral_contrast(self, freqs, psd):
+def calculate_spectral_contrast(freqs, psd, f_bands):
         """
         Calculate the spectral contrast of a Power Spectral Density (PSD) array.
 
@@ -372,7 +381,7 @@ def calculate_spectral_contrast(self, freqs, psd):
             McFee et al., 2024, https://zenodo.org/badge/latestdoi/6309729
         """
         feats = []
-        for f_band in self.f_bands:
+        for f_band in f_bands:
             try:
                 idx_band = np.logical_and(freqs >= f_band[0], freqs < f_band[1])
                 peak = np.max(psd[idx_band])
@@ -383,7 +392,7 @@ def calculate_spectral_contrast(self, freqs, psd):
                 feats.append(np.nan)
         return np.array(feats)
 
-def calculate_spectral_bandwidth(self, freqs, magnitudes, order):
+def calculate_spectral_bandwidth(freqs, magnitudes, order):
         """
         Calculate the spectral bandwidth of a given frequency spectrum.
         
@@ -417,11 +426,11 @@ def calculate_spectral_bandwidth(self, freqs, magnitudes, order):
             - Librosa Library Documentation: https://zenodo.org/badge/latestdoi/6309729
         """
         normalized_magnitudes = magnitudes / np.sum(magnitudes)
-        mean_frequency = self.calculate_spectral_centroid(freqs, magnitudes)
+        mean_frequency = calculate_spectral_centroid(freqs, magnitudes)
         spectral_bandwidth = ((np.sum(((freqs - mean_frequency) ** order) * normalized_magnitudes)) ** (1 / order))
         return np.array([spectral_bandwidth])
 
-def calculate_spectral_absolute_deviation(self, freqs, magnitudes, order=1):
+def calculate_spectral_absolute_deviation(freqs, magnitudes, order=1):
         """
         Calculate the spectral absolute deviation of a given frequency spectrum.
 
@@ -453,11 +462,11 @@ def calculate_spectral_absolute_deviation(self, freqs, magnitudes, order=1):
         """
         # The even order spectral absolute deviation is the same as spectral bandwidth of the same order
         normalized_magnitudes = magnitudes / np.sum(magnitudes)
-        mean_frequency = self.calculate_spectral_centroid(freqs, magnitudes)
+        mean_frequency = calculate_spectral_centroid(freqs, magnitudes)
         spectral_absolute_deviation = ((np.sum((np.abs(freqs - mean_frequency) ** order) * normalized_magnitudes)) ** (1 / order))
         return np.array([spectral_absolute_deviation])
 
-def calculate_spectral_cov(self, freqs, magnitudes):
+def calculate_spectral_cov(freqs, magnitudes):
         """
         Calculate the spectral coefficient of variation (CoV) for a given frequency spectrum.
 
@@ -487,55 +496,55 @@ def calculate_spectral_cov(self, freqs, magnitudes):
             neural digital signal processing. Journal of Open Source Software, 4(36), 1272. 
             https://doi.org/10.21105/JOSS.01272
         """
-        mean_frequency = self.calculate_spectral_centroid(freqs, magnitudes)
-        frequency_std = self.calculate_spectral_bandwidth(freqs, magnitudes, 2)
+        mean_frequency = calculate_spectral_centroid(freqs, magnitudes)
+        frequency_std = calculate_spectral_bandwidth(freqs, magnitudes, 2)
         coefficient_of_variation = (frequency_std / mean_frequency) * 100
         return coefficient_of_variation
 
-def calculate_spectral_flux(self, magnitudes, order=2):
+def calculate_spectral_flux(magnitudes, order=2):
         # https://doi.org/10.1016/B978-0-08-099388-1.00004-2
         spectral_flux = (np.sum(np.abs(np.diff(magnitudes)) ** order)) ** (1 / order)
         return np.array([spectral_flux])
     
-def calculate_spectral_rolloff(self, freqs, magnitudes, roll_percent=0.85):
+def calculate_spectral_rolloff(freqs, magnitudes, roll_percent=0.85):
         # https://doi.org/10.1016/j.softx.2020.100456
         cumulative_magnitudes = np.cumsum(magnitudes)
         rolloff_frequency = np.min(freqs[np.where(cumulative_magnitudes >= roll_percent * cumulative_magnitudes[-1])])
         return np.array([rolloff_frequency])
 
-def calculate_harmonic_ratio(self, signal):
+def calculate_harmonic_ratio(signal):
         # https://www.mathworks.com/help/audio/ref/harmonicratio.html
         harmonic_ratio = librosa.effects.harmonic(signal).mean()
         return np.array([harmonic_ratio])
 
-def calculate_fundamental_frequency(self, signal):
+def calculate_fundamental_frequency(signal):
         # https://doi.org/10.1121%2F1.4740482
         f0 = librosa.yin(signal, fmin=librosa.note_to_hz('C1'), fmax=librosa.note_to_hz('C8'))
         return np.array([np.mean(f0)])
 
-def calculate_spectral_crest_factor(self, magnitudes):
+def calculate_spectral_crest_factor(magnitudes):
         # https://www.mathworks.com/help/signal/ref/spectralcrest.html#d126e220002
         crest_factor = np.max(magnitudes) / np.mean(magnitudes)
         return np.array([crest_factor])
 
-def calculate_spectral_decrease(self, freqs, magnitudes):
+def calculate_spectral_decrease(freqs, magnitudes):
         # https://doi.org/10.1016/j.softx.2020.100456
         k = np.arange(1, len(magnitudes) + 1)
         spectral_decrease = np.sum((magnitudes[1:] - magnitudes[0]) / k[1:])
         return np.array([spectral_decrease])
 
-def calculate_spectral_irregularity(self, magnitudes):
+def calculate_spectral_irregularity(magnitudes):
         # https://docs.twoears.eu/en/latest/afe/available-processors/spectral-features/
         # https://doi.org/10.1109/ICASSP.2004.1325955
         irregularity = np.sum(np.abs(magnitudes[1:] - magnitudes[:-1])) / (len(magnitudes) - 1)
         return np.array([irregularity])
 
-def calculate_mean_frequency(self, freqs, magnitudes):
+def calculate_mean_frequency(freqs, magnitudes):
         # https://www.mathworks.com/help/signal/ref/meanfreq.html
         mean_freq = np.sum(freqs * magnitudes) / np.sum(magnitudes)
         return np.array([mean_freq])
 
-def calculate_frequency_winsorized_mean(self, freqs, magnitudes, limits=(0.05, 0.95)):
+def calculate_frequency_winsorized_mean(freqs, magnitudes, limits=(0.05, 0.95)):
         # https://doi.org/10.1007/978-94-010-0231-8_13
         sorted_indices = np.argsort(magnitudes)
         lower_limit = int(limits[0] * len(magnitudes))
@@ -544,26 +553,36 @@ def calculate_frequency_winsorized_mean(self, freqs, magnitudes, limits=(0.05, 0
         winsorized_mean = np.mean(freqs[trimmed_indices])
         return np.array([winsorized_mean])
 
-def calculate_total_harmonic_distortion(self, signal, harmonics=5):
+def calculate_total_harmonic_distortion(signal, fs, harmonics=5):
         # 10.1109/TCOMM.2011.061511.100749
         # https://zenodo.org/badge/latestdoi/6309729
         f0 = librosa.yin(signal, fmin=librosa.note_to_hz('C1'), fmax=librosa.note_to_hz('C8'))
         fundamental_freq = np.mean(f0)
         harmonic_frequencies = [(i+1) * fundamental_freq for i in range(harmonics)]
-        harmonic_power = sum([np.sum(np.abs(np.fft.rfft(signal * np.sin(2 * np.pi * harmonic_freq * np.arange(len(signal)) / self.fs)))) for harmonic_freq in harmonic_frequencies])
+        harmonic_power = sum([np.sum(np.abs(np.fft.rfft(signal * np.sin(2 * np.pi * harmonic_freq * np.arange(len(signal)) / fs)))) for harmonic_freq in harmonic_frequencies])
         total_power = np.sum(np.abs(np.fft.rfft(signal))**2)
         thd = harmonic_power / total_power
         return np.array([thd])
 
-    #def calculate_inharmonicity(self, signal):
-        # https://zenodo.org/badge/latestdoi/6309729
-    #     f0 = librosa.yin(signal, fmin=librosa.note_to_hz('C1'), fmax=librosa.note_to_hz('C8'))
-    #     fundamental_freq = np.mean(f0)
-    #     harmonics = [(i+1) * fundamental_freq for i in range(1, int(self.fs/(2*fundamental_freq)))]
-    #     inharmonicity = sum([np.abs(harmonic - fundamental_freq * (i+1)) for i, harmonic in enumerate(harmonics)]) / len(harmonics)
-    #     return np.array([inharmonicity])
+def calculate_inharmonicity(signal, fs):
+    """
+    Reference:
+    ----------
+        - McFee, B., Matt McVicar, Daniel Faronbi, Iran Roman, Matan Gover, Stefan Balke, Scott Seyfarth, Ayoub Malek, 
+        Colin Raffel, Vincent Lostanlen, Benjamin van Niekirk, Dana Lee, Frank Cwitkowitz, Frank Zalkow, Oriol Nieto, 
+        Dan Ellis, Jack Mason, Kyungyun Lee, Bea Steers, … Waldir Pimenta. (2024). librosa/librosa: 0.10.2.post1 (0.10.2.post1). 
+        Zenodo. https://doi.org/10.5281/zenodo.11192913
+    """
+    try:
+        f0 = librosa.yin(signal, fmin=librosa.note_to_hz('C1'), fmax=librosa.note_to_hz('C8'))
+        fundamental_freq = np.mean(f0)
+        harmonics = [(i+1) * fundamental_freq for i in range(1, int(fs/(2*fundamental_freq)))]
+        inharmonicity = sum([np.abs(harmonic - fundamental_freq * (i+1)) for i, harmonic in enumerate(harmonics)]) / len(harmonics)
+    except ZeroDivisionError:
+        inharmonicity = np.nan
+    return np.array([inharmonicity])
 
-def calculate_tristimulus(self, magnitudes):
+def calculate_tristimulus(magnitudes):
         # https://zenodo.org/badge/latestdoi/6309729
         if len(magnitudes) < 3:
             return np.array([np.nan, np.nan, np.nan])
@@ -572,56 +591,56 @@ def calculate_tristimulus(self, magnitudes):
         t3 = np.sum(magnitudes[2:]) / np.sum(magnitudes)
         return np.array([t1, t2, t3])
 
-def calculate_spectral_rollon(self, freqs, magnitudes, roll_percent=0.85):
+def calculate_spectral_rollon(freqs, magnitudes, roll_percent=0.85):
         # https://doi.org/10.1016/j.softx.2020.100456
         cumulative_magnitudes = np.cumsum(magnitudes)
         rollon_frequency = np.min(freqs[np.where(cumulative_magnitudes >= roll_percent * cumulative_magnitudes[-1])])
         return np.array([rollon_frequency])
 
-def calculate_spectral_hole_count(self, magnitudes, threshold=0.05):
+def calculate_spectral_hole_count(magnitudes, threshold=0.05):
         # https://doi.org/10.1103/PhysRevA.104.063111
         peaks, _ = find_peaks(magnitudes, height=threshold)
         dips, _ = find_peaks(-magnitudes, height=-threshold)
         return np.array([len(dips)])
 
-def calculate_spectral_autocorrelation(self, magnitudes):
+def calculate_spectral_autocorrelation(magnitudes):
         # https://doi.org/10.48550/arXiv.1702.00105
         autocorrelation = np.correlate(magnitudes, magnitudes, mode='full')
         return autocorrelation[autocorrelation.size // 2:]
 
-def calculate_spectral_variability(self, magnitudes):
+def calculate_spectral_variability(magnitudes):
         # https://doi.org/10.1016/j.dsp.2015.10.011
         variability = np.var(magnitudes)
         return np.array([variability])
 
-def calculate_spectral_spread_ratio(self, freqs, magnitudes, reference_value=1.0):
+def calculate_spectral_spread_ratio(freqs, magnitudes, reference_value=1.0):
         # https://doi.org/10.1016/j.softx.2020.100456
         spread = np.sqrt(np.sum((freqs - np.mean(freqs))**2 * magnitudes) / np.sum(magnitudes))
         spread_ratio = spread / reference_value
         return np.array([spread_ratio])
 
-def calculate_spectral_skewness_ratio(self, freqs, magnitudes, reference_value=1.0):
+def calculate_spectral_skewness_ratio(freqs, magnitudes, reference_value=1.0):
         # https://doi.org/10.1016/j.softx.2020.100456
         mean_freq = np.mean(freqs)
         skewness = np.sum((freqs - mean_freq)**3 * magnitudes) / (len(freqs) * (np.std(freqs)**3))
         skewness_ratio = skewness / reference_value
         return np.array([skewness_ratio])
 
-def calculate_spectral_kurtosis_ratio(self, freqs, magnitudes, reference_value=1.0):
+def calculate_spectral_kurtosis_ratio(freqs, magnitudes, reference_value=1.0):
         # https://doi.org/10.1016/j.softx.2020.100456
         mean_freq = np.mean(freqs)
         kurtosis = np.sum((freqs - mean_freq)**4 * magnitudes) / (len(freqs) * (np.std(freqs)**4)) - 3
         kurtosis_ratio = kurtosis / reference_value
         return np.array([kurtosis_ratio])
 
-def calculate_spectral_tonal_power_ratio(self, signal):
+def calculate_spectral_tonal_power_ratio(signal):
         # https://zenodo.org/badge/latestdoi/6309729
         harmonic_power = np.sum(librosa.effects.harmonic(signal)**2)
         total_power = np.sum(signal**2)
         tonal_power_ratio = harmonic_power / total_power
         return np.array([tonal_power_ratio])
 
-def calculate_spectral_noise_to_harmonics_ratio(self, signal):
+def calculate_spectral_noise_to_harmonics_ratio(signal):
         # https://zenodo.org/badge/latestdoi/6309729
         harmonic_part = librosa.effects.harmonic(signal)
         noise_part = signal - harmonic_part
@@ -630,75 +649,75 @@ def calculate_spectral_noise_to_harmonics_ratio(self, signal):
         noise_to_harmonics_ratio = noise_energy / harmonic_energy
         return np.array([noise_to_harmonics_ratio])
 
-    #def calculate_spectral_even_to_odd_harmonic_energy_ratio(self, signal):
+    #def calculate_spectral_even_to_odd_harmonic_energy_ratio(signal):
         # https://zenodo.org/badge/latestdoi/6309729
     #     f0 = librosa.yin(signal, fmin=librosa.note_to_hz('C1'), fmax=librosa.note_to_hz('C8'))
     #     fundamental_freq = np.mean(f0)
-    #     even_harmonics = [(2 * i + 2) * fundamental_freq for i in range(int(self.fs / (2 * fundamental_freq)))]
-    #     odd_harmonics = [(2 * i + 1) * fundamental_freq for i in range(int(self.fs / (2 * fundamental_freq)))]
+    #     even_harmonics = [(2 * i + 2) * fundamental_freq for i in range(int(fs / (2 * fundamental_freq)))]
+    #     odd_harmonics = [(2 * i + 1) * fundamental_freq for i in range(int(fs / (2 * fundamental_freq)))]
     #     even_energy = sum([np.sum(np.abs(np.fft.rfft(signal * np.sin(2 * np.pi * harmonic * np.arange(len(signal)) / self.fs)))) for harmonic in even_harmonics])
     #     odd_energy = sum([np.sum(np.abs(np.fft.rfft(signal * np.sin(2 * np.pi * harmonic * np.arange(len(signal)) / self.fs)))) for harmonic in odd_harmonics])
     #     even_to_odd_ratio = even_energy / odd_energy
     #     return np.array([even_to_odd_ratio])
 
-def calculate_spectral_strongest_frequency_phase(self, freqs, spectrum):
+def calculate_spectral_strongest_frequency_phase(freqs, spectrum):
         # https://mriquestions.com/phase-v-frequency.html
         strongest_frequency_index = np.argmax(np.abs(spectrum))
         phase = np.angle(spectrum[strongest_frequency_index])
         return np.array([phase])
 
-def calculate_spectral_frequency_below_peak(self, freqs, magnitudes):
+def calculate_spectral_frequency_below_peak(freqs, magnitudes):
         # https://doi.org/10.1016/B978-012437552-9/50003-9
         peak_index = np.argmax(magnitudes)
         frequency_below_peak = freqs[max(0, peak_index - 1)]
         return np.array([frequency_below_peak])
 
-def calculate_spectral_frequency_above_peak(self, freqs, magnitudes):
+def calculate_spectral_frequency_above_peak(freqs, magnitudes):
         # https://doi.org/10.1016/B978-012437552-9/50003-9
         peak_index = np.argmax(magnitudes)
         frequency_above_peak = freqs[min(len(freqs) - 1, peak_index + 1)]
         return np.array([frequency_above_peak])
 
-def calculate_spectral_cumulative_frequency(self, freqs, magnitudes, threshold):
+def calculate_spectral_cumulative_frequency(freqs, magnitudes, threshold):
         # https://doi.org/10.48550/arXiv.0901.3708
         cumulative_power = np.cumsum(magnitudes) / np.sum(magnitudes)
         frequency = freqs[np.where(cumulative_power >= threshold)[0][0]]
         return np.array([frequency])
 
-def calculate_spectral_cumulative_frequency_above(self, freqs, magnitudes, threshold):
+def calculate_spectral_cumulative_frequency_above(freqs, magnitudes, threshold):
         # https://doi.org/10.48550/arXiv.0901.3708
         cumulative_power = np.cumsum(magnitudes) / np.sum(magnitudes)
         frequency = freqs[np.where(cumulative_power <= threshold)[-1][-1]]
         return np.array([frequency])
 
-def calculate_spectral_spread_shift(self, freqs, magnitudes):
+def calculate_spectral_spread_shift(freqs, magnitudes):
         # https://docs.twoears.eu/en/latest/afe/available-processors/spectral-features/
         mean_frequency = np.sum(freqs * magnitudes) / np.sum(magnitudes)
         spread = np.sqrt(np.sum((freqs - mean_frequency) ** 2 * magnitudes) / np.sum(magnitudes))
         return np.array([spread])
 
-def calculate_spectral_entropy_shift(self, magnitudes):
+def calculate_spectral_entropy_shift(magnitudes):
         # https://doi.org/10.3390/buildings12030310
         psd_norm = magnitudes / np.sum(magnitudes)
         entropy = -np.sum(psd_norm * np.log2(psd_norm))
         return np.array([entropy])
 
-def calculate_spectral_change_vector_magnitude(self, magnitudes):
+def calculate_spectral_change_vector_magnitude(magnitudes):
         # https://doi.org/10.3390/rs3112473
         change_vector_magnitude = np.linalg.norm(np.diff(magnitudes))
         return np.array([change_vector_magnitude])
 
-def calculate_spectral_low_frequency_content(self, freqs, magnitudes, low_freq_threshold=300):
+def calculate_spectral_low_frequency_content(freqs, magnitudes, low_freq_threshold=300):
         # https://resources.pcb.cadence.com/blog/2022-an-overview-of-frequency-bands-and-their-applications
         low_freq_content = np.sum(magnitudes[freqs < low_freq_threshold])
         return np.array([low_freq_content])
 
-def calculate_spectral_mid_frequency_content(self, freqs, magnitudes, mid_freq_range=(300, 3000)):
+def calculate_spectral_mid_frequency_content(freqs, magnitudes, mid_freq_range=(300, 3000)):
         # https://resources.pcb.cadence.com/blog/2022-an-overview-of-frequency-bands-and-their-applications
         mid_freq_content = np.sum(magnitudes[(freqs >= mid_freq_range[0]) & (freqs <= mid_freq_range[1])])
         return np.array([mid_freq_content])
 
-def calculate_spectral_peak_to_valley_ratio(self, magnitudes):
+def calculate_spectral_peak_to_valley_ratio(magnitudes):
         # https://doi.org/10.3389/fpsyg.2022.994047
         # https://openlab.help.agilent.com/en/index.htm#t=mergedProjects/DataAnalysis/27021601168830603.htm
         peaks, _ = find_peaks(magnitudes)
@@ -708,7 +727,7 @@ def calculate_spectral_peak_to_valley_ratio(self, magnitudes):
         peak_to_valley_ratio = np.max(magnitudes[peaks]) / np.min(magnitudes[valleys])
         return np.array([peak_to_valley_ratio])
 
-def calculate_spectral_valley_depth_mean(self, magnitudes):
+def calculate_spectral_valley_depth_mean(magnitudes):
         # https://doi.org/10.48550/arXiv.1506.04828
         valleys, _ = find_peaks(-magnitudes)
         if len(valleys) == 0:
@@ -716,7 +735,7 @@ def calculate_spectral_valley_depth_mean(self, magnitudes):
         valley_depth_mean = np.mean(magnitudes[valleys])
         return np.array([valley_depth_mean])
 
-def calculate_spectral_valley_depth_std(self, magnitudes):
+def calculate_spectral_valley_depth_std(magnitudes):
         # https://doi.org/10.48550/arXiv.1506.04828
         valleys, _ = find_peaks(-magnitudes)
         if len(valleys) == 0:
@@ -724,7 +743,7 @@ def calculate_spectral_valley_depth_std(self, magnitudes):
         valley_depth_std = np.std(magnitudes[valleys])
         return np.array([valley_depth_std])
 
-def calculate_spectral_valley_depth_variance(self, magnitudes):
+def calculate_spectral_valley_depth_variance(magnitudes):
         # https://doi.org/10.48550/arXiv.1506.04828
         valleys, _ = find_peaks(-magnitudes)
         if len(valleys) == 0:
@@ -732,7 +751,7 @@ def calculate_spectral_valley_depth_variance(self, magnitudes):
         valley_depth_variance = np.var(magnitudes[valleys])
         return np.array([valley_depth_variance])
 
-def calculate_spectral_valley_width_mode(self, magnitudes):
+def calculate_spectral_valley_width_mode(magnitudes):
         # https://doi.org/10.48550/arXiv.1506.04828
         valleys, _ = find_peaks(-magnitudes)
         if len(valleys) < 2:
@@ -742,7 +761,7 @@ def calculate_spectral_valley_width_mode(self, magnitudes):
         valley_width_mode = mode(valley_widths)[0]
         return np.array([valley_width_mode])
 
-def calculate_spectral_valley_width_std(self, magnitudes):
+def calculate_spectral_valley_width_std(magnitudes):
         # https://doi.org/10.48550/arXiv.1506.04828
         valleys, _ = find_peaks(-magnitudes)
         if len(valleys) < 2:
@@ -751,7 +770,7 @@ def calculate_spectral_valley_width_std(self, magnitudes):
         valley_width_std = np.std(valley_widths)
         return np.array([valley_width_std])
 
-def calculate_spectral_subdominant_valley(self, magnitudes):
+def calculate_spectral_subdominant_valley(magnitudes):
         valleys, _ = find_peaks(-magnitudes)
         if len(valleys) < 2:
             return np.array([np.nan])
@@ -759,12 +778,12 @@ def calculate_spectral_subdominant_valley(self, magnitudes):
         subdominant_valley = sorted_valleys[-2] if len(sorted_valleys) >= 2 else np.nan
         return np.array([subdominant_valley])
 
-def calculate_spectral_valley_count(self, magnitudes):
+def calculate_spectral_valley_count(magnitudes):
         # https://doi.org/10.48550/arXiv.1506.04828
         valleys, _ = find_peaks(-magnitudes)
         return np.array([len(valleys)])
 
-def calculate_spectral_peak_broadness(self, freqs, magnitudes):
+def calculate_spectral_peak_broadness(freqs, magnitudes):
         # https://terpconnect.umd.edu/~toh/spectrum/PeakFindingandMeasurement.htm
         peaks, _ = find_peaks(magnitudes)
         if len(peaks) < 2:
@@ -773,7 +792,7 @@ def calculate_spectral_peak_broadness(self, freqs, magnitudes):
         peak_broadness = np.mean(peak_widths)
         return np.array([peak_broadness])
 
-def calculate_spectral_valley_broadness(self, freqs, magnitudes):
+def calculate_spectral_valley_broadness(freqs, magnitudes):
         # https://doi.org/10.48550/arXiv.1506.04828
         valleys, _ = find_peaks(-magnitudes)
         if len(valleys) < 2:
@@ -782,25 +801,25 @@ def calculate_spectral_valley_broadness(self, freqs, magnitudes):
         valley_broadness = np.mean(valley_widths)
         return np.array([valley_broadness])
 
-def calculate_frequency_variance(self, freqs, magnitudes):
+def calculate_frequency_variance(freqs, magnitudes):
         # https://doi.org/10.1016/B978-0-12-811153-6.00003-8
         mean_freq = np.sum(freqs * magnitudes) / np.sum(magnitudes)
         variance = np.sum(((freqs - mean_freq) ** 2) * magnitudes) / np.sum(magnitudes)
         return np.array([variance])
 
-def calculate_frequency_std(self, freqs, magnitudes):
+def calculate_frequency_std(freqs, magnitudes):
         # https://doi.org/10.1016/B978-0-12-811153-6.00003-8
         mean_freq = np.sum(freqs * magnitudes) / np.sum(magnitudes)
         variance = np.sum(((freqs - mean_freq) ** 2) * magnitudes) / np.sum(magnitudes)
         std_dev = np.sqrt(variance)
         return np.array([std_dev])
 
-def calculate_frequency_range(self, freqs):
+def calculate_frequency_range(freqs):
         # https://doi.org/10.1016/B978-0-12-811153-6.00003-8
         freq_range = np.max(freqs) - np.min(freqs)
         return np.array([freq_range])
 
-def calculate_frequency_trimmed_mean(self, freqs, magnitudes, trim_percent=0.1):
+def calculate_frequency_trimmed_mean(freqs, magnitudes, trim_percent=0.1):
         # https://doi.org/10.1016/B978-0-12-811153-6.00003-8
         sorted_indices = np.argsort(magnitudes)
         lower_limit = int(trim_percent * len(magnitudes))
@@ -809,7 +828,7 @@ def calculate_frequency_trimmed_mean(self, freqs, magnitudes, trim_percent=0.1):
         trimmed_mean = np.mean(freqs[trimmed_indices])
         return np.array([trimmed_mean])
     
-def calculate_harmonic_product_spectrum(self, magnitudes):
+def calculate_harmonic_product_spectrum(magnitudes):
         # 10.1109/MHS.2018.8886911
         hps = np.copy(magnitudes)
         for h in range(2, 5):
@@ -817,12 +836,12 @@ def calculate_harmonic_product_spectrum(self, magnitudes):
             hps[:len(decimated)] *= decimated
         return np.array([np.sum(hps)])
 
-def calculate_smoothness(self, magnitudes):
+def calculate_smoothness(magnitudes):
         # https://doi.org/10.3390/rs13163196
         smoothness = np.sum(np.diff(magnitudes)**2)
         return np.array([smoothness])
 
-def calculate_roughness(self, magnitudes):
+def calculate_roughness(magnitudes):
         roughness = np.sum(np.abs(np.diff(magnitudes)))
         return np.array([roughness])
     

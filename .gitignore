@@ -9,3 +9,6 @@ Untitled-1.py
 /.vscode
 /__pycache__
 Public Dataset/
+*/__pycache__
+*/*/__pycache__
+*.pyc

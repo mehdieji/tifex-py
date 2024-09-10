@@ -1,0 +1,40 @@
+# pyproject.toml
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "project"
+version = "0.1.0"
+description = "TODO"
+readme = "README.md"
+authors = [
+    {name = "Mehdi Ejtehadi", email = "TODO@gmail.com"},
+    {name = "Gloria Edumaba Graham", email = "edumabagrahamp@gmail.com"},
+    {name = "Kang Wang", email = "TODO@gmail.com"},
+    {name = "Cailin Ringstrom", email = "cringstrom@ethz.ch"}]
+maintainers = [
+    {name = "TODO", email = "TODO@gmail.com"}
+]
+license = {file = "LICENSE.txt"}
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3"
+]
+keywords = ["feature", "extraction"]
+dependencies = [
+    "scipy",
+    "statsmodels",
+    "numpy",
+    "librosa"
+]
+
+[project.urls]
+Repository = "https://github.com/SCAI-Lab/proj-adl-classification/tree/main"
+
+[tool.setuptools.packages.find]
+where = ["."]  # list of folders that contain the packages (["."] by default)
+include = ["package_name"]  # package names should match these glob patterns (["*"] by default)
+exclude = []  # exclude packages matching these glob patterns (empty by default)
+namespaces = false  # to disable scanning PEP 420 namespaces (true by default)

@@ -10,194 +10,188 @@ from scipy.ndimage.filters import convolve
 from scipy import stats
 
 
-
-
-
 def calculate_mean(signal):
-        """
-        Calculates the mean of the given signal.
+    """
+    Calculates the mean of the given signal.
 
-        Parameters:
-        ---------
-        signal: np.array
-            An array of values corresponding to the signal.
+    Parameters:
+    ---------
+    signal: np.array
+        An array of values corresponding to the signal.
 
-        Returns:
-        -------
-        np.array
-            An array containing the mean of the signal.
-        
-        References:
-            Manolopoulos et al., 2001, https://www.researchgate.net/publication/234800113
-        """
-        return np.array([np.mean(signal)])
-
+    Returns:
+    -------
+    np.array
+        An array containing the mean of the signal.
+    
+    References:
+        Manolopoulos et al., 2001, https://www.researchgate.net/publication/234800113
+    """
+    return np.array([np.mean(signal, axis=0)])
 
 def calculate_geometric_mean(signal):
-        """
-        Calculates the geometric mean of the given signal.
+    """
+    Calculates the geometric mean of the given signal.
 
-        Parameters:
-        ----------
-        signal : np.array
-            An array of values corresponding to the input signal.
+    Parameters:
+    ----------
+    signal : np.array
+        An array of values corresponding to the input signal.
 
-        Returns:
-        -------
-            np.array
-                An array containing the geometric mean of the signal.
-        
-        References:
-        ----------
-            Chaddad et al., 2014, DOI: 10.1117/12.2062143
-        """
-        signal = signal[signal > 0]
-        return np.array([gmean(signal)])
-
-
-def calculate_harmonic_mean(self, signal):
-        """
-        Calculates the harmonic mean of the given signal.
-        Only positive values in the signal are considered.
-
-        Parameters:
-        ----------
-        signal : np.array
-            An array of values corresponding to the input signal.
-
-        Returns:
-        -------
+    Returns:
+    -------
         np.array
-            An array containing the harmonic mean of the signal.
-        
-        References:
-        ----------
-            Chaddad et al., 2014, DOI: 10.1117/12.2062143
-        """
-        # Filter out non-positive values
-        signal = signal[signal > 0]
-        return np.array([hmean(signal)])
+            An array containing the geometric mean of the signal.
+    
+    References:
+    ----------
+        Chaddad et al., 2014, DOI: 10.1117/12.2062143
+    """
+    signal = signal[signal > 0]
+    print(signal.shape)
+    return np.array([gmean(signal)])
 
+def calculate_harmonic_mean(signal):
+    """
+    Calculates the harmonic mean of the given signal.
+    Only positive values in the signal are considered.
+
+    Parameters:
+    ----------
+    signal : np.array
+        An array of values corresponding to the input signal.
+
+    Returns:
+    -------
+    np.array
+        An array containing the harmonic mean of the signal.
+    
+    References:
+    ----------
+        Chaddad et al., 2014, DOI: 10.1117/12.2062143
+    """
+    # Filter out non-positive values
+    signal = signal[signal > 0]
+    return np.array([hmean(signal)])
 
 def calculate_trimmed_mean(signal, trimmed_mean_thresholds):
-        """
-        Calculate the trimmed mean of the given signal for different proportions.
-        
-        The trimmed mean excludes a fraction of the smallest and largest values 
-        from the signal.
+    """
+    Calculate the trimmed mean of the given signal for different proportions.
+    
+    The trimmed mean excludes a fraction of the smallest and largest values 
+    from the signal.
 
-        Parameters:
-        ----------
-        signal : np.array
-            An array of values corresponding to the signal.
-        self.trimmed_mean_thresholds (list): 
-            List of proportions to cut from each end of the signal.
+    Parameters:
+    ----------
+    signal : np.array
+        An array of values corresponding to the signal.
+    trimmed_mean_thresholds (list): 
+        List of proportions to cut from each end of the signal.
 
-        Returns:
-        -------
-            np.array: An array containing the trimmed means for each proportion.
-        
-        References:
-        ----------
-            Chaddad et al., 2014, DOI: 10.1117/12.2062143
-        """
-        feats = []
-        for proportiontocut in trimmed_mean_thresholds:
-            feats.append(trim_mean(signal, proportiontocut=proportiontocut))
-        return np.array(feats)
+    Returns:
+    -------
+        np.array: An array containing the trimmed means for each proportion.
+    
+    References:
+    ----------
+        Chaddad et al., 2014, DOI: 10.1117/12.2062143
+    """
+    feats = []
+    for proportiontocut in trimmed_mean_thresholds:
+        feats.append(trim_mean(signal, proportiontocut=proportiontocut))
+    return np.array(feats)
 
 def calculate_mean_abs(signal):
-        """
-        Calculate the mean of the absolute values of the given signal.
+    """
+    Calculate the mean of the absolute values of the given signal.
 
-        Parameters:
-        ----------
-        signal : np.array
-            An array of values corresponding to the input signal.
+    Parameters:
+    ----------
+    signal : np.array
+        An array of values corresponding to the input signal.
 
-        Returns:
-        -------
-            np.array
-                An array containing the mean of the absolute values of the signal.
-        
-        References:
-        ----------
-            - Myroniv, B., Wu, C.-W., Ren, Y., Christian, A., Bajo, E., & Tseng, 
-            Y.-C. (2017). Analyzing User Emotions via Physiology Signals. 
-            https://www.researchgate.net/publication/323935725
-            - Phinyomark et al., 2012, DOI: 10.1016/j.eswa.2012.01.102
-            - Purushothaman et al., 2018, DOI: 10.1007/s13246-018-0646-7
-        """
-        return np.array([np.mean(np.abs(signal))])
-
+    Returns:
+    -------
+        np.array
+            An array containing the mean of the absolute values of the signal.
+    
+    References:
+    ----------
+        - Myroniv, B., Wu, C.-W., Ren, Y., Christian, A., Bajo, E., & Tseng, 
+        Y.-C. (2017). Analyzing User Emotions via Physiology Signals. 
+        https://www.researchgate.net/publication/323935725
+        - Phinyomark et al., 2012, DOI: 10.1016/j.eswa.2012.01.102
+        - Purushothaman et al., 2018, DOI: 10.1007/s13246-018-0646-7
+    """
+    return np.array([np.mean(np.abs(signal), axis=0)])
 
 def calculate_geometric_mean_abs(signal):
-        """
-        Calculate the geometric mean of the absolute values of the given signal.
+    """
+    Calculate the geometric mean of the absolute values of the given signal.
 
-        Parameters:
-        ----------
-        signal : np.array
-            An array of values corresponding to the input signal.
+    Parameters:
+    ----------
+    signal : np.array
+        An array of values corresponding to the input signal.
 
-        Returns:
-        -------
-            np.array
-                An array containing the geometric mean of the absolute values of the signal.
-        References:
-        ----------
-            DOI:10.1134/S1064226917050060
-        """
-        return np.array([gmean(np.abs(signal))])
+    Returns:
+    -------
+        np.array
+            An array containing the geometric mean of the absolute values of the signal.
+    References:
+    ----------
+        DOI:10.1134/S1064226917050060
+    """
+    return np.array([gmean(np.abs(signal))])
 
 
 def calculate_harmonic_mean_abs(signal):
-        """
-        Calculate the harmonic mean of the absolute values of the given signal.
+    """
+    Calculate the harmonic mean of the absolute values of the given signal.
 
-        Parameters:
-        ----------
-        signal : np.array
-            An array of values corresponding to the input signal.
+    Parameters:
+    ----------
+    signal : np.array
+        An array of values corresponding to the input signal.
 
-        Returns:
-        -------
-            np.array
-                An array containing the harmonic mean of the absolute values of the signal.
-        Reference:
-        ---------
-        
-        """
-        return np.array([hmean(np.abs(signal))])
+    Returns:
+    -------
+        np.array
+            An array containing the harmonic mean of the absolute values of the signal.
+    Reference:
+    ---------
+    
+    """
+    return np.array([hmean(np.abs(signal))])
 
 
 def calculate_trimmed_mean_abs(signal, trimmed_mean_thresholds):
-        """
-        Calculate the trimmed mean of the absolute values of the given signal for 
-        different proportions.
-        
-        The trimmed mean excludes a fraction of the smallest and largest values 
-        from the absolute values of the signal.
+    """
+    Calculate the trimmed mean of the absolute values of the given signal for 
+    different proportions.
+    
+    The trimmed means excludes a fraction of the smallest and largest values 
+    from the absolute values of the signal.
 
-        Parameters:
-        ----------
-        signal : np.array
-            An array of values corresponding to the signal.
-        self.trimmed_mean_thresholds: list
-            List of proportions to cut from each end of the absolute values of the signal.
+    Parameters:
+    ----------
+    signal : np.array
+        An array of values corresponding to the signal.
+    trimmed_mean_thresholds: list
+        List of proportions to cut from each end of the absolute values of the signal.
 
-        Returns:
-        -------
-            np.array
-                An array containing the trimmed means for each proportion.
-        Reference:
-        ---------
-        ---------
-        """
-        feats = []
-        for proportiontocut in trimmed_mean_thresholds:
-            feats.append(trim_mean(np.abs(signal), proportiontocut=proportiontocut))
-        return np.array(feats)
+    Returns:
+    -------
+        np.array
+            An array containing the trimmed means for each proportion.
+    Reference:
+    ---------
+    ---------
+    """
+    feats = []
+    for proportiontocut in trimmed_mean_thresholds:
+        feats.append(trim_mean(np.abs(signal), proportiontocut=proportiontocut))
+    return np.array(feats)
 
 
 def calculate_std(signal):
@@ -218,7 +212,7 @@ def calculate_std(signal):
         ---------
             Manolopoulos et al., 2001, https://www.researchgate.net/publication/234800113
         """
-        return np.array([np.std(signal)])
+        return np.array([np.std(signal, axis=0)])
 
 def calculate_std_abs(signal):
         """
@@ -237,7 +231,7 @@ def calculate_std_abs(signal):
         Reference:
         ---------
         """
-        return np.array([np.std(np.abs(signal))])
+        return np.array([np.std(np.abs(signal), axis=0)])
 
 def calculate_skewness(signal):
         """
@@ -295,7 +289,7 @@ def calculate_kurtosis(signal):
             
         References:
         ----------
-            Manolopoulos et al., 2001, https://www.researchgate.net/publication/234800113
+            Manolopoulos et np.array([<al., 2001, https://www.researchgate.net/publication/234800113
             Khorshidtalab et al., 2013 , DOI: 10.1088/0967-3334/34/11/1563
         """
         return np.array([kurtosis(signal)])
@@ -337,7 +331,7 @@ def calculate_median(signal):
             Banos et al., 2012, DOI: 10.1016/j.eswa.2012.01.164
         """
         
-        return np.array([np.median(signal)])
+        return np.array([np.median(signal, axis=0)])
 
 def calculate_median_abs(signal):
         """
@@ -356,7 +350,7 @@ def calculate_median_abs(signal):
         Reference:
         ---------
         """
-        return np.array([np.median(np.abs(signal))])
+        return np.array([np.median(np.abs(signal), axis=0)])
 
 def calculate_min(signal):
         """
@@ -380,7 +374,7 @@ def calculate_min(signal):
             Communications and Networks, ICCCN. https://doi.org/10.1109/ICCCN.2009.5235262
         """
         
-        min_val = np.min(signal)
+        min_val = np.min(signal, axis=0)
         return np.array([min_val])
 
 def calculate_min_abs(signal):
@@ -400,7 +394,7 @@ def calculate_min_abs(signal):
         Reference:
         ---------
         """
-        min_abs_val = np.min(np.abs(signal))
+        min_abs_val = np.min(np.abs(signal), axis=0)
         return np.array([min_abs_val])
 
 def calculate_max(signal):
@@ -422,7 +416,7 @@ def calculate_max(signal):
             Khorshidtalab et al., 2013 , DOI: 10.1088/0967-3334/34/11/1563
         """
         
-        max_val = np.max(signal)
+        max_val = np.max(signal, axis=0)
         return np.array([max_val])
 
 def calculate_max_abs(signal):
@@ -445,7 +439,7 @@ def calculate_max_abs(signal):
             basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
             https://doi.org/10.1016/J.NEUCOM.2018.03.067
         """
-        max_abs_val = np.max(np.abs(signal))
+        max_abs_val = np.max(np.abs(signal), axis=0)
         return np.array([max_abs_val])
 
 def calculate_range(signal):
@@ -468,7 +462,7 @@ def calculate_range(signal):
             the sample size, median, range and/or interquartile range. BMC Medical Research Methodology, 14(1), 
             1–13. https://doi.org/10.1186/1471-2288-14-135/TABLES/3
         """
-        return np.array([np.max(signal) - np.min(signal)])
+        return np.array([np.max(signal, axis=0) - np.min(signal, axis=0)])
 
 def calculate_range_abs(signal):
         """
@@ -488,7 +482,7 @@ def calculate_range_abs(signal):
         ---------
         """
         abs_signal = np.abs(signal)
-        return np.array([np.max(abs_signal) - np.min(abs_signal)])
+        return np.array([np.max(abs_signal, axis=0) - np.min(abs_signal, axis=0)])
 
 def calculate_variance(signal):
         """
@@ -507,7 +501,7 @@ def calculate_variance(signal):
         ---------
             Khorshidtalab et al., 2013 , DOI: 10.1088/0967-3334/34/11/1563
         """
-        return np.array([np.var(signal)])
+        return np.array([np.var(signal, axis=0)])
 
 def calculate_variance_abs(signal):
         """
@@ -525,7 +519,7 @@ def calculate_variance_abs(signal):
         Reference:
         ---------
         """
-        return np.array([np.var(np.abs(signal))])
+        return np.array([np.var(np.abs(signal), axis=0)])
 
 def calculate_interquartile_range(signal):
         """
@@ -546,7 +540,7 @@ def calculate_interquartile_range(signal):
         ----------
             Bedeeuzzaman et al., 2012, DOI: 10.5120/6304-8614
         """
-        return np.array([np.percentile(signal, 75) - np.percentile(signal, 25)])
+        return np.array([np.percentile(signal, 75, axis=0) - np.percentile(signal, 25, axis=0)])
     
 def calculate_quantile(signal, q):
     """
@@ -589,7 +583,7 @@ def calculate_mean_absolute_deviation(signal):
             - Pham-Gia, T., & Hung, T. L. (2001). The mean and median absolute deviations. Mathematical and Computer Modelling,
             34(7–8), 921–936. https://doi.org/10.1016/S0895-7177(01)00109-1
         """
-        return np.array([np.mean(np.abs(signal - np.mean(signal)))])
+        return np.array([np.mean(np.abs(signal - np.mean(signal, axis=0)), axis=0)])
 
 
 def calculate_root_mean_square(signal):
@@ -614,7 +608,7 @@ def calculate_root_mean_square(signal):
             Hamedi, M. (2013). Robust classification of motor imagery EEG signals using statistical 
             time–domain features. Physiological Measurement, 34(11), 1563. https://doi.org/10.1088/0967-3334/34/11/1563
         """
-        return np.array([np.sqrt(np.mean(signal**2))])
+        return np.array([np.sqrt(np.mean(signal**2, axis=0))])
 
 
 def calculate_signal_energy(signal):
@@ -635,7 +629,7 @@ def calculate_signal_energy(signal):
         References:
             Rafiuddin et al., 2011, DOI: 10.1109/MSPCT.2011.6150470
         """
-        return np.array([np.sum(signal**2)])
+        return np.array([np.sum(signal**2, axis=0)])
 
 
 def calculate_log_energy(signal):
@@ -657,7 +651,7 @@ def calculate_log_energy(signal):
         ---------
         https://mathworks.com/help/audio/ref/mfcc.html
         """
-        return np.array([np.log(np.sum(signal**2))])
+        return np.array([np.log(np.sum(signal**2, axis=0))])
 
 
 def calculate_entropy(signal, window_size):
@@ -1024,85 +1018,83 @@ def calculate_binned_entropy(signal, bins):
     return -np.sum(probs * np.log(probs))
 
 def calculate_zero_crossings( signal):
-        """
-        Calculates the number of times the signal crosses zero
-        
-        Parameters:
-        ----------
-            signal (array-like): The input time series.
+    """
+    Calculates the number of times the signal crosses zero
+    
+    Parameters:
+    ----------
+        signal (array-like): The input time series.
 
-        Returns:
-        -------
-            np.array
-                An array containing the number of times(integer) the signal crosses zero
-        
-        References:
-        ----------
-            - Myroniv, B., Wu, C.-W., Ren, Y., Christian, A., Bajo, E., & Tseng, 
-            Y.-C. (2017). Analyzing User Emotions via Physiology Signals. https://www.researchgate.net/publication/323935725
-            - Sharma, G., Umapathy, K., & Krishnan, S. (2020). Trends in audio signal feature extraction methods.
-            Applied Acoustics, 158, 107020. https://doi.org/10.1016/J.APACOUST.2019.107020
-            - Purushothaman, G., & Vikas, · Raunak. (2018). Identification of a feature selection
-            based pattern recognition scheme for finger movement recognition from multichannel EMG
-            signals. Australasian Physical & Engineering Sciences in Medicine, 41, 549–559. 
-            https://doi.org/10.1007/s13246-018-0646-7
-        """
-        # Compute the difference in signbit (True if number is negative)
-        zero_cross_diff = np.diff(np.signbit(signal))
-        # Sum the differences to get the number of zero-crossings
-        num_zero_crossings = zero_cross_diff.sum()
-        return np.array([num_zero_crossings])
+    Returns:
+    -------
+        np.array
+            An array containing the number of times(integer) the signal crosses zero
+    
+    References:
+    ----------
+        - Myroniv, B., Wu, C.-W., Ren, Y., Christian, A., Bajo, E., & Tseng, 
+        Y.-C. (2017). Analyzing User Emotions via Physiology Signals. https://www.researchgate.net/publication/323935725
+        - Sharma, G., Umapathy, K., & Krishnan, S. (2020). Trends in audio signal feature extraction methods.
+        Applied Acoustics, 158, 107020. https://doi.org/10.1016/J.APACOUST.2019.107020
+        - Purushothaman, G., & Vikas, · Raunak. (2018). Identification of a feature selection
+        based pattern recognition scheme for finger movement recognition from multichannel EMG
+        signals. Australasian Physical & Engineering Sciences in Medicine, 41, 549–559. 
+        https://doi.org/10.1007/s13246-018-0646-7
+    """
+    # Compute the difference in signbit (True if number is negative)
+    zero_cross_diff = np.diff(np.signbit(signal), axis=0)
+    print(zero_cross_diff.shape)
+    # Sum the differences to get the number of zero-crossings
+    num_zero_crossings = zero_cross_diff.sum(axis=0)
+    return np.array([num_zero_crossings])
 
 def calculate_crest_factor(signal):
-        """
-        Calculate the crest factor of the given signal.
-        
-        Parameters:
-        ----------
-            signal (array-like): The input time series.
+    """
+    Calculate the crest factor of the given signal.
+    
+    Parameters:
+    ----------
+        signal (array-like): The input time series.
 
-        Returns:
-        -------
-            np.array
-                An array containing the crest factor(float) of the signal.
-        
-        References:
-        ----------
-            - Cempel, C. (1980). Diagnostically oriented measures of vibroacoustical processes. 
-            Journal of Sound and Vibration, 73(4), 547–561. https://doi.org/10.1016/0022-460X(80)90667-7
-            - Wang, X., Zheng, Y., Zhao, Z., & Wang, J. (2015). Bearing fault diagnosis based on statistical 
-            locally linear embedding. Sensors (Switzerland), 15(7), 16225–16247. https://doi.org/10.3390/S150716225
-        """
-        crest_factor = np.max(np.abs(signal)) / np.sqrt(np.mean(signal**2))
-        return np.array([crest_factor])
+    Returns:
+    -------
+        np.array
+            An array containing the crest factor(float) of the signal.
+    
+    References:
+    ----------
+        Formula from Cempel, 1980, DOI: 10.1016/0022-460X(80)90667-7
+        Wang et al., 2015, DOI: 10.3390/S150716225, https://doi.org/10.3390/S150716225  
+    """
+    crest_factor = np.max(np.abs(signal)) / np.sqrt(np.mean(signal**2))
+    return np.array([crest_factor])
 
 def calculate_clearance_factor(signal):
-        """
-        Calculate the clearance factor of the given signal.
-        
-        The clearance factor is a measure used in signal processing to 
-        quantify the peakiness of a signal. It isdefined as the ratio 
-        of the maximum absolute value of the signal to the square of 
-        the mean square root of the absolute values of the signal.
-        
-        Parameters:
-        ----------
-            signal (array-like): The input time series.
+    """
+    Calculate the clearance factor of the given signal.
+    
+    The clearance factor is a measure used in signal processing to 
+    quantify the peakiness of a signal. It is defined as the ratio 
+    of the maximum absolute value of the signal to the square of 
+    the mean square root of the absolute values of the signal.
+    
+    Parameters:
+    ----------
+        signal (array-like): The input time series.
 
-        Returns:
-        -------
-            np.array
-                An array containing the clearance factor (float) of the signal.
-        
-        References:
-        ----------     
-            Formula from The MathWorks Inc., 2022, Available: [Signal Features](https://www.mathworks.com)
-            - Wang, X., Zheng, Y., Zhao, Z., & Wang, J. (2015). Bearing fault diagnosis based on statistical 
-            locally linear embedding. Sensors (Switzerland), 15(7), 16225–16247. https://doi.org/10.3390/S150716225      
-        """
-        
-        clearance_factor = np.max(np.abs(signal)) / (np.mean(np.sqrt(np.abs(signal))) ** 2)
-        return np.array([clearance_factor])
+    Returns:
+    -------
+        np.array
+            An array containing the clearance factor (float) of the signal.
+    
+    References:
+    ----------     
+        Formula from The MathWorks Inc., 2022, Available: [Signal Features](https://www.mathworks.com)
+        Wang et al., 2015, DOI: 10.3390/S150716225, https://doi.org/10.3390/S150716225       
+    """
+    
+    clearance_factor = np.max(np.abs(signal), axis=0) / (np.mean(np.sqrt(np.abs(signal)), axis=0) ** 2)
+    return np.array([clearance_factor])
 
 def calculate_shape_factor(signal):
     """
@@ -1125,7 +1117,7 @@ def calculate_shape_factor(signal):
         - Cempel, C. (1980). Diagnostically oriented measures of vibroacoustical processes. 
         Journal of Sound and Vibration, 73(4), 547–561. https://doi.org/10.1016/0022-460X(80)90667-7
     """
-    shape_factor = np.sqrt(np.mean(signal**2)) / np.mean(np.abs(signal))
+    shape_factor = np.sqrt(np.mean(signal**2, axis=0)) / np.mean(np.abs(signal), axis=0)
     return np.array([shape_factor])
 
 def calculate_mean_crossing(signal):
@@ -1149,8 +1141,8 @@ def calculate_mean_crossing(signal):
         Y.-C. (2017). Analyzing User Emotions via Physiology Signals. 
         https://www.researchgate.net/publication/323935725
     """
-    mean_val = np.mean(signal)
-    return np.sum(np.diff(signal > mean_val))
+    mean_val = np.mean(signal, axis=0)
+    return np.sum(np.diff(signal > mean_val, axis=0), axis=0)
 
 def calculate_impulse_factor(signal):
     """
@@ -1174,7 +1166,7 @@ def calculate_impulse_factor(signal):
     -----------
         Cempel, 1980, DOI: 10.1016/0022-460X(80)90667-7
     """
-    impulse_factor = np.max(np.abs(signal)) / np.mean(np.abs(signal))
+    impulse_factor = np.max(np.abs(signal), axis=0) / np.mean(np.abs(signal), axis=0)
     return np.array([impulse_factor])
 
 def calculate_mean_auto_correlation(signal, n_lags_auto_correlation):
@@ -1206,7 +1198,7 @@ def calculate_mean_auto_correlation(signal, n_lags_auto_correlation):
         39(9), 8013–8021. https://doi.org/10.1016/J.ESWA.2012.01.164
     
     """
-    auto_correlation_values = acf(signal, nlags= n_lags_auto_correlation)[1:]
+    auto_correlation_values = acf(signal, nlags=n_lags_auto_correlation)[1:]
     return np.array([np.mean(auto_correlation_values)])
 
 def calculate_higher_order_moments(signal, moment_orders):
@@ -1216,7 +1208,7 @@ def calculate_higher_order_moments(signal, moment_orders):
     Parameters:
     ---------
         signal (array-like): The input time series.
-        moment_orders:
+        moment_orders: 
 
     moment_orders : array-like
         A list or array of integers specifying the orders of the moments to be calculated. For example, [3, 4] will calculate 
@@ -1262,7 +1254,7 @@ def calculate_coefficient_of_variation(signal):
         107600. https://doi.org/10.1016/J.CIE.2021.107600
     
     """
-    coefficient_of_variation = np.std(signal) / np.mean(signal)
+    coefficient_of_variation = np.std(signal, axis=0) / np.mean(signal, axis=0)
     return np.array([coefficient_of_variation])
 
 def calculate_median_absolute_deviation(signal, adjusted):
@@ -1297,8 +1289,8 @@ def calculate_median_absolute_deviation(signal, adjusted):
         - Pham-Gia, T., & Hung, T. L. (2001). The mean and median absolute deviations. Mathematical and Computer Modelling,
         34(7–8), 921–936. https://doi.org/10.1016/S0895-7177(01)00109-1
     """
-    median_value = np.median(signal)
-    mad = np.median(np.abs(signal - median_value))
+    median_value = np.median(signal, axis=0)
+    mad = np.median(np.abs(signal - median_value), axis=0)
     
     if adjusted:
         mad *= 1.4826
@@ -1328,7 +1320,7 @@ def calculate_avg_amplitude_change(signal):
         - Phinyomark, A., Phukpattaranont, P., & Limsakul, C. (2012). Feature reduction and selection for EMG signal classification. 
         Expert Systems with Applications, 39(8), 7420–7431. https://doi.org/10.1016/J.ESWA.2012.01.102
     """
-    avg_amplitude_change = np.mean(np.abs(np.diff(signal)))
+    avg_amplitude_change = np.mean(np.abs(np.diff(signal, axis=0)), axis=0)
     return np.array([avg_amplitude_change])
 
 def calculate_slope_sign_change(signal, ssc_threshold):
@@ -1448,8 +1440,8 @@ def calculate_katz_fractal_dimension(signal):
         https://doi.org/10.3390/FRACTALFRACT8010009
     """
     N = len(signal)
-    distance = np.max(np.abs(signal - signal[0]))
-    length = np.sum(np.abs(np.diff(signal)))
+    distance = np.max(np.abs(signal - signal[0]), axis=0)
+    length = np.sum(np.abs(np.diff(signal, axis=0)), axis=0)
     return np.log10(N) / (np.log10(N) + np.log10(distance / length))
 
 def calculate_petrosian_fractal_dimension(signal):
@@ -1547,64 +1539,64 @@ def calculate_cardinality(signal, window_size):
         return np.array([cardinality])
 
 def calculate_rms_to_mean_abs(signal):
-        """
-        Calculates the ratio of the root-mean-squared value to the mean
-        absolute value.
+    """
+    Calculates the ratio of the root-mean-squared value to the mean
+    absolute value.
 
-        Parameters:
-        ---------
-            signal : array-like
-                The input time series data.
+    Parameters:
+    ---------
+        signal : array-like
+            The input time series data.
 
-        Returns:
-        -------
-            numpy.ndarray
-                An array containing the ratio of the root-mean-squared value to the mean
-                absolute value.
-        
-        Reference:
-        ---------
-        """
-        rms_val = np.sqrt(np.mean(signal ** 2))
-        mean_abs_val = np.mean(np.abs(signal))
-        ratio = rms_val / mean_abs_val
-        return np.array([ratio])
+    Returns:
+    -------
+        numpy.ndarray
+            An array containing the ratio of the root-mean-squared value to the mean
+            absolute value.
+    
+    Reference:
+    ---------
+    """
+    rms_val = np.sqrt(np.mean(signal ** 2, axis=0))
+    mean_abs_val = np.mean(np.abs(signal), axis=0)
+    ratio = rms_val / mean_abs_val
+    return np.array([ratio])
 
 def calculate_area_under_curve(signal):
-        """
-        Calculates the area under the curve of the given signal
+    """
+    Calculates the area under the curve of the given signal
 
-        Parameters:
-        ----------
-            signal : array-like
-                The input time series data.
+    Parameters:
+    ----------
+        signal : array-like
+            The input time series data.
 
-        Returns:
-        -------
-            float: area under curve
-        
-        Reference:
-        ---------
-            - Kuremoto, T., Baba, Y., Obayashi, M., Mabu, S., & Kobayashi, K. 
-            (2018). Enhancing EEG Signals Recognition Using ROC Curve. Journal 
-            of Robotics, Networking and Artificial Life, 4(4), 283. https://doi.org/10.2991/JRNAL.2018.4.4.5
-        """
-        return simpson(np.abs(signal), dx=1)
+    Returns:
+    -------
+        float: area under curve
+    
+    Reference:
+    ---------
+        - Kuremoto, T., Baba, Y., Obayashi, M., Mabu, S., & Kobayashi, K. 
+        (2018). Enhancing EEG Signals Recognition Using ROC Curve. Journal 
+        of Robotics, Networking and Artificial Life, 4(4), 283. https://doi.org/10.2991/JRNAL.2018.4.4.5
+    """
+    return simpson(np.abs(signal), dx=1)
 
 def calculate_area_under_squared_curve(signal):
-        """
-        Calculates the area under the curve of the given signal squared
+    """
+    Calculates the area under the curve of the given signal squared
 
-        Parameters:
-        ----------
-            signal : array-like
-                The input time series data.
+    Parameters:
+    ----------
+        signal : array-like
+            The input time series data.
 
-        Returns:
-        -------
-            float: area under curve of signal squared
-        """
-        return simpson(signal**2, dx=1)
+    Returns:
+    -------
+        float: area under curve of signal squared
+    """
+    return simpson(signal**2, dx=1)
 
 def calculate_autoregressive_model_coefficients(signal, ar_model_coefficients_order):
     """
@@ -2951,33 +2943,33 @@ def calculate_hurst_exponent(signal):
     return hurst
     
 def calculate_augmented_dickey_fuller_test(signal):
-        """
-        Perform the Augmented Dickey-Fuller (ADF) test to check for stationarity in a given time series signal.
+    """
+    Perform the Augmented Dickey-Fuller (ADF) test to check for stationarity in a given time series signal.
 
-        The ADF test is a statistical test used to determine if a time series is stationary or has a unit root.
-        A stationary time series has constant mean and variance over time.
+    The ADF test is a statistical test used to determine if a time series is stationary or has a unit root.
+    A stationary time series has constant mean and variance over time.
 
-        Parameters:
-        ----------
-        signal (array-like): 
-            The time series data to be tested for stationarity.
+    Parameters:
+    ----------
+    signal (array-like): 
+        The time series data to be tested for stationarity.
 
-        Returns:
-        -------
-        np.array or float:
-                    A numpy array containing the test statistic, p-value, and number of lags used in the test.
-                    If the test fails due to an exception, returns NaN.
-        Reference:
-        ---------
-            Christ et al., 2018, https://doi.org/10.1016/J.NEUCOM.2018.03.067
-        """
-        adf_vals_names = np.array(["teststats", "pvalue", "usedlag"])
-        try:
-            test_stat, p_value, used_lag, _,_,_ = adfuller(signal)
-            adf_vals = np.array([test_stat, p_value, used_lag])
-        except:
-            return np.nan
-        return adf_vals, adf_vals_names
+    Returns:
+    -------
+    np.array or float:
+                A numpy array containing the test statistic, p-value, and number of lags used in the test.
+                If the test fails due to an exception, returns NaN.
+    Reference:
+    ---------
+        Christ et al., 2018, https://doi.org/10.1016/J.NEUCOM.2018.03.067
+    """
+    adf_vals_names = np.array(["teststats", "pvalue", "usedlag"])
+    try:
+        test_stat, p_value, used_lag, _,_,_ = adfuller(signal)
+        adf_vals = np.array([test_stat, p_value, used_lag])
+    except:
+        return np.nan
+    return adf_vals, adf_vals_names
 
     
 def calculate_duplicates(signal):
@@ -3202,7 +3194,7 @@ def calculate_cid_ce(signal, normalize):
     return np.sqrt(np.dot(signal, signal))
 
 
-def calculate_conditional_entropy(self, signal):
+def calculate_conditional_entropy(signal):
         """
         Calculates the entropy of the signal X, given the entropy of X
 

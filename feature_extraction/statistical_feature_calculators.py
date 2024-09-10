@@ -464,7 +464,7 @@ def calculate_range(signal):
             
         Reference:
         ---------
-            -Wan, X., Wang, W., Liu, J., & Tong, T. (2014). Estimating the sample mean and standard deviation from 
+            - Wan, X., Wang, W., Liu, J., & Tong, T. (2014). Estimating the sample mean and standard deviation from 
             the sample size, median, range and/or interquartile range. BMC Medical Research Methodology, 14(1), 
             1–13. https://doi.org/10.1186/1471-2288-14-135/TABLES/3
         """
@@ -865,7 +865,8 @@ def calculate_tsallis_entropy(signal, window_size, tsallis_q_parameter):
                 An array containing the Tsallis entropy of the signal.
         Reference:
         ---------
-            Sneddon et al., 2007, https://doi.org/10.1016/J.PHYSA.2007.05.065
+            - Sneddon, R. (2007). The Tsallis entropy of natural information. Physica A: Statistical Mechanics 
+            and Its Applications, 386(1), 101–118. https://doi.org/10.1016/J.PHYSA.2007.05.065
         """
         try:
             # Calculate the histogram
@@ -1067,8 +1068,10 @@ def calculate_crest_factor(signal):
         
         References:
         ----------
-            Formula from Cempel, 1980, DOI: 10.1016/0022-460X(80)90667-7
-            Wang et al., 2015, DOI: 10.3390/S150716225, https://doi.org/10.3390/S150716225  
+            - Cempel, C. (1980). Diagnostically oriented measures of vibroacoustical processes. 
+            Journal of Sound and Vibration, 73(4), 547–561. https://doi.org/10.1016/0022-460X(80)90667-7
+            - Wang, X., Zheng, Y., Zhao, Z., & Wang, J. (2015). Bearing fault diagnosis based on statistical 
+            locally linear embedding. Sensors (Switzerland), 15(7), 16225–16247. https://doi.org/10.3390/S150716225
         """
         crest_factor = np.max(np.abs(signal)) / np.sqrt(np.mean(signal**2))
         return np.array([crest_factor])
@@ -1094,7 +1097,8 @@ def calculate_clearance_factor(signal):
         References:
         ----------     
             Formula from The MathWorks Inc., 2022, Available: [Signal Features](https://www.mathworks.com)
-            Wang et al., 2015, DOI: 10.3390/S150716225, https://doi.org/10.3390/S150716225       
+            - Wang, X., Zheng, Y., Zhao, Z., & Wang, J. (2015). Bearing fault diagnosis based on statistical 
+            locally linear embedding. Sensors (Switzerland), 15(7), 16225–16247. https://doi.org/10.3390/S150716225      
         """
         
         clearance_factor = np.max(np.abs(signal)) / (np.mean(np.sqrt(np.abs(signal))) ** 2)
@@ -1104,7 +1108,8 @@ def calculate_shape_factor(signal):
     """
     Calculates the shape factor of the time series.
     
-    The shape factor is a measure of the waveform shape of a signal, which is the ratio of the root mean square (RMS) value to the mean absolute value of the signal.
+    The shape factor is a measure of the waveform shape of a signal, which is the ratio of the root mean square (RMS) 
+    value to the mean absolute value of the signal.
 
     Parameter:
     ---------
@@ -1117,7 +1122,8 @@ def calculate_shape_factor(signal):
         
     Reference:
     ----------
-        Cempel, 1980, DOI: 10.1016/0022-460X(80)90667-7
+        - Cempel, C. (1980). Diagnostically oriented measures of vibroacoustical processes. 
+        Journal of Sound and Vibration, 73(4), 547–561. https://doi.org/10.1016/0022-460X(80)90667-7
     """
     shape_factor = np.sqrt(np.mean(signal**2)) / np.mean(np.abs(signal))
     return np.array([shape_factor])
@@ -1193,8 +1199,11 @@ def calculate_mean_auto_correlation(signal, n_lags_auto_correlation):
         
     References:
     ----------
-        Fulcher, 2017, DOI: 10.48550/arXiv.1709.08055
-        Banos et al., 2012, DOI: 10.1016/j.eswa.2012.01.164
+        - Fulcher, B. D. (2017). Feature-based time-series analysis. Feature Engineering for Machine 
+        Learning and Data Analytics, 87–116. https://doi.org/10.1201/9781315181080-4
+        - Banos, O., Damas, M., Pomares, H., Prieto, A., & Rojas, I. (2012). Daily living activity 
+        recognition based on statistical feature quality group selection. Expert Systems with Applications, 
+        39(9), 8013–8021. https://doi.org/10.1016/J.ESWA.2012.01.164
     
     """
     auto_correlation_values = acf(signal, nlags= n_lags_auto_correlation)[1:]
@@ -1220,7 +1229,8 @@ def calculate_higher_order_moments(signal, moment_orders):
         
     Reference:
     ---------
-        Clerk et al., 2022, https://doi.org/10.1016/J.HELIYON.2022.E08833
+        - de Clerk, L., & Savel’ev, S. (2022). An investigation of higher order moments of empirical financial 
+        data and their implications to risk. Heliyon, 8(2), e08833. https://doi.org/10.1016/J.HELIYON.2022.E08833
     """
     feats = []
     for order in moment_orders:
@@ -1247,7 +1257,9 @@ def calculate_coefficient_of_variation(signal):
         
     Reference:
     ---------
-        Jalilibal et al., 2021, DOI: 10.1016/j.cie.2021.107600
+        - Jalilibal, Z., Amiri, A., Castagliola, P., & Khoo, M. B. C. (2021). Monitoring the 
+        coefficient of variation: A literature review. Computers & Industrial Engineering, 161,
+        107600. https://doi.org/10.1016/J.CIE.2021.107600
     
     """
     coefficient_of_variation = np.std(signal) / np.mean(signal)
@@ -2027,6 +2039,18 @@ def calculate_last_location_of_maximum(signal):
 
 def calculate_last_location_of_minimum(signal):
     """
+    Returns the last location of the mininum value
+    
+    Parameter:
+    ----------
+    signal : array-like
+        The input time series
+        
+    Return:
+    -------
+    int:
+        last location of the mininum value in the time series
+        
     Reference:
     ----------
         - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
@@ -2060,12 +2084,6 @@ def calculate_linear_trend_with_full_linear_regression_results(signal):
         - p_value (float): The p-value for the slope, indicating the significance of the slope.
         - std_err (float): The standard error of the estimated slope.
 
-    Example:
-    --------
-    >>> signal = [1, 2, 3, 4, 5]
-    >>> calculate_linear_trend_with_full_linear_regression_results(signal)
-    (1.0, 1.0, 1.0, 1.2004217548761408e-30, 0.0)
-
     Notes:
     ------
     - The function uses `scipy.stats.linregress` to perform the linear regression.
@@ -2076,7 +2094,6 @@ def calculate_linear_trend_with_full_linear_regression_results(signal):
     -----------
     - "Linear Regression", MATLAB Documentation: https://www.mathworks.com/help/matlab/data_analysis/linear-regression.html
     """
-    # https://www.mathworks.com/help/matlab/data_analysis/linear-regression.html
     slope, intercept, r_value, p_value, std_err = linregress(np.arange(len(signal)), signal)
     return slope, intercept, r_value**2, p_value, std_err
 
@@ -2085,8 +2102,6 @@ def calculate_local_maxima_and_minima(signal):
         local_max = find_peaks(signal)[0]
         local_min = find_peaks(-signal)[0]
         return len(local_max), len(local_min)
-
-import numpy as np
 
 def calculate_log_return(signal):
     """
@@ -2198,7 +2213,7 @@ def calculate_mean_absolute_change(signal):
     Parameters:
     ----------
     signal : array-like
-        A 1D array or list of numerical values representing the signal.
+        A sequence of numerical values representing the time series.
 
     Returns:
     -------
@@ -2212,11 +2227,46 @@ def calculate_mean_absolute_change(signal):
     return np.mean(np.abs(np.diff(signal)))
 
     
-def calculate_absolute_sum_of_changes(signal):
-    return np.sum(np.diff(signal))
+def calculate_sum_of_absolute_changes(signal):
+    """
+    Calculates the sum of absolute differences of the time series
+    
+    Parameters:
+    ----------
+    signal : array-like
+        A sequence of numerical values representing the time series.
+
+    Returns:
+    -------
+    float
+        The mean absolute change of the signal.
+        
+    Reference:
+    ---------
+        - Barandas, M., Folgado, D., Fernandes, L., Santos, S., Abreu, M., Bota, P., Liu, H., Schultz, T., & Gamboa, H. (2020). 
+        TSFEL: Time Series Feature Extraction Library. SoftwareX, 11. https://doi.org/10.1016/j.softx.2020.100456
+    """
+    return np.sum(np.abs(np.diff(signal)))
 
 def calculate_mean_relative_change(signal):
-    # https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/j.1365-2745.2007.01281.x
+    """
+    Calculates the mean relative change of the time series which is calculated 
+    as the absolute difference between consecutive indices divided by their mean value.
+    
+    Parameters:
+    ----------
+    signal : array-like
+        A sequence of numerical values representing the time series.
+
+    Returns:
+    -------
+    float
+        The mean relative change of the signal.
+        
+    Reference:
+    ----------
+        - https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/j.1365-2745.2007.01281.x
+    """
     return np.mean(np.abs(np.diff(signal) / signal[:-1]))
 
 def calculate_mean_second_derivative_central(signal):
@@ -2243,57 +2293,230 @@ def calculate_mean_second_derivative_central(signal):
     return np.mean(np.diff(signal, n=2)) / 2 if len(signal) > 2 else np.NaN
 
 def calculate_median_second_derivative_central(signal):
+    """
+    Calculate the median of the central second derivative of a given signal.
+
+    The second derivative is computed using the central difference method, 
+    which approximates the second derivative by taking the difference of 
+    differences between consecutive data points. The median of these 
+    second derivative values is then returned.
+
+    Parameters:
+    -----------
+    signal : array-like
+        A sequence of numerical values representing the time series.
+
+    Returns:
+    --------
+    float
+        The median of the second derivative values of the input signal.
+    """
     second_derivative = np.diff(signal, n=2)
     return np.median(second_derivative)
 
 def calculate_mode(signal):
+    """
+    Calculates the mode of the time series
+
+    Parameters:
+    -----------
+    signal : array-like
+        A sequence of numerical values representing the time series.
+
+    Returns:
+    --------
+    float
+        The mode of the input signal.
+        
+    References:
+    -----------
+    
+    """
     return mode(signal)[0]
 
 def calculate_number_of_inflection_points(signal):
-    # https://en.wikipedia.org/wiki/Inflection_point
+    """
+    Calculate the number of inflection points in a signal.
+
+    An inflection point is where the second derivative of the signal changes sign,
+    indicating a change in the direction of curvature.
+
+    Parameters:
+    -----------
+        signal (array-like): 
+            Input signal as a 1D array or list.
+
+    Returns:
+    --------
+        int: 
+            The number of inflection points in the signal.
+            
+    Reference:
+    ---------
+        https://en.wikipedia.org/wiki/Inflection_point
+    """
+    # Compute the second derivative of the signal
     second_derivative = np.diff(signal, n=2)
-    return np.sum(np.diff(np.sign(second_derivative)) != 0)
+    
+    # Calculate the number of sign changes in the second derivative
+    inflection_points = np.sum(np.diff(np.sign(second_derivative)) != 0)
+    
+    return inflection_points
 
 def calculate_peak_to_peak_distance(signal):
-    # https://www.mathworks.com/matlabcentral/fileexchange/20314-peak-to-peak-of-signal
+    """
+    Calculates the peak-to-peak distance of a signal.
+    The peak-to-peak distance is the difference between the maximum and minimum values of the signal.
+
+    Parameters:
+    -----------
+        signal (array-like): 
+            Input signal as a 1D array or list.
+
+    Returns:
+    --------
+        float
+            The peak-to-peak distance of the signal.
+
+    Reference:
+    ----------
+        - Robert Lobbia (2024). Peak to Peak of signal 
+        (https://www.mathworks.com/matlabcentral/fileexchange/20314-peak-to-peak-of-signal), 
+        MATLAB Central File Exchange. Retrieved September 5, 2024.
+
+    """
     return np.ptp(signal)
 
-def calculate_pearson_correlation_coefficient(signal):
-    # https://en.wikipedia.org/wiki/Pearson_correlation_coefficient
-    # https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.pearsonr.html
-    if len(signal) < 2:
-        return np.nan
-    return pearsonr(signal[:-1], signal[1:])[0]
-
 def calculate_percentage_of_negative_values(signal):
+    """
+    Calculate the percentage of values in the time series that are negative
+    
+    Parameters:
+    -----------
+        signal (array-like): 
+            Input signal as a 1D array or list.
+
+    Returns:
+    --------
+        float
+            Percentage of negative values
+            
+    Reference:
+    ---------
+    
+    """
     return np.mean(signal < 0) * 100
 
 def calculate_percentage_of_positive_values(signal):
+    """
+    Calculate the percentage of values in the time series that are positive
+    
+    Parameters:
+    -----------
+        signal (array-like): 
+            Input signal as a 1D array or list.
+
+    Returns:
+    --------
+        float
+            Percentage of positive values
+            
+    Reference:
+    ---------
+    
+    """
     return np.mean(signal > 0) * 100
 
 def calculate_percentage_of_reoccurring_datapoints_to_all_datapoints(signal):
-    # - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
-    #         basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
-    #         https://doi.org/10.1016/J.NEUCOM.2018.03.067
+    """
+    Calculates the percentage of non-unique values in the time series.
+    
+    Parameters:
+    -----------
+    signal : array-like
+        The input time series is to be calculated.
+
+    Returns:
+    --------
+    float
+        Percentage of reoccurring values 
+    
+    Reference:
+    ----------
+        - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
+        basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
+        https://doi.org/10.1016/J.NEUCOM.2018.03.067
+    """
     unique, counts = np.unique(signal, return_counts=True)
-    return 100 * np.sum(counts > 1) / len(signal)
+    return 100 * np.sum(counts[counts > 1]) / len(signal)
 
 def calculate_percentage_of_reoccurring_values_to_all_values(signal):
-    # - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
-    #         basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
-    #         https://doi.org/10.1016/J.NEUCOM.2018.03.067
-    unique, counts = np.unique(signal, return_counts=True)
-    return 100 * np.sum(counts[counts > 1]) / np.sum(counts)
+    """
+    Calculates the percentage of values that occur more than once in the signal
     
-def calculate_ratio_beyond_r_sigma(signal, r=2):
-    # - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
-    #         basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
-    #         https://doi.org/10.1016/J.NEUCOM.2018.03.067
+    Parameters:
+    -----------
+    signal : array-like
+        The input time series is to be calculated.
+
+    Returns:
+    --------
+    float
+        Percentage of reoccurring values 
+    
+    Reference:
+    ----------
+        - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
+        basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
+        https://doi.org/10.1016/J.NEUCOM.2018.03.067
+    
+    """
+    unique, counts = np.unique(signal, return_counts=True)
+    
+    if counts.shape[0] == 0:
+        return 0
+    
+    return 100 * np.sum(counts > 1) / float(counts.shape[0])
+
+def calculate_ratio_beyond_r_sigma(signal, r):
+    """
+    Calculates the ratio of data points in the signal that are beyond 'r' times the standard deviation from the mean.
+
+    Parameters:
+    -----------
+        signal (array-like): The input signal data.
+        r (float, optional): The multiplier for the standard deviation to define the threshold.
+
+    Returns:
+    --------
+        float: The ratio of data points in the signal that are beyond 'r' standard deviations from the mean.
+
+    Reference:
+    ----------
+        - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on
+        the basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77.
+        https://doi.org/10.1016/J.NEUCOM.2018.03.067
+    """
     std_dev = np.std(signal)
     mean_val = np.mean(signal)
     return np.sum(np.abs(signal - mean_val) > r * std_dev) / len(signal)
 
 def calculate_ratio_of_fluctuations(signal):
+    """
+    Calculates the ratio of positive to negative fluctuations in the signal.
+
+    Parameters:
+    ----------
+    signal (array-like): The input signal data.
+
+    Returns:
+    --------
+    tuple: A tuple containing:
+        - ratio_positive (float): The ratio of positive fluctuations.
+        - ratio_negative (float): The ratio of negative fluctuations.
+        - ratio_positive_to_negative (float): The ratio of positive to negative fluctuations. 
+        Returns 'inf' if there are no negative fluctuations.
+    """
     increases = np.sum(np.diff(signal) > 0)
     decreases = np.sum(np.diff(signal) < 0)
     total = increases + decreases
@@ -2302,35 +2525,110 @@ def calculate_ratio_of_fluctuations(signal):
     return ratio_positive, ratio_negative, ratio_positive / ratio_negative if ratio_negative != 0 else float('inf')
 
 def calculate_ratio_value_number_to_sequence_length(signal):
+    """
+    Calculates the ratio of the number of unique values in the signal to its length.
+
+    Parameters:
+    signal (array-like): The input signal data.
+
+    Returns:
+    float: The ratio of unique values in the signal to the total number of data points in the signal.
+    """
     unique_values = len(np.unique(signal))
     return unique_values / len(signal)
 
 def calculate_second_order_difference(signal):
-    # https://numpy.org/doc/stable/reference/generated/numpy.diff.html
+    """
+    Calculates the second-order difference of the signal.
+
+    Parameters:
+    signal (array-like): The input signal data.
+
+    Returns:
+    array-like: The second-order difference of the signal.
+    
+    Reference:
+    ----------
+        Intuition of this feature:
+            https://stats.stackexchange.com/questions/351697/what-is-the-intuition-behind-second-order-differencing
+    """
     return np.diff(signal, n=2)
     
 def calculate_signal_resultant(signal):
-        return np.sqrt(np.sum(signal**2))
+    """
+    Calculates the resultant magnitude of the signal vector.
+
+    Parameters:
+    ----------
+        signal (array-like): The input signal data.
+
+    Returns:
+    --------
+        float: The square root of the sum of squares of the signal values.
+        
+    """
+    return np.sqrt(np.sum(signal**2))
 
 def calculate_signal_to_noise_ratio(signal):
-    # https://en.wikipedia.org/wiki/Signal-to-noise_ratio
-    # DOI:10.4249/SCHOLARPEDIA.2088
+    """
+    Calculates the Signal-to-Noise Ratio (SNR) of the signal.
+
+    Parameters:
+    ----------
+        signal (array-like): 
+            The input signal data.
+
+    Returns:
+    -------
+        float: 
+            The Signal-to-Noise Ratio (SNR) of the signal. 
+            Returns 'inf' if the noise standard deviation is zero.
+    
+    References:
+    -----------
+        - https://en.wikipedia.org/wiki/Signal-to-noise_ratio
+        - DOI:10.4249/SCHOLARPEDIA.2088
+    """
     mean_signal = np.mean(signal)
     std_noise = np.std(signal)
     return mean_signal / std_noise if std_noise > 0 else float('inf')
 
-def calculate_slope_of_linear_fit(signal):
-    # https://www.mathworks.com/help/matlab/data_analysis/linear-regression.html
-    slope, _, _, _, _ = linregress(np.arange(len(signal)), signal)
-    return slope
-
 def calculate_smoothing_by_binomial_filter(signal):
-    # https://www.wavemetrics.com/products/igorpro/dataanalysis/signalprocessing/smoothing
+    """
+    Applies binomial smoothing to the signal using a simple [1, 2, 1] kernel.
+
+    Parameters:
+    -----------
+    signal (array-like): The input signal data.
+
+    Returns:
+    --------
+    array-like: The smoothed signal.
+    
+    Reference:
+    ---------
+        - https://www.wavemetrics.com/products/igorpro/dataanalysis/signalprocessing/smoothing
+    """
     kernel = np.array([1, 2, 1]) / 4.0
     return convolve(signal, kernel, mode='reflect')
 
 def calculate_stochastic_oscillator_value(signal):
-    # https://www.investopedia.com/terms/s/stochasticoscillator.asp
+    """
+    Calculates the stochastic oscillator value, a measure used in technical analysis of financial markets.
+
+    Parameters:
+    ----------
+    signal (array-like): The input signal data.
+
+    Returns:
+    --------
+    float: The stochastic oscillator value, calculated as:
+           100 * (current_value - low_min) / (high_max - low_min).
+    
+    Reference:
+    ----------
+        - https://www.investopedia.com/terms/s/stochasticoscillator.asp
+    """
     low_min = np.min(signal)
     high_max = np.max(signal)
     current_value = signal[-1]
@@ -2435,8 +2733,7 @@ def calculate_sum_of_reoccurring_data_points(signal):
     Parameters:
     -----------
     signal : array-like
-        The input time series
-        is to be calculated. This is typically a 1D array representing the data points.
+        The input time series is to be calculated. 
 
     Returns:
     --------
@@ -2459,7 +2756,7 @@ def calculate_sum_of_reoccurring_data_points(signal):
     """
     unique, counts = np.unique(signal, return_counts=True)
     counts[counts < 2] = 0
-    return np.sum(np.sum(counts * unique))
+    return np.sum(counts * unique)
 
 
 def calculate_variance_of_absolute_differences(signal):

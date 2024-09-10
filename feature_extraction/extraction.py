@@ -326,15 +326,15 @@ def calculate_statistical_features(self, signal, signal_name):
         feats.append(log_return)
         feats_names.append(f"{signal_name}_log_return")
 
-        # # Longest Strike Above Mean
-        # longest_above = calculate_longest_strike_above_mean(signal)
-        # feats.append(longest_above)
-        # feats_names.append(f"{signal_name}_longest_strike_above_mean")
+        # Longest Strike Above Mean
+        longest_above = calculate_longest_strike_above_mean(signal)
+        feats.append(longest_above)
+        feats_names.append(f"{signal_name}_longest_strike_above_mean")
 
-        # # Longest Strike Below Mean
-        # longest_below = calculate_longest_strike_below_mean(signal)
-        # feats.append(longest_below)
-        # feats_names.append(f"{signal_name}_longest_strike_below_mean")
+        # Longest Strike Below Mean
+        longest_below = calculate_longest_strike_below_mean(signal)
+        feats.append(longest_below)
+        feats_names.append(f"{signal_name}_longest_strike_below_mean")
 
         # Lower Complete Moment
         lower_moment = calculate_lower_complete_moment(signal)
@@ -376,11 +376,6 @@ def calculate_statistical_features(self, signal, signal_name):
         feats.append(peak_to_peak_distance)
         feats_names.append(f"{signal_name}_peak_to_peak_distance")
 
-        # Pearson Correlation Coefficient
-        pearson_correlation = calculate_pearson_correlation_coefficient(signal)
-        feats.append(pearson_correlation)
-        feats_names.append(f"{signal_name}_pearson_correlation_coefficient")
-
         # Percentage of Negative Values
         percentage_negative = calculate_percentage_of_negative_values(signal)
         feats.append(percentage_negative)
@@ -402,9 +397,10 @@ def calculate_statistical_features(self, signal, signal_name):
         feats_names.append(f"{signal_name}_percentage_of_reoccurring_values_to_all_values")
 
         # Ratio Beyond r Sigma
-        rbs = calculate_ratio_beyond_r_sigma(signal)
-        feats.append(rbs)
-        feats_names.append(f"{signal_name}_ratio_beyond_r_sigma")
+        for r in [0.5, 1, 1.5, 2, 2.5, 3, 5, 6, 7, 10]:
+            rbs = calculate_ratio_beyond_r_sigma(signal, r)
+            feats.append(rbs)
+            feats_names.append(f"{signal_name}_ratio_beyond_{r}_sigma")
 
         # Ratio of Fluctuations
         ratio_positive, ratio_negative, ratio_pn = calculate_ratio_of_fluctuations(signal)
@@ -434,11 +430,6 @@ def calculate_statistical_features(self, signal, signal_name):
         snr = calculate_signal_to_noise_ratio(signal)
         feats.append(snr)
         feats_names.append(f"{signal_name}_signal_to_noise_ratio")
-
-        # Slope of Linear Fit
-        slope = calculate_slope_of_linear_fit(signal)
-        feats.append(slope)
-        feats_names.append(f"{signal_name}_slope_of_linear_fit")
 
         # Smoothing by Binomial Filter
         smoothed_signal = calculate_smoothing_by_binomial_filter(signal)
@@ -536,7 +527,7 @@ def calculate_statistical_features(self, signal, signal_name):
 
 # ------------------------------------------------------------------------------------------------------------------
 # Spectral features
-    
+# ------------------------------------------------------------------------------------------------------------------
     
     
 def calculate_frequency_features(self, signal, signal_name):

@@ -10,5 +10,5 @@ Untitled-1.py
 /__pycache__
 Public Dataset/
 */__pycache__
-*/*/__pycache__
+package_name/*/__pycache__
 *.pyc

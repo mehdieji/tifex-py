@@ -778,7 +778,6 @@ def calculate_differential_entropy(signal, **kwargs):
     """
     probability, _ = np.histogram(signal, bins=10, density=True)
     probability = probability[probability > 0]
-    print(entropy(probability))
     return np.array([entropy(probability)])
 
 @name("approximate_entropy")
@@ -1577,15 +1576,15 @@ def calculate_hjorth_mobility_and_complexity(signal, **kwargs):
 
 @name("cardinality")
 def calculate_cardinality(signal, window_size, **kwargs):
-        # Parameter
-        thresh = 0.05 * np.std(signal)  # threshold
-        # Sort data
-        sorted_values = np.sort(signal)
-        cardinality_array = np.zeros(window_size - 1)
-        for i in range(window_size - 1):
-            cardinality_array[i] = np.abs(sorted_values[i] - sorted_values[i + 1]) > thresh
-        cardinality = np.sum(cardinality_array)
-        return np.array([cardinality])
+    # Parameter
+    thresh = 0.05 * np.std(signal)  # threshold
+    # Sort data
+    sorted_values = np.sort(signal)
+    cardinality_array = np.zeros(window_size - 1)
+    for i in range(window_size - 1):
+        cardinality_array[i] = np.abs(sorted_values[i] - sorted_values[i + 1]) > thresh
+    cardinality = np.sum(cardinality_array)
+    return np.array([cardinality])
 
 @name("rms_to_mean_of_abs")
 def calculate_rms_to_mean_abs(signal, **kwargs):

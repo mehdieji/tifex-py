@@ -1,4 +1,6 @@
 import pandas as pd
+import multiprocessing as mp
+from functools import partial
 
 import package_name.feature_extraction.statistical_feature_calculators as statistical_feature_calculators
 import package_name.feature_extraction.spectral_features_calculators as spectral_features_calculators
@@ -30,11 +32,8 @@ def calculate_all_features(data, params=None, window_size=None, columns=None, si
     -------
 
     """
-    modules = [statistical_feature_calculators,
-               spectral_features_calculators]
-    calculators = get_calculators(modules)
-    
-    calculate_ts_features(data, calculators, params=params, window_size=window_size,
+
+    calculate_ts_features(data, ["statistical", "spectral", "timefreq"], params=params, window_size=window_size,
                           columns=columns, signal_name=signal_name, njobs=njobs)
 
 def calculate_statistical_features(data, params=None, window_size=None, columns=None, signal_name=None, njobs=None):
@@ -62,8 +61,7 @@ def calculate_statistical_features(data, params=None, window_size=None, columns=
     features: pandas.DataFrame
         DataFrame of calculated features.
     """
-    calculators = get_calculators([statistical_feature_calculators])
-    features = calculate_ts_features(data, calculators, params=params, window_size=window_size,
+    features = calculate_ts_features(data, ["statistical"], params=params, window_size=window_size,
                                      columns=columns, signal_name=signal_name, njobs=njobs)
     return features
 
@@ -73,7 +71,7 @@ def calculate_spectral_features():
 def calculate_time_frequency_features():
     pass
 
-def calculate_ts_features(data, calculators, params=None, window_size=None, columns=None, signal_name=None, njobs=None):
+def calculate_ts_features(data, modules, params=None, window_size=None, columns=None, signal_name=None, njobs=None):
     """
     Calculate features for the given time series data.
     """
@@ -88,21 +86,48 @@ def calculate_ts_features(data, calculators, params=None, window_size=None, colu
 
     param_dict = params.get_settings_as_dict()
 
-    for series in time_series:
-        features.append(calculate_features(series[1], calculators, param_dict))
-        index.append(series[0])
+    pool = mp.Pool(njobs)
+
+    results = pool.imap(partial(calculate_features, modules=modules, param_dict=param_dict), time_series)
+
+    for r in results:
+        index.append(r[0])
+        features.append(r[1])
 
     features_df = pd.DataFrame(features, index=index)
     return features_df
 
-def calculate_features(data, calculators, param_dict):
+def get_modules(module_str):
+    """
+    Get a list of modules corresponding to the given module strings.
+
+    Parameters:
+    ----------
+    module_str: list
+        List of strings representing the modules to use.
+
+    Returns:
+    -------
+    modules: list
+        List of modules.
+    """
+    modules = []
+    for name in module_str:
+        if name=="statistical":
+            modules.append(statistical_feature_calculators)
+        elif name=="spectral":
+            modules.append(spectral_features_calculators)
+    return modules
+
+def calculate_features(series, modules, param_dict):
     """
     Calculate features for the given univariate time series data.
 
     Parameters:
     ----------
-    data: pandas.DataFrame or array-like
-        The dataset to calculate features for.
+    series: tuple of a string and pandas.DataFrame or array-like
+        The name of the dataset to calculate features for and the data
+        itself.
     calculators: list
         List of feature calculators to use.
     param_dict: dict
@@ -114,9 +139,10 @@ def calculate_features(data, calculators, param_dict):
         Dictionary of calculated features.
     """
     features = {}
+    calculators = get_calculators(get_modules(modules))
     for calculate in calculators:
-        feature = calculate(data, **param_dict)
-        name = calculate.names
+        feature = calculate(series[1], **param_dict)
+        name = getattr(calculate, "names")
 
         if isinstance(name, list):
             for n, f in zip(name, feature):
@@ -124,7 +150,7 @@ def calculate_features(data, calculators, param_dict):
         else:
             features[name] = feature
 
-    return features
+    return series[0], features
 
 def get_calculators(modules):
     """

@@ -19,6 +19,8 @@ def name(strname, argname=None):
                         names.append(n)
                 else:
                     names.append(strname)
+            if len(names) == 1:
+                names = names[0]
             wrapper.names = names
             return func(*args, **kwargs)
         return wrapper

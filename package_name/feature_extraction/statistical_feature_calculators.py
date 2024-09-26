@@ -631,7 +631,6 @@ def calculate_root_mean_square(signal, **kwargs):
     """
     return np.array([np.sqrt(np.mean(signal**2))])
 
-# @exclude()
 @name("energy")
 def calculate_signal_energy(signal, **kwargs):
     """
@@ -675,7 +674,6 @@ def calculate_log_energy(signal, **kwargs):
     """
     return np.array([np.log(np.sum(signal**2))])
 
-@exclude()
 @name("entropy")
 def calculate_entropy(signal, window_size, **kwargs):
     """
@@ -710,7 +708,6 @@ def calculate_entropy(signal, window_size, **kwargs):
         entropy = np.nan
     return np.array([entropy])
 
-@exclude()
 @name("sample_entropy")
 def calculate_sample_entropy(signal, **kwargs):
     """
@@ -752,7 +749,7 @@ def calculate_sample_entropy(signal, **kwargs):
     A = _phi(m + 1)
     B = _phi(m)
 
-    return -np.log(A / B)
+    return np.array([-np.log(A / B)])
 
 @name("differential_entropy")
 def calculate_differential_entropy(signal, **kwargs):
@@ -784,7 +781,6 @@ def calculate_differential_entropy(signal, **kwargs):
     print(entropy(probability))
     return np.array([entropy(probability)])
 
-@exclude()
 @name("approximate_entropy")
 def calculate_approximate_entropy(signal, **kwargs):
     """
@@ -821,7 +817,7 @@ def calculate_approximate_entropy(signal, **kwargs):
         C = np.sum(np.max(np.abs(X[:, None] - X[None, :]), axis=2) <= r, axis=0)
         return np.sum(np.log(C / (N - m + 1))) / (N - m + 1)
 
-    return _phi(m) - _phi(m + 1)
+    return np.array([_phi(m) - _phi(m + 1)])
 
 @name("renyi_entropy")
 def calculate_renyi_entropy(signal, window_size, renyi_alpha_parameter, **kwargs):
@@ -860,7 +856,7 @@ def calculate_renyi_entropy(signal, window_size, renyi_alpha_parameter, **kwargs
     """
     try:
         # Calculate the histogram
-        hist, _ = np.histogram(signal, bins= window_size//2, density=True)
+        hist, _ = np.histogram(signal, bins=window_size//2, density=True)
         # Replace zero values with a small epsilon
         epsilon = 1e-10
         hist = np.where(hist > 0, hist, epsilon)
@@ -1760,10 +1756,8 @@ def calculate_count_below_mean(signal, **kwargs):
     mean_val = np.mean(signal)
     return np.array([np.sum(signal < mean_val)])
 
-#TODO: cHANGE PARAM NAME AND SWITCH TO SETTINGS
-@exclude()
 @name("count_below")
-def calculate_count_below(signal, x, **kwargs):
+def calculate_count_below(signal, count_below_or_above_x, **kwargs):
     """
     Calculate the count of values below scalar x: default is 0
     
@@ -1771,7 +1765,7 @@ def calculate_count_below(signal, x, **kwargs):
     -----------
     signal : array-like
         The input time series data.
-    x : int
+    count_below_or_above_x : int
         Value of interest
         
     Return:
@@ -1785,11 +1779,10 @@ def calculate_count_below(signal, x, **kwargs):
         basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
         https://doi.org/10.1016/J.NEUCOM.2018.03.067
     """
-    return np.array([np.sum(signal < x)])
+    return np.array([np.sum(signal < count_below_or_above_x)])
 
-@exclude()
 @name("count_above")
-def calculate_count_above(signal, x, **kwargs):
+def calculate_count_above(signal, count_below_or_above_x, **kwargs):
     """
     Calculate the count of values above scalar x: default is 0
     
@@ -1797,7 +1790,7 @@ def calculate_count_above(signal, x, **kwargs):
     -----------
     signal : array-like
         The input time series data.
-    x : int
+    count_below_or_above_x : int
         Value of interest
         
     Return:
@@ -1811,7 +1804,7 @@ def calculate_count_above(signal, x, **kwargs):
         basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
         https://doi.org/10.1016/J.NEUCOM.2018.03.067
     """
-    return np.array([np.sum(signal > x)])
+    return np.array([np.sum(signal > count_below_or_above_x)])
 
 # Also not suitable for calculate all
 @exclude()
@@ -1824,7 +1817,6 @@ def calculate_covariance(signal, other_signal, **kwargs):
     """
     return np.cov(signal, other_signal)[0, 1]
 
-@exclude()
 @name("cumulative_sum")
 def calculate_cumulative_sum(signal, **kwargs):
     """
@@ -1832,7 +1824,7 @@ def calculate_cumulative_sum(signal, **kwargs):
     ----------
         https://docs.amd.com/r/2020.2-English/ug1483-model-composer-sys-gen-user-guide/Cumulative-Sum
     """
-    return np.cumsum(signal)[-1]
+    return np.array([np.cumsum(signal)[-1]])
 
 @name("energy_ratio_by_chunks")
 def calculate_energy_ratio_by_chunks(signal, energy_ratio_chunks, **kwargs):
@@ -2567,17 +2559,15 @@ def calculate_percentage_of_reoccurring_values_to_all_values(signal, **kwargs):
 
     return np.array([100 * np.sum(counts > 1) / float(counts.shape[0])])
 
-#TODO: Add R to settings
-@exclude()
-@name("ratio_beyond_r_sigma_{}", "r")
-def calculate_ratio_beyond_r_sigma(signal, r, **kwargs):
+@name("ratio_beyond_r_sigma_{}", "r_sigma")
+def calculate_ratio_beyond_r_sigma(signal, r_sigma, **kwargs):
     """
     Calculates the ratio of data points in the signal that are beyond 'r' times the standard deviation from the mean.
 
     Parameters:
     -----------
         signal (array-like): The input signal data.
-        r (list): The multiplier for the standard deviation to define the threshold.
+        r_sigma (list): The multiplier for the standard deviation to define the threshold.
 
     Returns:
     --------
@@ -2590,10 +2580,10 @@ def calculate_ratio_beyond_r_sigma(signal, r, **kwargs):
         https://doi.org/10.1016/J.NEUCOM.2018.03.067
     """
     results = []
-    for multiplier in r:
+    for multiplier in r_sigma:
         std_dev = np.std(signal)
         mean_val = np.mean(signal)
-        results.append(np.sum(np.abs(signal - mean_val) > r * std_dev) / len(signal))
+        results.append(np.sum(np.abs(signal - mean_val) > multiplier * std_dev) / len(signal))
     return np.array(results)
 
 @name(["ratio_positive", "ratio_negative", "ratio_positive_to_negative"])
@@ -3025,7 +3015,7 @@ def calculate_detrended_fluctuation_analysis(signal, order=1, minimal=20, **kwar
             p = np.polyfit(t, Y[:, i], 1)
             F[:, i] = Y[:, i] - t * p[0] - p[1]
         fluctuation_values.append(np.mean(np.std(F)))
-        
+
     return segment_sizes, np.array(fluctuation_values)
 
 @name("hurst_exponent")
@@ -3058,38 +3048,34 @@ def calculate_hurst_exponent(signal, **kwargs):
     hurst = poly[0]
     return np.array([hurst])
 
-# TODO: Figure out the problem
-@exclude()
-# Figure out how to format this
 @name(["adf_teststats", "adf_pvalue", "adf_usedlag"])
 def calculate_augmented_dickey_fuller_test(signal, **kwargs):
-        """
-        Perform the Augmented Dickey-Fuller (ADF) test to check for stationarity in a given time series signal.
+    """
+    Perform the Augmented Dickey-Fuller (ADF) test to check for stationarity in a given time series signal.
 
-        The ADF test is a statistical test used to determine if a time series is stationary or has a unit root.
-        A stationary time series has constant mean and variance over time.
+    The ADF test is a statistical test used to determine if a time series is stationary or has a unit root.
+    A stationary time series has constant mean and variance over time.
 
-        Parameters:
-        ----------
-        signal (array-like): 
-            The time series data to be tested for stationarity.
+    Parameters:
+    ----------
+    signal (array-like): 
+        The time series data to be tested for stationarity.
 
-        Returns:
-        -------
-        np.array or float:
-                    A numpy array containing the test statistic, p-value, and number of lags used in the test.
-                    If the test fails due to an exception, returns NaN.
-        Reference:
-        ---------
-            Christ et al., 2018, https://doi.org/10.1016/J.NEUCOM.2018.03.067
-        """
-        adf_vals_names = np.array(["teststats", "pvalue", "usedlag"])
-        try:
-            test_stat, p_value, used_lag, _,_,_ = adfuller(signal)
-            adf_vals = np.array([test_stat, p_value, used_lag])
-        except:
-            return np.nan
-        return adf_vals, adf_vals_names
+    Returns:
+    -------
+    np.array or float:
+                A numpy array containing the test statistic, p-value, and number of lags used in the test.
+                If the test fails due to an exception, returns NaN.
+    Reference:
+    ---------
+        Christ et al., 2018, https://doi.org/10.1016/J.NEUCOM.2018.03.067
+    """
+    try:
+        test_stat, p_value, used_lag, _,_,_ = adfuller(signal)
+        adf_vals = np.array([test_stat, p_value, used_lag])
+    except:
+        return np.array([np.nan, np.nan, np.nan])
+    return adf_vals
 
 @name("has_duplicates")
 def calculate_duplicates(signal, **kwargs):
@@ -3214,10 +3200,8 @@ def calculate_large_std(signal, **kwargs):
 
     return np.array([np.std(signal) > (r * range)])
 
-# TODO: Make separate parameter in settings for this
-@exclude()
 @name("lempel_ziv_complexity")
-def calculate_lempel_ziv_complexity(signal, bins, **kwargs):
+def calculate_lempel_ziv_complexity(signal, lz_bins, **kwargs):
     """
     Calculate the Lempel-Ziv complexity of a given time series.
 
@@ -3231,7 +3215,7 @@ def calculate_lempel_ziv_complexity(signal, bins, **kwargs):
     -----------
     signal : array-like
         The input time series
-    bins : int
+    lz_bins : int
         The number of bins to discretize the time series into.
 
     Returns:
@@ -3249,7 +3233,7 @@ def calculate_lempel_ziv_complexity(signal, bins, **kwargs):
     signal = np.asarray(signal)
 
     # Discretize the signal into bins
-    bin_edges = np.linspace(np.min(signal), np.max(signal), bins + 1)[1:]
+    bin_edges = np.linspace(np.min(signal), np.max(signal), lz_bins + 1)[1:]
     discretized_sequence = np.searchsorted(bin_edges, signal, side="left")
 
     unique_subsequences = set()
@@ -3266,13 +3250,11 @@ def calculate_lempel_ziv_complexity(signal, bins, **kwargs):
             unique_subsequences.add(subsequence)
             ind += inc
             inc = 1
-   
-    return len(unique_subsequences) / length
 
-# TODO: Add parameter to settings
-@exclude()
+    return np.array([len(unique_subsequences) / length])
+
 @name("cid_ce")
-def calculate_cid_ce(signal, normalize, **kwargs):
+def calculate_cid_ce(signal, cid_ce_normalize, **kwargs):
     """
     Calculate the Complexity Estimate (CE) of a time series signal.
 
@@ -3312,7 +3294,7 @@ def calculate_cid_ce(signal, normalize, **kwargs):
     - If `normalize` is set to True, the signal is scaled to have zero mean and unit variance. This 
     step is crucial when comparing signals of different scales.
     """
-    if normalize:
+    if cid_ce_normalize:
         s = np.std(signal)
         if s != 0:
             signal = (signal - np.mean(signal)) / s
@@ -3320,7 +3302,7 @@ def calculate_cid_ce(signal, normalize, **kwargs):
             return 0.0
 
     signal = np.diff(signal)
-    return np.sqrt(np.dot(signal, signal))
+    return np.array([np.sqrt(np.dot(signal, signal))])
 
 @exclude()
 @name("conditional_entropy")

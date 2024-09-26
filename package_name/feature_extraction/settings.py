@@ -136,10 +136,14 @@ class StatisticalFeatureParams(BaseFeatureParams):
     hist_bins : int, optional
         Bins for the histogram. The default is 10.
     q : list, optional
-        Quantiles. The default is [0.1, 0.2, 0.25, 0.3, 0.4, 0.6, 0.7, 0.75, 0.8, 0.9].                                                                                                                                                                                                                                                          
+        Quantiles. The default is [0.1, 0.2, 0.25, 0.3, 0.4, 0.6, 0.7, 0.75, 0.8, 0.9].
+    r_sigma: list, optional
+        STD multiplier. The default is [0.1, 0.2, 0.3, 0.4, 0.5].
+    lz_bins : int, optional
+        Bins for the Lempel-Ziv. The default is 10.                                                                                                                                                                                                                                                    
     """
     def __init__(self,
-                 window_size: int,
+                 window_size,
                  n_lags_auto_correlation=None,
                  moment_orders=None,
                  trimmed_mean_thresholds=None,
@@ -156,15 +160,17 @@ class StatisticalFeatureParams(BaseFeatureParams):
                  energy_ratio_chunks = 4,
                  mode = 'valid',
                  weights = None,
-                 ema_alpha: float=0.3, 
-                 dfa_order: int=1,
-                 dfa_minimum = 20,
-                 wm_limits = [0.05, 0.05],
-                 bins = [2,3,4,10,100],
-                 count_below_or_above_x = 0,
-                 cid_ce_normalize = [True, False],
-                 hist_bins = 10,
-                 q = [0.1, 0.2, 0.25, 0.3, 0.4, 0.6, 0.7, 0.75, 0.8, 0.9]
+                 ema_alpha=0.3, 
+                 dfa_order=1,
+                 dfa_minimum=20,
+                 wm_limits=[0.05, 0.05],
+                 bins=[2,3,4,10,100],
+                 count_below_or_above_x=0,
+                 cid_ce_normalize=[True, False],
+                 hist_bins=10,
+                 q=[0.1, 0.2, 0.25, 0.3, 0.4, 0.6, 0.7, 0.75, 0.8, 0.9],
+                 r_sigma=[1, 2],
+                 lz_bins=10
                 ):
         self.window_size = window_size
         self.tsallis_q_parameter = tsallis_q_parameter
@@ -188,6 +194,8 @@ class StatisticalFeatureParams(BaseFeatureParams):
         self.cid_ce_normalize = cid_ce_normalize
         self.hist_bins = hist_bins
         self.q = q
+        self.r_sigma = r_sigma
+        self.lz_bins = lz_bins
 
         if n_lags_auto_correlation is None:
             self.n_lags_auto_correlation = int(min(10 * np.log10(window_size), window_size - 1))

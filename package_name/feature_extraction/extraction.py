@@ -1,9 +1,11 @@
+import pandas as pd
+
 import package_name.feature_extraction.statistical_feature_calculators as statistical_feature_calculators
 import package_name.feature_extraction.spectral_features_calculators as spectral_features_calculators
 from package_name.feature_extraction.settings import StatisticalFeatureParams
 from package_name.utils.data import TimeSeries
 
-def calculate_all_features(data, params=None, window_size=None, columns=None, signal_name=None):
+def calculate_all_features(data, params=None, window_size=None, columns=None, signal_name=None, n_jobs=-1):
     """
     Calculates statisctical, spectral, and time frequency features for the
     given dataset.
@@ -19,11 +21,13 @@ def calculate_all_features(data, params=None, window_size=None, columns=None, si
                spectral_features_calculators]
     calculators = get_calculators(modules)
     
-    calculate_ts_features(data, calculators, params=params, window_size=window_size)
+    calculate_ts_features(data, calculators, params=params, window_size=window_size,
+                          columns=columns, signal_name=signal_name)
 
 def calculate_statistical_features(data, params=None, window_size=None, columns=None, signal_name=None):
     calculators = get_calculators([statistical_feature_calculators])
-    features = calculate_ts_features(data, calculators, params=params, window_size=window_size)
+    features = calculate_ts_features(data, calculators, params=params, window_size=window_size,
+                                     columns=columns, signal_name=signal_name)
     return features
 
 def calculate_spectral_features():
@@ -32,19 +36,27 @@ def calculate_spectral_features():
 def calculate_time_frequency_features():
     pass
 
-def calculate_ts_features(data, calculators, params=None, window_size=None, columns=None):
+def calculate_ts_features(data, calculators, params=None, window_size=None, columns=None, signal_name=None):
+    """
+    Calculate features for the given time series data.
+    """
+    features = []
+    index = []
+
     # Standardize data format
-    time_series = TimeSeries(data, columns=columns)
+    time_series = TimeSeries(data, columns=columns, name=signal_name)
 
     if params is None:
         params = StatisticalFeatureParams(window_size)
 
     param_dict = params.get_settings_as_dict()
 
-    # TODO: somehow iterate through time series
-    features = calculate_features(time_series.data, calculators, param_dict)
+    for series in time_series:
+        features.append(calculate_features(series[1], calculators, param_dict))
+        index.append(series[0])
 
-    return features
+    features_df = pd.DataFrame(features, index=index)
+    return features_df
 
 def calculate_features(data, calculators, param_dict):
     """
@@ -69,14 +81,26 @@ def calculate_features(data, calculators, param_dict):
         feature = calculate(data, **param_dict)
         name = calculate.names
 
-        print(name, feature)
         for n, f in zip(name, feature):
             features[n] = f
 
     return features
 
-# TODO: Change this to look at function attribute
 def get_calculators(modules):
+    """
+    Get all calculator functions from the given modules. Will exclude functions
+    with the 'exclude' attribute.
+
+    Parameters:
+    ----------
+    modules: list
+        List of modules to get the calculators from.
+    
+    Returns:
+    -------
+    calculators: list
+        List of calculator functions.
+    """
     calculators = []
     for m in modules:
         module_calculators = [v for k, v in m.__dict__.items() if k.startswith("calculate_") and not hasattr(v, 'exclude')]

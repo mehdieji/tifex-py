@@ -11,7 +11,7 @@ class BaseFeatureParams:
         pass
 
     @staticmethod
-    def load_from_json(file_path):
+    def from_json(file_path):
         """
         Load the settings from a json file. Overwrites the current settings.
 
@@ -25,7 +25,7 @@ class BaseFeatureParams:
         return StatisticalFeatureParams(**settings)
 
     @staticmethod
-    def load_from_yaml(file_path):
+    def from_yaml(file_path):
         """
         Load the settings from a yaml file. Overwrites the current settings.
 
@@ -47,7 +47,9 @@ class BaseFeatureParams:
         file_path : str
             Path to the file.
         """
-        pass
+        settings = self.get_settings_as_dict()
+        with open(file_path, 'w') as file:
+            json.dump(settings, file, indent=4)
     
     def to_yaml(self, file_path):
         """
@@ -58,7 +60,9 @@ class BaseFeatureParams:
         file_path : str
             Path to the file.
         """
-        pass
+        settings = self.get_settings_as_dict()
+        with open(file_path, 'w') as file:
+            yaml.dump(settings, file, default_flow_style=False)
 
     def get_settings_as_dict(self):
         """

@@ -1270,7 +1270,7 @@ def calculate_higher_order_moments(signal, moment_orders, **kwargs):
     """
     feats = []
     for order in moment_orders:
-            feats.append(moment(signal, moment=order))
+        feats.append(moment(signal, moment=order))
     return np.array(feats)
 
 @name("spectral_coefficient_of_variation")
@@ -2172,10 +2172,10 @@ def calculate_linear_trend_with_full_linear_regression_results(signal, **kwargs)
 
 @name(["local_maxima", "local_minima"])
 def calculate_local_maxima_and_minima(signal, **kwargs):
-        # https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.find_peaks.html
-        local_max = find_peaks(signal)[0]
-        local_min = find_peaks(-signal)[0]
-        return len(local_max), len(local_min)
+    # https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.find_peaks.html
+    local_max = find_peaks(signal)[0]
+    local_min = find_peaks(-signal)[0]
+    return len(local_max), len(local_min)
 
 @name("log_return")
 def calculate_log_return(signal, **kwargs):
@@ -2559,7 +2559,6 @@ def calculate_percentage_of_reoccurring_values_to_all_values(signal, **kwargs):
         - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
         basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
         https://doi.org/10.1016/J.NEUCOM.2018.03.067
-    
     """
     unique, counts = np.unique(signal, return_counts=True)
 
@@ -2665,7 +2664,7 @@ def calculate_signal_resultant(signal, **kwargs):
     Returns:
     --------
         float: The square root of the sum of squares of the signal values.
-        
+
     """
     return np.array([np.sqrt(np.sum(signal**2))])
 
@@ -3059,6 +3058,8 @@ def calculate_hurst_exponent(signal, **kwargs):
     hurst = poly[0]
     return np.array([hurst])
 
+# TODO: Figure out the problem
+@exclude()
 # Figure out how to format this
 @name(["adf_teststats", "adf_pvalue", "adf_usedlag"])
 def calculate_augmented_dickey_fuller_test(signal, **kwargs):

@@ -1,6 +1,7 @@
 import numpy as np
 import json
 import yaml
+import pywt
 from typing import List
 # from feature_extraction.extraction import calculate_statistical_features
 # from feature_extraction.extraction import calculate_frequency_features
@@ -231,3 +232,22 @@ class SpectralFeatureParams(BaseFeatureParams):
             self.cumulative_power_thresholds = np.array([.5, .75, .85, .9, 0.95])
         else:
             self.cumulative_power_thresholds = cumulative_power_thresholds
+
+
+class TimeFrequencyFeatureParams(BaseFeatureParams):
+    def __init__(self,
+                 window_size,
+                 wavelet="db4",
+                 decomposition_level=None,
+                 stft_window="hann",
+                 nperseg=None
+                ):
+        self.window_size = window_size
+        self.wavelet = wavelet
+        self.stft_window = stft_window
+        self.nperseg = nperseg if nperseg else window_size // 4
+        if decomposition_level is None:
+            wavelet_length = len(pywt.Wavelet(wavelet).dec_lo)
+            self.decomposition_level = int(np.round(np.log2(self.window_size/wavelet_length) - 1))
+        else:
+            self.decomposition_level = decomposition_level

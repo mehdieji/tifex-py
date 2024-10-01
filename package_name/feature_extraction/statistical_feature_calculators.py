@@ -346,7 +346,7 @@ def calculate_median(signal, **kwargs):
     ---------
         Banos et al., 2012, DOI: 10.1016/j.eswa.2012.01.164
     """
-    return np.median(signal)]
+    return np.median(signal)
 
 @name("median_of_abs")
 def calculate_median_abs(signal, **kwargs):
@@ -1234,6 +1234,8 @@ def calculate_impulse_factor(signal, **kwargs):
     return impulse_factor
 
 # TODO: Make sure integer argument works
+# Compare to old implementation
+@exclude()
 @name("mean_of_auto_corr_lag_1_to_{}", "n_lags_auto_correlation")
 def calculate_mean_auto_correlation(signal, n_lags_auto_correlation, **kwargs):
     """
@@ -1562,10 +1564,10 @@ def calculate_petrosian_fractal_dimension(signal, **kwargs):
     2020, Vol. 34,  Issue 3, Pages: 180-190, 34(3), 180–190. https://doi.org/10.7555/JBR.33.20190009
     """
     N = len(signal)
-    nzc = calculate_zero_crossings(np.diff(signal))[0]
+    nzc = calculate_zero_crossings(np.diff(signal))
     return np.log10(N) / (np.log10(N) + np.log10(N / (N + 0.4 * nzc)))
 
-@name("hjorth_mobility_and_complexity")
+@name(["hjorth_mobility", "hjorth_complexity"])
 def calculate_hjorth_mobility_and_complexity(signal, **kwargs):
     """
     Calculates mobility and complexity of the time series which are based on 
@@ -1945,7 +1947,7 @@ def calculate_moving_average(signal, window_size, mode, **kwargs):
     """
     if len(signal) < window_size:
         return np.nan
-    return np.convolve(signal, np.ones(window_size) / window_size, mode= mode)
+    return np.convolve(signal, np.ones(window_size) / window_size, mode=mode)
 
 @name("weighted_moving_average")
 def calculate_weighted_moving_average(signal, weights, mode, **kwargs):
@@ -2096,7 +2098,7 @@ def calculate_fisher_information(signal, **kwargs):
     # https://www.researchgate.net/publication/311396939_Analysis_of_Signals_by_the_Fisher_Information_Measure
     variance = np.var(signal)
     information = 1 / variance if variance != 0 else float('inf')
-    return np.array([information])
+    return information
 
 # TODO: Allow integer series for naming or choose to put all in one
 @name("histogram_bin_frequencies")
@@ -2418,7 +2420,7 @@ def calculate_mean_second_derivative_central(signal, **kwargs):
         basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
         https://doi.org/10.1016/J.NEUCOM.2018.03.067
     """
-    return np.mean(np.diff(signal, n=2)) / 2 if len(signal) > 2 else np.NaN]
+    return np.mean(np.diff(signal, n=2)) / 2 if len(signal) > 2 else np.NaN
 
 @name("median_second_derivative_central")
 def calculate_median_second_derivative_central(signal, **kwargs):
@@ -3279,7 +3281,7 @@ def calculate_large_std(signal, **kwargs):
         Extraction on basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 
         307, 72–77. https://doi.org/10.1016/J.NEUCOM.2018.03.067
     """
-    range = calculate_range(signal)[0]
+    range = calculate_range(signal)
     N = len(signal)
     r = 4 if 15 < N <=70 else 6
 

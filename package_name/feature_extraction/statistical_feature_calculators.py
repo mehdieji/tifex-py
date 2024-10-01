@@ -23,13 +23,13 @@ def calculate_mean(signal, **kwargs):
 
     Returns:
     -------
-    np.array
-        An array containing the mean of the signal.
+    float
+        The mean of the signal.
     
     References:
         Manolopoulos et al., 2001, https://www.researchgate.net/publication/234800113
     """
-    return np.array([np.mean(signal)])
+    return np.mean(signal)
 
 @name("geometric_mean")
 def calculate_geometric_mean(signal, **kwargs):
@@ -43,15 +43,15 @@ def calculate_geometric_mean(signal, **kwargs):
 
     Returns:
     -------
-        np.array
-            An array containing the geometric mean of the signal.
+    float
+        The geometric mean of the signal.
     
     References:
     ----------
         Chaddad et al., 2014, DOI: 10.1117/12.2062143
     """
     signal = signal[signal > 0]
-    return np.array([gmean(signal)])
+    return gmean(signal)
 
 @name("harmonic_mean")
 def calculate_harmonic_mean(signal, **kwargs):
@@ -66,8 +66,8 @@ def calculate_harmonic_mean(signal, **kwargs):
 
     Returns:
     -------
-    np.array
-        An array containing the harmonic mean of the signal.
+    float
+       The harmonic mean of the signal.
     
     References:
     ----------
@@ -75,7 +75,7 @@ def calculate_harmonic_mean(signal, **kwargs):
     """
     # Filter out non-positive values
     signal = signal[signal > 0]
-    return np.array([hmean(signal)])
+    return hmean(signal)
 
 @name("geometric_mean")
 def calculate_trimmed_mean(signal, trimmed_mean_thresholds, **kwargs):
@@ -94,7 +94,8 @@ def calculate_trimmed_mean(signal, trimmed_mean_thresholds, **kwargs):
 
     Returns:
     -------
-        np.array: An array containing the trimmed means for each proportion.
+    float
+        The trimmed means for each proportion.
     
     References:
     ----------
@@ -117,8 +118,8 @@ def calculate_mean_abs(signal, **kwargs):
 
     Returns:
     -------
-        np.array
-            An array containing the mean of the absolute values of the signal.
+    float
+        The mean of the absolute values of the signal.
     
     References:
     ----------
@@ -128,7 +129,7 @@ def calculate_mean_abs(signal, **kwargs):
         - Phinyomark et al., 2012, DOI: 10.1016/j.eswa.2012.01.102
         - Purushothaman et al., 2018, DOI: 10.1007/s13246-018-0646-7
     """
-    return np.array([np.mean(np.abs(signal))])
+    return np.mean(np.abs(signal))
 
 @name("geometric_mean_of_abs")
 def calculate_geometric_mean_abs(signal, **kwargs):
@@ -142,13 +143,14 @@ def calculate_geometric_mean_abs(signal, **kwargs):
 
     Returns:
     -------
-        np.array
-            An array containing the geometric mean of the absolute values of the signal.
+    float
+        An array containing the geometric mean of the absolute values of the signal.
+   
     References:
     ----------
         DOI:10.1134/S1064226917050060
     """
-    return np.array([gmean(np.abs(signal))])
+    return gmean(np.abs(signal))
 
 @name("harmonic_mean_of_abs")
 def calculate_harmonic_mean_abs(signal, **kwargs):
@@ -162,13 +164,14 @@ def calculate_harmonic_mean_abs(signal, **kwargs):
 
     Returns:
     -------
-        np.array
+        float
             An array containing the harmonic mean of the absolute values of the signal.
-    Reference:
+
+    References:
     ---------
     
     """
-    return np.array([hmean(np.abs(signal))])
+    return hmean(np.abs(signal))
 
 @name("trimmed_mean_abs_{}", "trimmed_mean_thresholds")
 def calculate_trimmed_mean_abs(signal, trimmed_mean_thresholds, **kwargs):
@@ -188,9 +191,10 @@ def calculate_trimmed_mean_abs(signal, trimmed_mean_thresholds, **kwargs):
 
     Returns:
     -------
-        np.array
-            An array containing the trimmed means for each proportion.
-    Reference:
+    np.array
+        An array containing the trimmed means for each proportion.
+
+    References:
     ---------
     ---------
     """
@@ -211,14 +215,14 @@ def calculate_std(signal, **kwargs):
         
     Returns:
     -------
-        np.array
-            An array containing the standard deviation of the signal.
+    float
+        An array containing the standard deviation of the signal.
         
-    Reference:
+    References:
     ---------
         Manolopoulos et al., 2001, https://www.researchgate.net/publication/234800113
     """
-    return np.array([np.std(signal)])
+    return np.std(signal)
 
 @name("std_of_abs")
 def calculate_std_abs(signal, **kwargs):
@@ -232,13 +236,13 @@ def calculate_std_abs(signal, **kwargs):
         
     Returns:
     -------
-        np.array
-            An array containing the standard deviation of the absolute values of the signal.
+    float
+        An array containing the standard deviation of the absolute values of the signal.
         
-    Reference:
+    References:
     ---------
     """
-    return np.array([np.std(np.abs(signal))])
+    return np.std(np.abs(signal))
 
 @name("skewness")
 def calculate_skewness(signal, **kwargs):
@@ -252,15 +256,15 @@ def calculate_skewness(signal, **kwargs):
         
     Returns:
     -------
-        np.array
-            An array containing the skewness of the signal.
+    float
+        An array containing the skewness of the signal.
         
     References:
     ----------
         Manolopoulos et al., 2001, https://www.researchgate.net/publication/234800113
         Khorshidtalab et al., 2013 , DOI: 10.1088/0967-3334/34/11/1563
     """ 
-    return np.array([skew(signal)])
+    return skew(signal)
 
 @name("skewness_of_abs")
 def calculate_skewness_abs(signal, **kwargs):
@@ -274,13 +278,13 @@ def calculate_skewness_abs(signal, **kwargs):
         
     Returns:
     -------
-        np.array 
-            An array containing the skewness of the absolute values of the signal.
+    float
+        An array containing the skewness of the absolute values of the signal.
         
-    Reference:
+    References:
     ---------
     """
-    return np.array([skew(np.abs(signal))])
+    return skew(np.abs(signal))
 
 @name("kurtosis")
 def calculate_kurtosis(signal, **kwargs):
@@ -294,15 +298,15 @@ def calculate_kurtosis(signal, **kwargs):
         
     Returns:
     -------
-        np.array:
-            An array containing the kurtosis of the signal.
+    float
+        The kurtosis of the signal.
         
     References:
     ----------
         Manolopoulos et al., 2001, https://www.researchgate.net/publication/234800113
         Khorshidtalab et al., 2013 , DOI: 10.1088/0967-3334/34/11/1563
     """
-    return np.array([kurtosis(signal)])
+    return kurtosis(signal)
 
 @name("kurtosis_of_abs")
 def calculate_kurtosis_abs(signal, **kwargs):
@@ -316,12 +320,12 @@ def calculate_kurtosis_abs(signal, **kwargs):
         
     Returns:
     -------
-        np.array
-            An array containing the kurtosis of the absolute values of the signal.
+    float
+        The kurtosis of the absolute values of the signal.
         
-    Reference:
+    References:
     """
-    return np.array([kurtosis(np.abs(signal))])
+    return kurtosis(np.abs(signal))
 
 @name("median")
 def calculate_median(signal, **kwargs):
@@ -335,14 +339,14 @@ def calculate_median(signal, **kwargs):
         
     Returns:
     -------
-        np.array:
-            An array containing the median  of the signal.
+    float
+        The median  of the signal.
         
-    Reference:
+    References:
     ---------
         Banos et al., 2012, DOI: 10.1016/j.eswa.2012.01.164
     """
-    return np.array([np.median(signal)])
+    return np.median(signal)]
 
 @name("median_of_abs")
 def calculate_median_abs(signal, **kwargs):
@@ -356,13 +360,13 @@ def calculate_median_abs(signal, **kwargs):
         
     Returns:
     -------
-        np.array
-            An array containing the median of the absolute values of the signal.
+    float
+        The median of the absolute values of the signal.
         
-    Reference:
+    References:
     ---------
     """
-    return np.array([np.median(np.abs(signal))])
+    return np.median(np.abs(signal))
 
 @name("min")
 def calculate_min(signal, **kwargs):
@@ -376,10 +380,10 @@ def calculate_min(signal, **kwargs):
         
     Returns:
     -------
-        np.array
-            An array containing the minimum value of the signal.
+    float
+        The minimum value of the signal.
         
-    Reference:
+    References:
     ---------
         -Quanz, B., Fei, H., Huan, J., Evans, J., Frost, V., Minden, G., Deavours, D., Searl, L., 
         Depardo, D., Kuehnhausen, M., Fokum, D., Zeets, M., & Oguna, A. (2009). Anomaly detection 
@@ -387,7 +391,7 @@ def calculate_min(signal, **kwargs):
         Communications and Networks, ICCCN. https://doi.org/10.1109/ICCCN.2009.5235262
     """
     min_val = np.min(signal)
-    return np.array([min_val])
+    return min_val
 
 @name("min_of_abs")
 def calculate_min_abs(signal, **kwargs):
@@ -401,14 +405,14 @@ def calculate_min_abs(signal, **kwargs):
         
     Returns:
     -------
-        np.array
-            An array containing the minimum value of the absolute values of the signal.
+    float
+        The minimum value of the absolute values of the signal.
         
-    Reference:
+    References:
     ---------
     """
     min_abs_val = np.min(np.abs(signal))
-    return np.array([min_abs_val])
+    return min_abs_val
 
 @name("max")
 def calculate_max(signal, **kwargs):
@@ -422,15 +426,15 @@ def calculate_max(signal, **kwargs):
         
     Returns:
     -------
-        np.array
-            An array containing the maximum value of the signal.
+    float
+        The maximum value of the signal.
         
-    Reference:
+    References:
     ---------
         Khorshidtalab et al., 2013 , DOI: 10.1088/0967-3334/34/11/1563
     """
     max_val = np.max(signal)
-    return np.array([max_val])
+    return max_val
 
 @name("max_of_abs")
 def calculate_max_abs(signal, **kwargs):
@@ -444,17 +448,17 @@ def calculate_max_abs(signal, **kwargs):
         
     Returns:
     -------
-    np.array
-        An array containing the maximum value of the absolute values of the signal.
+    float
+        The maximum value of the absolute values of the signal.
         
-    Reference:
+    References:
     ----------
         - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
         basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
         https://doi.org/10.1016/J.NEUCOM.2018.03.067
     """
     max_abs_val = np.max(np.abs(signal))
-    return np.array([max_abs_val])
+    return max_abs_val
 
 @name("range")
 def calculate_range(signal, **kwargs):
@@ -469,15 +473,15 @@ def calculate_range(signal, **kwargs):
     Returns:
     -------
     np.array
-        An array containing the range of the signal.
+        The range of the signal.
         
-    Reference:
+    References:
     ---------
         - Wan, X., Wang, W., Liu, J., & Tong, T. (2014). Estimating the sample mean and standard deviation from 
         the sample size, median, range and/or interquartile range. BMC Medical Research Methodology, 14(1), 
         1–13. https://doi.org/10.1186/1471-2288-14-135/TABLES/3
     """
-    return np.array([np.max(signal) - np.min(signal)])
+    return np.max(signal) - np.min(signal)
 
 @name("range_of_abs")
 def calculate_range_abs(signal, **kwargs):
@@ -491,14 +495,14 @@ def calculate_range_abs(signal, **kwargs):
         
     Returns:
     -------
-        np.array
-            An array containing the range of the absolute values of the signal.
+    float
+        The range of the absolute values of the signal.
         
-    Reference:
+    References:
     ---------
     """
     abs_signal = np.abs(signal)
-    return np.array([np.max(abs_signal) - np.min(abs_signal)])
+    return np.max(abs_signal) - np.min(abs_signal)
 
 @name("var")
 def calculate_variance(signal, **kwargs):
@@ -507,18 +511,19 @@ def calculate_variance(signal, **kwargs):
 
     Parameters:
     ----------
-        signal (array-like): The input time series.
+    signal : np.array
+        The input time series.
         
     Returns:
     -------
-        np.array
-            An array containing the variance of the signal.
+    float
+        The variance of the signal.
         
-    Reference:
+    References:
     ---------
         Khorshidtalab et al., 2013 , DOI: 10.1088/0967-3334/34/11/1563
     """
-    return np.array([np.var(signal)])
+    return np.var(signal)
 
 @name("var_of_abs")
 def calculate_variance_abs(signal, **kwargs):
@@ -527,17 +532,18 @@ def calculate_variance_abs(signal, **kwargs):
 
     Parameters:
     ----------
-        signal (array-like): The input time series.
+    signal : np.array
+        The input time series.
         
     Returns:
     -------
-        np.array
-            An array containing the variance of the absolute values of the  signal.
+    float
+        The variance of the absolute values of the signal.
         
-    Reference:
+    References:
     ---------
     """
-    return np.array([np.var(np.abs(signal))])
+    return np.var(np.abs(signal))
 
 @name("iqr")
 def calculate_interquartile_range(signal, **kwargs):
@@ -548,19 +554,21 @@ def calculate_interquartile_range(signal, **kwargs):
 
     Parameters:
     ----------
-        signal (array-like): The input time series.
+    signal : np,array
+        The input time series.
 
     Returns:
     -------
-        np.array
-            An array containing the interquartile range of the signal.
+    float
+        An array containing the interquartile range of the signal.
     
     References:
     ----------
         Bedeeuzzaman et al., 2012, DOI: 10.5120/6304-8614
     """
-    return np.array([np.percentile(signal, 75) - np.percentile(signal, 25)])
+    return np.percentile(signal, 75) - np.percentile(signal, 25)
 
+# TODO: FIX THIS 
 @name("quantile_{}", "q")
 def calculate_quantile(signal, q, **kwargs):
     """
@@ -568,16 +576,16 @@ def calculate_quantile(signal, q, **kwargs):
     
     Parameters:
     -----------
-        signal : np.array
-            The input time series
-        q : array of float
+    signal : np.array
+        The input time series
+    q : array of float
             
-    Return:
+    Returns:
     -------
     np.array
         An array containing the quantile values of the signal
     
-    Reference:
+    References:
     ----------
     """
     if len(signal) == 0:
@@ -593,18 +601,20 @@ def calculate_mean_absolute_deviation(signal, **kwargs):
 
     Parameters:
     ----------
-        signal (array-like): The input time series.
+    signal : np.array
+        The input time series.
 
     Returns:
     -------
-        np.array
-            An array containing the mean absolute deviation of the signal.
+    float
+        The mean absolute deviation of the signal.
     
     References:
+    ----------
         - Pham-Gia, T., & Hung, T. L. (2001). The mean and median absolute deviations. Mathematical and Computer Modelling,
         34(7–8), 921–936. https://doi.org/10.1016/S0895-7177(01)00109-1
     """
-    return np.array([np.mean(np.abs(signal - np.mean(signal)))])
+    return np.mean(np.abs(signal - np.mean(signal)))
 
 @name("rms")
 def calculate_root_mean_square(signal, **kwargs):
@@ -615,12 +625,13 @@ def calculate_root_mean_square(signal, **kwargs):
 
     Parameters:
     ----------
-        signal (array-like): The input time series.
+    signal : np.array
+        The input time series.
 
     Returns:
     -------
-        np.array
-            An array containing the root mean square of the signal.
+    float
+        The root mean square of the signal.
     
     References:
     ----------
@@ -629,7 +640,7 @@ def calculate_root_mean_square(signal, **kwargs):
         Hamedi, M. (2013). Robust classification of motor imagery EEG signals using statistical 
         time–domain features. Physiological Measurement, 34(11), 1563. https://doi.org/10.1088/0967-3334/34/11/1563
     """
-    return np.array([np.sqrt(np.mean(signal**2))])
+    return np.sqrt(np.mean(signal**2))
 
 @name("energy")
 def calculate_signal_energy(signal, **kwargs):
@@ -640,17 +651,18 @@ def calculate_signal_energy(signal, **kwargs):
 
     Parameters:
     ----------
-        signal (array-like): The input time series.
+    signal : np.array
+        The input time series.
 
     Returns:
     -------
-        np.array
-            An array containing the energy of the signal.
+    float
+        The energy of the signal.
     
     References:
         Rafiuddin et al., 2011, DOI: 10.1109/MSPCT.2011.6150470
     """
-    return np.array([np.sum(signal**2)])
+    return np.sum(signal**2)
 
 @name("log_of_energy")
 def calculate_log_energy(signal, **kwargs):
@@ -661,18 +673,19 @@ def calculate_log_energy(signal, **kwargs):
 
     Parameters:
     ----------
-        signal (array-like): The input time series.
+    signal : np.array
+        The input time series.
 
     Returns:
     -------
-        np.array:
-            An array containing the logarithm of the energy of the signal.
+    float
+        The logarithm of the energy of the signal.
         
-    Reference:
+    References:
     ---------
     https://mathworks.com/help/audio/ref/mfcc.html
     """
-    return np.array([np.log(np.sum(signal**2))])
+    return np.log(np.sum(signal**2))
 
 @name("entropy")
 def calculate_entropy(signal, window_size, **kwargs):
@@ -684,12 +697,13 @@ def calculate_entropy(signal, window_size, **kwargs):
 
     Parameters:
     ----------
-        signal (array-like): The input time series.
+    signal : np.array
+        The input time series.
 
     Returns:
     -------
-        np.array:
-            An array containing the entropy of the signal.
+    float
+        The entropy of the signal.
     
     References:
     ----------
@@ -706,7 +720,7 @@ def calculate_entropy(signal, window_size, **kwargs):
         entropy = np.nan
     except Exception as e:
         entropy = np.nan
-    return np.array([entropy])
+    return entropy
 
 @name("sample_entropy")
 def calculate_sample_entropy(signal, **kwargs):
@@ -749,7 +763,7 @@ def calculate_sample_entropy(signal, **kwargs):
     A = _phi(m + 1)
     B = _phi(m)
 
-    return np.array([-np.log(A / B)])
+    return -np.log(A / B)
 
 @name("differential_entropy")
 def calculate_differential_entropy(signal, **kwargs):
@@ -778,7 +792,7 @@ def calculate_differential_entropy(signal, **kwargs):
     """
     probability, _ = np.histogram(signal, bins=10, density=True)
     probability = probability[probability > 0]
-    return np.array([entropy(probability)])
+    return entropy(probability)
 
 @name("approximate_entropy")
 def calculate_approximate_entropy(signal, **kwargs):
@@ -816,7 +830,7 @@ def calculate_approximate_entropy(signal, **kwargs):
         C = np.sum(np.max(np.abs(X[:, None] - X[None, :]), axis=2) <= r, axis=0)
         return np.sum(np.log(C / (N - m + 1))) / (N - m + 1)
 
-    return np.array([_phi(m) - _phi(m + 1)])
+    return _phi(m) - _phi(m + 1)
 
 @name("renyi_entropy")
 def calculate_renyi_entropy(signal, window_size, renyi_alpha_parameter, **kwargs):
@@ -844,8 +858,8 @@ def calculate_renyi_entropy(signal, window_size, renyi_alpha_parameter, **kwargs
 
     Returns:
     --------
-    numpy.ndarray
-        A numpy array containing the calculated Rényi entropy of the signal. If an error 
+    float
+        The calculated Rényi entropy of the signal. If an error 
         occurs during the calculation, the function returns NaN.
 
     References:
@@ -862,45 +876,46 @@ def calculate_renyi_entropy(signal, window_size, renyi_alpha_parameter, **kwargs
 
         if renyi_alpha_parameter == 1:
             # Return the Shannon entropy
-            return np.array([-sum([p * (0 if p == 0 else np.log(p)) for p in hist])])
+            return -sum([p * (0 if p == 0 else np.log(p)) for p in hist])
         else:
-            return np.array([(1 / (1 - renyi_alpha_parameter)) * np.log(sum([p ** renyi_alpha_parameter for p in hist]))])
+            return (1 / (1 - renyi_alpha_parameter)) * np.log(sum([p ** renyi_alpha_parameter for p in hist]))
     except:
-        return np.array([np.nan])
+        return np.nan
 
 @name("tsallis_entropy")
 def calculate_tsallis_entropy(signal, window_size, tsallis_q_parameter, **kwargs):
-        """
-        Calculates the tsallis entropy of the signal.
-        Tsallis entropy generalizes the Shannon entropy parameterized by a parameter 𝑞
-        q, which introduces non-extensivity (a form of non-linearity) into the entropy measure.
+    """
+    Calculates the tsallis entropy of the signal.
+    Tsallis entropy generalizes the Shannon entropy parameterized by a parameter 𝑞
+    q, which introduces non-extensivity (a form of non-linearity) into the entropy measure.
 
-        Parameters:
-        ----------
-            signal (array-like): The input time series.
+    Parameters:
+    ----------
+    signal (array-like): The input time series.
 
-        Returns:
-        -------
-            np.array:
-                An array containing the Tsallis entropy of the signal.
-        Reference:
-        ---------
-            - Sneddon, R. (2007). The Tsallis entropy of natural information. Physica A: Statistical Mechanics 
-            and Its Applications, 386(1), 101–118. https://doi.org/10.1016/J.PHYSA.2007.05.065
-        """
-        try:
-            # Calculate the histogram
-            hist, _ = np.histogram(signal, bins=window_size//2, density=True)
-            # Replace zero values with a small epsilon
-            epsilon = 1e-10
-            hist = np.where(hist > 0, hist, epsilon)
-            if tsallis_q_parameter == 1:
-                # Return the Boltzmann–Gibbs entropy
-                return np.array([-sum([p * (0 if p == 0 else np.log(p)) for p in hist])])
-            else:
-                return np.array([(1 - sum([p ** tsallis_q_parameter for p in hist])) / (tsallis_q_parameter - 1)])
-        except:
-            return np.array([np.nan])
+    Returns:
+    -------
+    float
+        The Tsallis entropy of the signal.
+
+    References:
+    ---------
+        - Sneddon, R. (2007). The Tsallis entropy of natural information. Physica A: Statistical Mechanics 
+        and Its Applications, 386(1), 101–118. https://doi.org/10.1016/J.PHYSA.2007.05.065
+    """
+    try:
+        # Calculate the histogram
+        hist, _ = np.histogram(signal, bins=window_size//2, density=True)
+        # Replace zero values with a small epsilon
+        epsilon = 1e-10
+        hist = np.where(hist > 0, hist, epsilon)
+        if tsallis_q_parameter == 1:
+            # Return the Boltzmann–Gibbs entropy
+            return -sum([p * (0 if p == 0 else np.log(p)) for p in hist])
+        else:
+            return (1 - sum([p ** tsallis_q_parameter for p in hist])) / (tsallis_q_parameter - 1)
+    except:
+        return np.nan
 
 @name("svd_entropy")  
 def calculate_svd_entropy(signal, svd_entropy_order, svd_entropy_delay, **kwargs):
@@ -927,8 +942,8 @@ def calculate_svd_entropy(signal, svd_entropy_order, svd_entropy_delay, **kwargs
 
     Returns:
     --------
-    numpy.ndarray
-        A numpy array containing the calculated SVD entropy value. If an error occurs during the 
+    float
+        The calculated SVD entropy value. If an error occurs during the 
         calculation, the function returns NaN.
 
     References:
@@ -970,8 +985,9 @@ def calculate_svd_entropy(signal, svd_entropy_order, svd_entropy_delay, **kwargs
         svd_entropy_value = -log_values.sum()
     except:
         svd_entropy_value = np.nan
-    return np.array([svd_entropy_value])
+    return svd_entropy_value
 
+# TODO: I think there is a problem with this implementation
 @name("permutation_entropy")
 def calculate_permutation_entropy(signal, window_size, permutation_entropy_order, permutation_entropy_delay, **kwargs):
     """
@@ -997,6 +1013,12 @@ def calculate_permutation_entropy(signal, window_size, permutation_entropy_order
         The time delay between consecutive values used to form the ordinal patterns. If multiple delays are passed as a 
         list or array, the function will return the average permutation entropy across all delays.
     
+    Returns:
+    --------
+    float
+        The calculated permutation entropy value. If an error occurs during the 
+        calculation, the function returns NaN.
+
     References:
     -----------
         Bandt et al., 2002, DOI: 10.1103/PhysRevLett.88.174102
@@ -1037,28 +1059,29 @@ def calculate_permutation_entropy(signal, window_size, permutation_entropy_order
         entropy_value = -log_values.sum()
     except:
         entropy_value = np.nan
-    return np.array([entropy_value])
+    return entropy_value
 
 @name("binned_entropy")
 def calculate_binned_entropy(signal, bins, **kwargs):
     hist = calculate_histogram_bin_frequencies(signal, bins)
     probs = hist / len(signal)
     probs[probs == 0] = 1.0
-    return np.array([-np.sum(probs * np.log(probs))])
+    return -np.sum(probs * np.log(probs))
 
 @name("no._of_zero_crossings")
 def calculate_zero_crossings(signal, **kwargs):
     """
-    Calculates the number of times the signal crosses zero
+    Calculates the number of times the signal crosses zero.
     
     Parameters:
     ----------
-        signal (array-like): The input time series.
+    signal : np.array
+        The input time series.
 
     Returns:
     -------
-        np.array
-            An array containing the number of times(integer) the signal crosses zero
+    int
+        The number of times (integer) the signal crosses zero
     
     References:
     ----------
@@ -1075,7 +1098,7 @@ def calculate_zero_crossings(signal, **kwargs):
     zero_cross_diff = np.diff(np.signbit(signal))
     # Sum the differences to get the number of zero-crossings
     num_zero_crossings = zero_cross_diff.sum()
-    return np.array([num_zero_crossings])
+    return num_zero_crossings
 
 @name("crest_factor")
 def calculate_crest_factor(signal, **kwargs):
@@ -1084,12 +1107,13 @@ def calculate_crest_factor(signal, **kwargs):
     
     Parameters:
     ----------
-        signal (array-like): The input time series.
+    signal : np.array
+        The input time series.
 
     Returns:
     -------
-        np.array
-            An array containing the crest factor(float) of the signal.
+    float
+        The crest factor(float) of the signal.
     
     References:
     ----------
@@ -1099,35 +1123,36 @@ def calculate_crest_factor(signal, **kwargs):
         locally linear embedding. Sensors (Switzerland), 15(7), 16225–16247. https://doi.org/10.3390/S150716225
     """
     crest_factor = np.max(np.abs(signal)) / np.sqrt(np.mean(signal**2))
-    return np.array([crest_factor])
+    return crest_factor
 
 @name("clearance_factor")
 def calculate_clearance_factor(signal, **kwargs):
-        """
-        Calculate the clearance factor of the given signal.
-        
-        The clearance factor is a measure used in signal processing to 
-        quantify the peakiness of a signal. It isdefined as the ratio 
-        of the maximum absolute value of the signal to the square of 
-        the mean square root of the absolute values of the signal.
-        
-        Parameters:
-        ----------
-            signal (array-like): The input time series.
+    """
+    Calculate the clearance factor of the given signal.
+    
+    The clearance factor is a measure used in signal processing to 
+    quantify the peakiness of a signal. It isdefined as the ratio 
+    of the maximum absolute value of the signal to the square of 
+    the mean square root of the absolute values of the signal.
+    
+    Parameters:
+    ----------
+    signal : np.array
+        The input time series.
 
-        Returns:
-        -------
-            np.array
-                An array containing the clearance factor (float) of the signal.
-        
-        References:
-        ----------     
-            Formula from The MathWorks Inc., 2022, Available: [Signal Features](https://www.mathworks.com)
-            - Wang, X., Zheng, Y., Zhao, Z., & Wang, J. (2015). Bearing fault diagnosis based on statistical 
-            locally linear embedding. Sensors (Switzerland), 15(7), 16225–16247. https://doi.org/10.3390/S150716225      
-        """
-        clearance_factor = np.max(np.abs(signal)) / (np.mean(np.sqrt(np.abs(signal))) ** 2)
-        return np.array([clearance_factor])
+    Returns:
+    -------
+    float
+        Clearance factor (float) of the signal.
+    
+    References:
+    ----------     
+        Formula from The MathWorks Inc., 2022, Available: [Signal Features](https://www.mathworks.com)
+        - Wang, X., Zheng, Y., Zhao, Z., & Wang, J. (2015). Bearing fault diagnosis based on statistical 
+        locally linear embedding. Sensors (Switzerland), 15(7), 16225–16247. https://doi.org/10.3390/S150716225      
+    """
+    clearance_factor = np.max(np.abs(signal)) / (np.mean(np.sqrt(np.abs(signal))) ** 2)
+    return clearance_factor
 
 @name("shape_factor")
 def calculate_shape_factor(signal, **kwargs):
@@ -1137,22 +1162,23 @@ def calculate_shape_factor(signal, **kwargs):
     The shape factor is a measure of the waveform shape of a signal, which is the ratio of the root mean square (RMS) 
     value to the mean absolute value of the signal.
 
-    Parameter:
+    Parameters:
     ---------
-        signal (array-like): The input time series.
+    signal : np.array
+        The input time series.
 
     Returns:
     -------
-    np.array
-        An array containing the shape factor (float) of the signal.
+    float
+        The shape factor (float) of the signal.
         
-    Reference:
+    References:
     ----------
         - Cempel, C. (1980). Diagnostically oriented measures of vibroacoustical processes. 
         Journal of Sound and Vibration, 73(4), 547–561. https://doi.org/10.1016/0022-460X(80)90667-7
     """
     shape_factor = np.sqrt(np.mean(signal**2)) / np.mean(np.abs(signal))
-    return np.array([shape_factor])
+    return shape_factor
 
 @name("no._of_mean_crossings")
 def calculate_mean_crossing(signal, **kwargs):
@@ -1161,23 +1187,24 @@ def calculate_mean_crossing(signal, **kwargs):
 
     Mean crossing refers to the number of times the signal crosses its mean value.
 
-    Parameter:
+    Parameters:
     ---------
-        signal (array-like): The input time series.
+    signal : np.array
+        The input time series.
 
     Returns:
     -------
-    np.array
-        An array containing the shape factor (float) of the signal.
+    float
+        The shape factor (float) of the signal.
         
-    Reference:
+    References:
     ----------
         -Myroniv, B., Wu, C.-W., Ren, Y., Christian, A., Bajo, E., & Tseng, 
         Y.-C. (2017). Analyzing User Emotions via Physiology Signals. 
         https://www.researchgate.net/publication/323935725
     """
     mean_val = np.mean(signal)
-    return np.array([np.sum(np.diff(signal > mean_val))])
+    return np.sum(np.diff(signal > mean_val))
 
 @name("impulse_factor")
 def calculate_impulse_factor(signal, **kwargs):
@@ -1191,11 +1218,12 @@ def calculate_impulse_factor(signal, **kwargs):
     Parameters:
     -----------
     signal : array-like
-            The input time series.
+        The input time series.
+
     Returns:
     --------
-    np.ndarray
-        A single-element array containing the impulse factor (float) of the signal. Higher values indicate a signal with sharp 
+    float
+        The impulse factor (float) of the signal. Higher values indicate a signal with sharp 
         peaks relative to its average level, while lower values suggest a more uniform signal.
 
     References:
@@ -1203,7 +1231,7 @@ def calculate_impulse_factor(signal, **kwargs):
         Cempel, 1980, DOI: 10.1016/0022-460X(80)90667-7
     """
     impulse_factor = np.max(np.abs(signal)) / np.mean(np.abs(signal))
-    return np.array([impulse_factor])
+    return impulse_factor
 
 # TODO: Make sure integer argument works
 @name("mean_of_auto_corr_lag_1_to_{}", "n_lags_auto_correlation")
@@ -1214,19 +1242,20 @@ def calculate_mean_auto_correlation(signal, n_lags_auto_correlation, **kwargs):
     Auto-correlation measures the similarity between a signal and a time-shifted version of itself, providing insight into the 
     signal's repeating patterns and periodicity. The mean auto-correlation value represents the average correlation of the signal 
     with its lagged versions, excluding the zero-lag correlation (which is always 1).
-    
+
     Parameters:
     -----------
     signal : array-like
         The input time series.
-    
+
     n_lags_auto_correlation : int
         The number of lags to include in the auto-correlation calculation.
+
     Returns:
     --------
     np.ndarray
-        A single-element array containing the mean auto-correlation value (float) of the signal.
-        
+        The mean auto-correlation value (float) of the signal.
+
     References:
     ----------
         - Fulcher, B. D. (2017). Feature-based time-series analysis. Feature Engineering for Machine 
@@ -1237,7 +1266,7 @@ def calculate_mean_auto_correlation(signal, n_lags_auto_correlation, **kwargs):
     
     """
     auto_correlation_values = acf(signal, nlags= n_lags_auto_correlation)[1:]
-    return np.array([np.mean(auto_correlation_values)])
+    return np.mean(auto_correlation_values)
 
 @name("moment_order_{}", "moment_orders")
 def calculate_higher_order_moments(signal, moment_orders, **kwargs):
@@ -1246,8 +1275,8 @@ def calculate_higher_order_moments(signal, moment_orders, **kwargs):
 
     Parameters:
     ---------
-        signal (array-like): The input time series.
-        moment_orders:
+    signal : np.array 
+        The input time series.
 
     moment_orders : array-like
         A list or array of integers specifying the orders of the moments to be calculated. For example, [3, 4] will calculate 
@@ -1255,10 +1284,10 @@ def calculate_higher_order_moments(signal, moment_orders, **kwargs):
         
     Returns:
     -------
-        np.array
-            An array containing the higher order moments of the signal.
+    np.array
+        An array containing the higher order moments of the signal.
         
-    Reference:
+    References:
     ---------
         - de Clerk, L., & Savel’ev, S. (2022). An investigation of higher order moments of empirical financial 
         data and their implications to risk. Heliyon, 8(2), e08833. https://doi.org/10.1016/J.HELIYON.2022.E08833
@@ -1280,14 +1309,15 @@ def calculate_coefficient_of_variation(signal, **kwargs):
     
     Parameters:
     ---------
-        signal (array-like): The input time series.
+    signal : np.array
+        The input time series.
 
     Returns:
     -------
-        np.array
-            A single-element array containing the coefficient of variation (float) of the signal. 
+    np.array
+        The coefficient of variation (float) of the signal. 
         
-    Reference:
+    References:
     ---------
         - Jalilibal, Z., Amiri, A., Castagliola, P., & Khoo, M. B. C. (2021). Monitoring the 
         coefficient of variation: A literature review. Computers & Industrial Engineering, 161,
@@ -1295,7 +1325,7 @@ def calculate_coefficient_of_variation(signal, **kwargs):
     
     """
     coefficient_of_variation = np.std(signal) / np.mean(signal)
-    return np.array([coefficient_of_variation])
+    return coefficient_of_variation
 
 @name("mean_abs_deviation")
 def calculate_median_absolute_deviation(signal, adjusted, **kwargs):
@@ -1316,9 +1346,9 @@ def calculate_median_absolute_deviation(signal, adjusted, **kwargs):
 
     Returns:
     --------
-        np.array
-            A single-element array containing the MAD (float) of the signal. This value represents the median of the absolute 
-            deviations from the median of the signal.
+    float
+        The MAD (float) of the signal. This value represents the median of the absolute 
+        deviations from the median of the signal.
 
     References:
     -----------
@@ -1335,7 +1365,7 @@ def calculate_median_absolute_deviation(signal, adjusted, **kwargs):
 
     if adjusted:
         mad *= 1.4826
-    return np.array([mad])
+    return mad
 
 # def calculate_signal_magnitude_area(self, signal, **kwargs):
 #         # Formula from Khan et al., 2010, DOI: 10.1109/TITB.2010.2051955
@@ -1354,16 +1384,16 @@ def calculate_avg_amplitude_change(signal, **kwargs):
 
     Returns:
     -------
-        np.array:
-            A single-element array containing the average amplitude change (float) of the signal.
+    float
+        The average amplitude change (float) of the signal.
     
-    Reference:
+    References:
     ----------
         - Phinyomark, A., Phukpattaranont, P., & Limsakul, C. (2012). Feature reduction and selection for EMG signal classification. 
         Expert Systems with Applications, 39(8), 7420–7431. https://doi.org/10.1016/J.ESWA.2012.01.102
     """
     avg_amplitude_change = np.mean(np.abs(np.diff(signal)))
-    return np.array([avg_amplitude_change])
+    return avg_amplitude_change
 
 @name("no._of_slope_sign_changes")
 def calculate_slope_sign_change(signal, ssc_threshold, **kwargs):
@@ -1379,10 +1409,10 @@ def calculate_slope_sign_change(signal, ssc_threshold, **kwargs):
 
     Returns:
     --------
-    np.ndarray
-        A single-element array containing the SSC value.
+    float
+        The SSC value.
         
-    Reference:
+    References:
     ----------
         - Purushothaman, G., & Vikas, · Raunak. (2018). Identification of a feature selection
         based pattern recognition scheme for finger movement recognition from multichannel EMG
@@ -1398,7 +1428,7 @@ def calculate_slope_sign_change(signal, ssc_threshold, **kwargs):
 
     # Apply the threshold and count the number of valid slope sign changes
     slope_sign_change = np.sum(product >= ssc_threshold)
-    return np.array([slope_sign_change])
+    return slope_sign_change
 
 @name("higuchi_fractal_dimensions_k={}", "higuchi_k_values")
 def calculate_higuchi_fractal_dimensions(signal, higuchi_k_values, **kwargs):
@@ -1478,7 +1508,7 @@ def calculate_katz_fractal_dimension(signal, **kwargs):
     float
         The Katz Fractal Dimension of the signal.
         
-    Reference:
+    References:
     ----------
         - Li, Y. ;, Zhou, Y. ;, Jiao, S., Li, Y., Zhou, Y., & Jiao, S. (2023). Variable-Step Multiscale Katz Fractal Dimension: 
         A New Nonlinear Dynamic Metric for Ship-Radiated Noise Analysis. Fractal and Fractional 2024, Vol. 8, Page 9, 8(1), 9. 
@@ -1487,7 +1517,7 @@ def calculate_katz_fractal_dimension(signal, **kwargs):
     N = len(signal)
     distance = np.max(np.abs(signal - signal[0]))
     length = np.sum(np.abs(np.diff(signal)))
-    return np.array([np.log10(N) / (np.log10(N) + np.log10(distance / length))])
+    return np.log10(N) / (np.log10(N) + np.log10(distance / length))
 
 @name("petrosian_fractal_dimension")
 def calculate_petrosian_fractal_dimension(signal, **kwargs):
@@ -1533,7 +1563,7 @@ def calculate_petrosian_fractal_dimension(signal, **kwargs):
     """
     N = len(signal)
     nzc = calculate_zero_crossings(np.diff(signal))[0]
-    return np.array([np.log10(N) / (np.log10(N) + np.log10(N / (N + 0.4 * nzc)))])
+    return np.log10(N) / (np.log10(N) + np.log10(N / (N + 0.4 * nzc)))
 
 @name("hjorth_mobility_and_complexity")
 def calculate_hjorth_mobility_and_complexity(signal, **kwargs):
@@ -1541,17 +1571,17 @@ def calculate_hjorth_mobility_and_complexity(signal, **kwargs):
     Calculates mobility and complexity of the time series which are based on 
     the first and second derivatives of the time series.
 
-    Parameter:
+    Parameters:
     ---------
-        signal : array-like
-            The input time series data.
+    signal : array-like
+        The input time series data.
 
     Returns:
     -------
     np.array
         Array containing the mobility and complexity of the time series.
         
-    Reference:
+    References:
     ---------
         - Hjorth, B. (1970). EEG analysis based on time domain properties. Electroencephalography
         and Clinical Neurophysiology, 29(3), 306–310. https://doi.org/10.1016/0013-4694(70)90143-4
@@ -1584,7 +1614,7 @@ def calculate_cardinality(signal, window_size, **kwargs):
     for i in range(window_size - 1):
         cardinality_array[i] = np.abs(sorted_values[i] - sorted_values[i + 1]) > thresh
     cardinality = np.sum(cardinality_array)
-    return np.array([cardinality])
+    return cardinality
 
 @name("rms_to_mean_of_abs")
 def calculate_rms_to_mean_abs(signal, **kwargs):
@@ -1594,22 +1624,22 @@ def calculate_rms_to_mean_abs(signal, **kwargs):
 
     Parameters:
     ---------
-        signal : array-like
-            The input time series data.
+    signal : array-like
+        The input time series data.
 
     Returns:
     -------
-        numpy.ndarray
-            An array containing the ratio of the root-mean-squared value to the mean
-            absolute value.
+    float
+        The ratio of the root-mean-squared value to the mean
+        absolute value.
     
-    Reference:
+    References:
     ---------
     """
     rms_val = np.sqrt(np.mean(signal ** 2))
     mean_abs_val = np.mean(np.abs(signal))
     ratio = rms_val / mean_abs_val
-    return np.array([ratio])
+    return ratio
 
 @name("area_under_curve")
 def calculate_area_under_curve(signal, **kwargs):
@@ -1618,20 +1648,21 @@ def calculate_area_under_curve(signal, **kwargs):
 
     Parameters:
     ----------
-        signal : array-like
-            The input time series data.
+    signal : array-like
+        The input time series data.
 
     Returns:
     -------
-        float: area under curve
+    float
+        Area under curve.
     
-    Reference:
+    References:
     ---------
         - Kuremoto, T., Baba, Y., Obayashi, M., Mabu, S., & Kobayashi, K. 
         (2018). Enhancing EEG Signals Recognition Using ROC Curve. Journal 
         of Robotics, Networking and Artificial Life, 4(4), 283. https://doi.org/10.2991/JRNAL.2018.4.4.5
     """
-    return np.array([simpson(np.abs(signal), dx=1)])
+    return simpson(np.abs(signal), dx=1)
 
 @name("area_under_squared_curve")
 def calculate_area_under_squared_curve(signal, **kwargs):
@@ -1640,33 +1671,34 @@ def calculate_area_under_squared_curve(signal, **kwargs):
 
     Parameters:
     ----------
-        signal : array-like
-            The input time series data.
+    signal : array-like
+        The input time series data.
 
     Returns:
     -------
-        float: area under curve of signal squared
+    float
+        Area under curve of signal squared.
     """
-    return np.array([simpson(signal**2, dx=1)])
+    return simpson(signal**2, dx=1)
 
 @name("autoregressive_model_coefficients")
 def calculate_autoregressive_model_coefficients(signal, ar_model_coefficients_order, **kwargs):
     """
     Calculates the autoregressive model coefficients of the time series
 
-    Parameter:
+    Parameters:
     ---------
-        signal : array-like
-            The input time series data.
-        ar_model_coefficients_order : (int, optional)
-            The number of lags to include in the model, defaults to 4.
+    signal : array-like
+        The input time series data.
+    ar_model_coefficients_order : (int, optional)
+        The number of lags to include in the model, defaults to 4.
 
     Returns:
     -------
-        numpy.ndarray
-            An array containing coefficients 
+    numpy.ndarray
+        An array containing coefficients 
         
-    Reference:
+    References:
     ---------
         - Khan, A. M., Lee, Y. K., & Kim, T. S. (2008). Accelerometer signal-based human 
         activity recognition using augmented autoregressive model coefficients and artificial 
@@ -1683,22 +1715,23 @@ def calculate_count(signal, **kwargs):
     """
     Calculates the length of the time series.
 
-    Parameter:
+    Parameters:
     ---------
-        signal : array-like
-            The input time series data.
+    signal : array-like
+        The input time series data.
 
     Returns:
     --------
-        int: The length of the time series
+    int
+        The length of the time series
     
-    Reference:
+    References:
     ----------
         - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
         basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
         https://doi.org/10.1016/J.NEUCOM.2018.03.067
     """
-    return np.array([len(signal)])
+    return len(signal)
 
 @name("count_above_mean")
 def calculate_count_above_mean(signal, **kwargs):
@@ -1719,14 +1752,14 @@ def calculate_count_above_mean(signal, **kwargs):
         The number of data points in the signal that are above the mean.
 
 
-    Reference:
+    References:
     ----------
         - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
         basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
         https://doi.org/10.1016/J.NEUCOM.2018.03.067
     """
     mean_val = np.mean(signal)
-    return np.array([np.sum(signal > mean_val)])
+    return np.sum(signal > mean_val)
 
 @name("count_below_mean")
 def calculate_count_below_mean(signal, **kwargs):
@@ -1746,14 +1779,14 @@ def calculate_count_below_mean(signal, **kwargs):
     int
         The number of data points in the signal that are below the mean.
         
-    Reference:
+    References:
     ----------
         - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
         basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
         https://doi.org/10.1016/J.NEUCOM.2018.03.067
     """
     mean_val = np.mean(signal)
-    return np.array([np.sum(signal < mean_val)])
+    return np.sum(signal < mean_val)
 
 @name("count_below")
 def calculate_count_below(signal, count_below_or_above_x, **kwargs):
@@ -1767,18 +1800,18 @@ def calculate_count_below(signal, count_below_or_above_x, **kwargs):
     count_below_or_above_x : int
         Value of interest
         
-    Return:
+    Returns:
     -------
     int
         number of values lower than x
         
-    Reference:
+    References:
     ----------
         - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
         basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
         https://doi.org/10.1016/J.NEUCOM.2018.03.067
     """
-    return np.array([np.sum(signal < count_below_or_above_x)])
+    return np.sum(signal < count_below_or_above_x)
 
 @name("count_above")
 def calculate_count_above(signal, count_below_or_above_x, **kwargs):
@@ -1792,38 +1825,53 @@ def calculate_count_above(signal, count_below_or_above_x, **kwargs):
     count_below_or_above_x : int
         Value of interest
         
-    Return:
+    Returns:
     -------
     int
         number of values higher than x
         
-    Reference:
+    References:
     ----------
         - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
         basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
         https://doi.org/10.1016/J.NEUCOM.2018.03.067
     """
-    return np.array([np.sum(signal > count_below_or_above_x)])
+    return np.sum(signal > count_below_or_above_x)
 
 # Also not suitable for calculate all
 @exclude()
 @name("covariance")
 def calculate_covariance(signal, other_signal, **kwargs):
     """
-    Reference:
+    Calculate the covariance of one signal with another signal.
+
+    Parameters:
+    -----------
+    signal : array-like
+        The input time series data.
+    other_signal : array-like
+        A second time series to compute the covariance with.
+        
+    Returns:
+    -------
+    int
+        number of values higher than x
+
+    References:
     ----------
         https://support.ptc.com/help/mathcad/r9.0/en/index.html#page/PTC_Mathcad_Help/covariance.html
     """
     return np.cov(signal, other_signal)[0, 1]
 
+# TODO: comments
 @name("cumulative_sum")
 def calculate_cumulative_sum(signal, **kwargs):
     """
-    Reference:
+    References:
     ----------
         https://docs.amd.com/r/2020.2-English/ug1483-model-composer-sys-gen-user-guide/Cumulative-Sum
     """
-    return np.array([np.cumsum(signal)[-1]])
+    return np.cumsum(signal)[-1]
 
 @name("energy_ratio_by_chunks")
 def calculate_energy_ratio_by_chunks(signal, energy_ratio_chunks, **kwargs):
@@ -1846,10 +1894,10 @@ def calculate_energy_ratio_by_chunks(signal, energy_ratio_chunks, **kwargs):
 
     Returns:
     --------
-    np.ndarray
+    float
         An array containing the energy ratio of each chunk relative to the total energy of the signal.
 
-    Reference:
+    References:
     ----------
         - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
         basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
@@ -1884,13 +1932,13 @@ def calculate_moving_average(signal, window_size, mode, **kwargs):
             - 'full': Returns the convolution at each point of overlap, with padding. The output length is M + N - 1.
         Default is 'valid'.
 
-    Return:
+    Returns:
     -------
     np.ndarray or float
         An array containing the moving average of the signal. If the signal length is shorter than the window size, 
         NaN is returned.
 
-    Reference:
+    References:
     ----------
     SPTK Moving Average Filter:
         https://cyclostationary.blog/2021/05/23/sptk-the-moving-average-filter/
@@ -1959,78 +2007,85 @@ def calculate_exponential_moving_average(signal, ema_alpha, **kwargs):
 
     Parameters:
     ---------
-        signal (array-like): The input time series.
-        ema_alpha (float, optional): Defaults to 0.3.
+    signal : array-like
+        The input time series.
+    ema_alpha : float 
+        Defaults to 0.3.
 
-    Return:
+    Returns:
     -------
-        float: last value in the array
+    float
+        Last value in the array
     """
     ema = np.zeros_like(signal)
     ema[0] = signal[0]
     for i in range(1, len(signal)):
         ema[i] = ema_alpha * signal[i] + (1 - ema_alpha) * ema[i - 1]
-    return np.array([ema[-1]])
+    return ema[-1]
 
 @name("first_location_of_maximum")
 def calculate_first_location_of_maximum(signal, **kwargs):
     """
-    Returns the location of the first maximum value of the time series
+    Returns the location of the first maximum value of the time series.
     
-    Parameter:
+    Parameters:
     ---------
-    signal: 
+    signal : np.array
         The input time series
     
-    Return:
+    Returns:
     -------
-        float: last value in the array
+    float
+        The location of the first maximum value of the time series.
         
-    Reference:
+    References:
     ----------
         - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
         basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
         https://doi.org/10.1016/J.NEUCOM.2018.03.067
     """
-    return np.array([np.argmax(signal)])
+    return np.argmax(signal)
 
 @name("first_location_of_minimum")
 def calculate_first_location_of_minimum(signal, **kwargs):
     """
     Returns the location of the first minimum value of the time series
     
-    Parameter:
+    Parameters:
     ---------
-    signal: 
+    signal : array-like
         The input time series
         
-    Return:
+    Returns:
     -------
+    float
+        The location of the first minimum value of the time series.
     
-    Reference:
+    References:
     ----------
         - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
         basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
         https://doi.org/10.1016/J.NEUCOM.2018.03.067
     """
-    return np.array([np.argmin(signal)])
+    return np.argmin(signal)
 
 @name("first_order_difference")
 def calculate_first_order_difference(signal, **kwargs):
     """
     Calculates the first-order difference of a given signal.
     
-    Parameter:
+    Parameters:
     --------
-        signal: 
+    signal : array-like
         The input time series
-    Return:
+
+    Returns:
     -------
-        np.ndarray
-            An array containing the first-order difference of the input signal. 
-            The length of this array is one less than the original signal.
+    np.ndarray
+        An array containing the first-order difference of the input signal. 
+        The length of this array is one less than the original signal.
     
-    Reference:
+    References:
     ----------
         https://cran.r-project.org/web/packages/doremi/vignettes/first-order.html    
     """
@@ -2067,7 +2122,7 @@ def calculate_histogram_bin_frequencies(signal, hist_bins, **kwargs):
         An array of integers where each value represents the number of occurrences of the signal's
         values within each bin.
         
-    Reference:
+    References:
     ----------
         - Pizzi, N. J., Somorjai, R. L., & Pedrycz, W. (2006). Classifying Biomedical Spectra 
         Using Stochastic Feature Selection and Parallelized Multi-Layer Perceptrons. Modern 
@@ -2081,46 +2136,46 @@ def calculate_last_location_of_maximum(signal, **kwargs):
     """
     Returns the last location of the maximum value
     
-    Parameter:
+    Parameters:
     ----------
     signal : array-like
         The input time series
         
-    Return:
+    Returns:
     -------
-    int:
-        last location of the maximum value in the time series
+    int
+        Last location of the maximum value in the time series
         
-    Reference:
+    References:
     ----------
         - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
         basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
         https://doi.org/10.1016/J.NEUCOM.2018.03.067
     """
-    return np.array([np.max(np.where(signal == np.max(signal))[0])])
+    return np.max(np.where(signal == np.max(signal))[0])
 
 @name("last_location_of_minimum")
 def calculate_last_location_of_minimum(signal, **kwargs):
     """
     Returns the last location of the mininum value
     
-    Parameter:
+    Parameters:
     ----------
     signal : array-like
         The input time series
         
-    Return:
+    Returns:
     -------
-    int:
-        last location of the mininum value in the time series
+    int
+        Last location of the mininum value in the time series
         
-    Reference:
+    References:
     ----------
         - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
         basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
         https://doi.org/10.1016/J.NEUCOM.2018.03.067
     """
-    return np.array([np.max(np.where(signal == np.min(signal))[0])])
+    return np.max(np.where(signal == np.min(signal))[0])
 
 @name(["lin_trend_slope", "lin_trend_intercept", "lin_trend_R2", "lin_trend_p_value", "lin_trend_std_err"])
 def calculate_linear_trend_with_full_linear_regression_results(signal, **kwargs):
@@ -2194,7 +2249,7 @@ def calculate_log_return(signal, **kwargs):
     - This function assumes that the signal is clean and contains no non-positive values. 
     If non-positive values are present, the function will return `NaN`.
     
-    Reference:
+    References:
     ----------
     Based on concepts from: https://pypi.org/project/stockstats/
     """
@@ -2207,7 +2262,7 @@ def calculate_log_return(signal, **kwargs):
     
     # Calculate and return the log 
     log_return = np.log(signal[-1] / signal[0])
-    return np.array([log_return])
+    return log_return
 
 @name("longest_strike_above_mean")
 def calculate_longest_strike_above_mean(signal, **kwargs):
@@ -2227,7 +2282,7 @@ def calculate_longest_strike_above_mean(signal, **kwargs):
     int
         The length of the longest sequence of consecutive values in the time series that are above the mean value.
 
-    Reference:
+    References:
     ----------
         - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on the basis 
         of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77.
@@ -2235,7 +2290,7 @@ def calculate_longest_strike_above_mean(signal, **kwargs):
     """
     mean_val = np.mean(signal)
     strike = max([sum(1 for i in g) for k, g in groupby(signal > mean_val) if k])
-    return np.array([strike])
+    return strike
 
 @name("longest_strike_below_mean")
 def calculate_longest_strike_below_mean(signal, **kwargs):
@@ -2255,7 +2310,7 @@ def calculate_longest_strike_below_mean(signal, **kwargs):
     int
         The length of the longest sequence of consecutive values in the time series that are below the mean value.
 
-    Reference:
+    References:
     ----------
         - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on the basis 
         of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77.
@@ -2263,13 +2318,13 @@ def calculate_longest_strike_below_mean(signal, **kwargs):
     """
     mean_val = np.mean(signal)
     strike = max([sum(1 for i in g) for k, g in groupby(signal < mean_val) if k])
-    return np.array([strike])
+    return strike
 
 @name("lower_complete_moment")
 def calculate_lower_complete_moment(signal, order=2, **kwargs):
     mean_val = np.mean(signal)
     moment = np.mean([(x - mean_val)**order for x in signal if x < mean_val])
-    return np.array([moment])
+    return moment
 
 @name("mean_absolute_change")
 def calculate_mean_absolute_change(signal, **kwargs):
@@ -2295,7 +2350,7 @@ def calculate_mean_absolute_change(signal, **kwargs):
     ----------
         - Mean absolute difference: https://en.wikipedia.org/wiki/Mean_absolute_difference
     """
-    return np.array([np.mean(np.abs(np.diff(signal)))])
+    return np.mean(np.abs(np.diff(signal)))
 
 @name("sum_of_absolute_changes")
 def calculate_sum_of_absolute_changes(signal, **kwargs):
@@ -2312,12 +2367,12 @@ def calculate_sum_of_absolute_changes(signal, **kwargs):
     float
         The mean absolute change of the signal.
         
-    Reference:
+    References:
     ---------
         - Barandas, M., Folgado, D., Fernandes, L., Santos, S., Abreu, M., Bota, P., Liu, H., Schultz, T., & Gamboa, H. (2020). 
         TSFEL: Time Series Feature Extraction Library. SoftwareX, 11. https://doi.org/10.1016/j.softx.2020.100456
     """
-    return np.array([np.sum(np.abs(np.diff(signal)))])
+    return np.sum(np.abs(np.diff(signal)))
 
 @name("mean_relative_change")
 def calculate_mean_relative_change(signal, **kwargs):
@@ -2335,11 +2390,11 @@ def calculate_mean_relative_change(signal, **kwargs):
     float
         The mean relative change of the signal.
         
-    Reference:
+    References:
     ----------
         - https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/j.1365-2745.2007.01281.x
     """
-    return np.array([np.mean(np.abs(np.diff(signal) / signal[:-1]))])
+    return np.mean(np.abs(np.diff(signal) / signal[:-1]))
 
 @name("mean_second_derivative_central")
 def calculate_mean_second_derivative_central(signal, **kwargs):
@@ -2357,13 +2412,13 @@ def calculate_mean_second_derivative_central(signal, **kwargs):
         The mean value of the central approximations of the second derivative. 
         If the input signal has fewer than three elements, the function returns `NaN`.
     
-    Reference:
+    References:
     ----------
         - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
         basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
         https://doi.org/10.1016/J.NEUCOM.2018.03.067
     """
-    return np.array([np.mean(np.diff(signal, n=2)) / 2 if len(signal) > 2 else np.NaN])
+    return np.mean(np.diff(signal, n=2)) / 2 if len(signal) > 2 else np.NaN]
 
 @name("median_second_derivative_central")
 def calculate_median_second_derivative_central(signal, **kwargs):
@@ -2386,7 +2441,7 @@ def calculate_median_second_derivative_central(signal, **kwargs):
         The median of the second derivative values of the input signal.
     """
     second_derivative = np.diff(signal, n=2)
-    return np.array([np.median(second_derivative)])
+    return np.median(second_derivative)
 
 @name("mode")
 def calculate_mode(signal, **kwargs):
@@ -2419,15 +2474,15 @@ def calculate_number_of_inflection_points(signal, **kwargs):
 
     Parameters:
     -----------
-        signal (array-like): 
-            Input signal as a 1D array or list.
+    signal : np.array 
+        Input signal as a 1D array or list.
 
     Returns:
     --------
-        int: 
-            The number of inflection points in the signal.
+    int
+        The number of inflection points in the signal.
             
-    Reference:
+    References:
     ---------
         https://en.wikipedia.org/wiki/Inflection_point
     """
@@ -2437,7 +2492,7 @@ def calculate_number_of_inflection_points(signal, **kwargs):
     # Calculate the number of sign changes in the second derivative
     inflection_points = np.sum(np.diff(np.sign(second_derivative)) != 0)
 
-    return np.array([inflection_points])
+    return inflection_points
 
 @name("peak_to_peak_distance")
 def calculate_peak_to_peak_distance(signal, **kwargs):
@@ -2447,22 +2502,22 @@ def calculate_peak_to_peak_distance(signal, **kwargs):
 
     Parameters:
     -----------
-        signal (array-like): 
-            Input signal as a 1D array or list.
+    signal : np.array 
+        Input signal as a 1D array or list.
 
     Returns:
     --------
-        float
-            The peak-to-peak distance of the signal.
+    float
+        The peak-to-peak distance of the signal.
 
-    Reference:
+    References:
     ----------
         - Robert Lobbia (2024). Peak to Peak of signal 
         (https://www.mathworks.com/matlabcentral/fileexchange/20314-peak-to-peak-of-signal), 
         MATLAB Central File Exchange. Retrieved September 5, 2024.
 
     """
-    return np.array([np.ptp(signal)])
+    return np.ptp(signal)
 
 @name("percentage_of_negative_values")
 def calculate_percentage_of_negative_values(signal, **kwargs):
@@ -2471,19 +2526,19 @@ def calculate_percentage_of_negative_values(signal, **kwargs):
     
     Parameters:
     -----------
-        signal (array-like): 
-            Input signal as a 1D array or list.
+    signal : np.array 
+        Input signal as a 1D array or list.
 
     Returns:
     --------
-        float
-            Percentage of negative values
+    float
+        Percentage of negative values
             
-    Reference:
+    References:
     ---------
     
     """
-    return np.array([np.mean(signal < 0) * 100])
+    return np.mean(signal < 0) * 100
 
 @name("percentage_of_positive_values")
 def calculate_percentage_of_positive_values(signal, **kwargs):
@@ -2492,19 +2547,19 @@ def calculate_percentage_of_positive_values(signal, **kwargs):
     
     Parameters:
     -----------
-        signal (array-like): 
-            Input signal as a 1D array or list.
+    signal : np.array
+        Input signal as a 1D array or list.
 
     Returns:
     --------
-        float
-            Percentage of positive values
+    float
+        Percentage of positive values
             
-    Reference:
+    References:
     ---------
     
     """
-    return np.array([np.mean(signal > 0) * 100])
+    return np.mean(signal > 0) * 100
 
 @name("percentage_of_reoccurring_datapoints_to_all_datapoints")
 def calculate_percentage_of_reoccurring_datapoints_to_all_datapoints(signal, **kwargs):
@@ -2521,14 +2576,14 @@ def calculate_percentage_of_reoccurring_datapoints_to_all_datapoints(signal, **k
     float
         Percentage of reoccurring values 
     
-    Reference:
+    References:
     ----------
         - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
         basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
         https://doi.org/10.1016/J.NEUCOM.2018.03.067
     """
     unique, counts = np.unique(signal, return_counts=True)
-    return np.array([100 * np.sum(counts[counts > 1]) / len(signal)])
+    return 100 * np.sum(counts[counts > 1]) / len(signal)
 
 @name("percentage_of_reoccurring_values_to_all_values")
 def calculate_percentage_of_reoccurring_values_to_all_values(signal, **kwargs):
@@ -2545,7 +2600,7 @@ def calculate_percentage_of_reoccurring_values_to_all_values(signal, **kwargs):
     float
         Percentage of reoccurring values 
     
-    Reference:
+    References:
     ----------
         - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
         basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
@@ -2556,7 +2611,7 @@ def calculate_percentage_of_reoccurring_values_to_all_values(signal, **kwargs):
     if counts.shape[0] == 0:
         return 0
 
-    return np.array([100 * np.sum(counts > 1) / float(counts.shape[0])])
+    return 100 * np.sum(counts > 1) / float(counts.shape[0])
 
 @name("ratio_beyond_r_sigma_{}", "r_sigma")
 def calculate_ratio_beyond_r_sigma(signal, r_sigma, **kwargs):
@@ -2565,14 +2620,17 @@ def calculate_ratio_beyond_r_sigma(signal, r_sigma, **kwargs):
 
     Parameters:
     -----------
-        signal (array-like): The input signal data.
-        r_sigma (list): The multiplier for the standard deviation to define the threshold.
+    signal : np.array
+        The input signal data.
+    r_sigma : array-like
+        The multiplier for the standard deviation to define the threshold.
 
     Returns:
     --------
-        float: The ratio of data points in the signal that are beyond 'r' standard deviations from the mean.
+    float
+        The ratio of data points in the signal that are beyond 'r' standard deviations from the mean.
 
-    Reference:
+    References:
     ----------
         - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on
         the basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77.
@@ -2583,7 +2641,7 @@ def calculate_ratio_beyond_r_sigma(signal, r_sigma, **kwargs):
         std_dev = np.std(signal)
         mean_val = np.mean(signal)
         results.append(np.sum(np.abs(signal - mean_val) > multiplier * std_dev) / len(signal))
-    return np.array(results)
+    return results
 
 @name(["ratio_positive", "ratio_negative", "ratio_positive_to_negative"])
 def calculate_ratio_of_fluctuations(signal, **kwargs):
@@ -2592,10 +2650,11 @@ def calculate_ratio_of_fluctuations(signal, **kwargs):
 
     Parameters:
     ----------
-    signal (array-like): The input signal data.
+    signal : np.array
+        The input signal data.
 
     Returns:
-    --------
+    -------
     tuple: A tuple containing:
         - ratio_positive (float): The ratio of positive fluctuations.
         - ratio_negative (float): The ratio of negative fluctuations.
@@ -2615,13 +2674,17 @@ def calculate_ratio_value_number_to_sequence_length(signal, **kwargs):
     Calculates the ratio of the number of unique values in the signal to its length.
 
     Parameters:
-    signal (array-like): The input signal data.
+    ----------
+    signal : np.array
+        The input signal data.
 
     Returns:
-    float: The ratio of unique values in the signal to the total number of data points in the signal.
+    -------
+    float
+        The ratio of unique values in the signal to the total number of data points in the signal.
     """
     unique_values = len(np.unique(signal))
-    return np.array([unique_values / len(signal)])
+    return unique_values / len(signal)
 
 @name("second_order_difference")
 def calculate_second_order_difference(signal, **kwargs):
@@ -2629,12 +2692,16 @@ def calculate_second_order_difference(signal, **kwargs):
     Calculates the second-order difference of the signal.
 
     Parameters:
-    signal (array-like): The input signal data.
+    ----------
+    signal : array-like
+        The input signal data.
 
     Returns:
-    array-like: The second-order difference of the signal.
+    -------
+    np.array
+        The second-order difference of the signal.
     
-    Reference:
+    References:
     ----------
         Intuition of this feature:
             https://stats.stackexchange.com/questions/351697/what-is-the-intuition-behind-second-order-differencing
@@ -2648,14 +2715,16 @@ def calculate_signal_resultant(signal, **kwargs):
 
     Parameters:
     ----------
-        signal (array-like): The input signal data.
+    signal : np.array
+        The input signal data.
 
     Returns:
     --------
-        float: The square root of the sum of squares of the signal values.
+    float
+        The square root of the sum of squares of the signal values.
 
     """
-    return np.array([np.sqrt(np.sum(signal**2))])
+    return np.sqrt(np.sum(signal**2))
 
 @name("signal_to_noise_ratio")
 def calculate_signal_to_noise_ratio(signal, **kwargs):
@@ -2664,14 +2733,14 @@ def calculate_signal_to_noise_ratio(signal, **kwargs):
 
     Parameters:
     ----------
-        signal (array-like): 
-            The input signal data.
+    signal : array-like 
+        The input signal data.
 
     Returns:
     -------
-        float: 
-            The Signal-to-Noise Ratio (SNR) of the signal. 
-            Returns 'inf' if the noise standard deviation is zero.
+    float
+        The Signal-to-Noise Ratio (SNR) of the signal. 
+        Returns 'inf' if the noise standard deviation is zero.
     
     References:
     -----------
@@ -2680,7 +2749,7 @@ def calculate_signal_to_noise_ratio(signal, **kwargs):
     """
     mean_signal = np.mean(signal)
     std_noise = np.std(signal)
-    return np.array([mean_signal / std_noise if std_noise > 0 else float('inf')])
+    return mean_signal / std_noise if std_noise > 0 else float('inf')
 
 @name("smoothing_by_binomial_filter")
 def calculate_smoothing_by_binomial_filter(signal, **kwargs):
@@ -2689,13 +2758,15 @@ def calculate_smoothing_by_binomial_filter(signal, **kwargs):
 
     Parameters:
     -----------
-    signal (array-like): The input signal data.
+    signal : array-like
+        The input signal data.
 
     Returns:
     --------
-    array-like: The smoothed signal.
+    np.array
+        The smoothed signal.
     
-    Reference:
+    References:
     ---------
         - https://www.wavemetrics.com/products/igorpro/dataanalysis/signalprocessing/smoothing
     """
@@ -2709,75 +2780,82 @@ def calculate_stochastic_oscillator_value(signal, **kwargs):
 
     Parameters:
     ----------
-    signal (array-like): The input signal data.
+    signal : array-like
+        The input signal data.
 
     Returns:
     --------
-    float: The stochastic oscillator value, calculated as:
-           100 * (current_value - low_min) / (high_max - low_min).
-    
-    Reference:
+    float
+        The stochastic oscillator value, calculated as:
+        100 * (current_value - low_min) / (high_max - low_min).
+
+    References:
     ----------
         - https://www.investopedia.com/terms/s/stochasticoscillator.asp
     """
     low_min = np.min(signal)
     high_max = np.max(signal)
     current_value = signal[-1]
-    return np.array([100 * (current_value - low_min) / (high_max - low_min)])
+    return 100 * (current_value - low_min) / (high_max - low_min)
 
 @name("total_sum")
 def calculate_sum(signal, **kwargs):
     """
-    Returns the sum of all values in the time series
+    Calculates the sum of all values in the time series.
 
-    Parameter"
-    ---------
-    signal: array-like
+    Parameters:
+    ----------
+    signal : array-like
         The input time series
 
     Returns:
     --------
-        float/int
+    float
+        The sum of all values in the time series.
         
-    Reference:
+    References:
     ---------
         - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
         basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
         https://doi.org/10.1016/J.NEUCOM.2018.03.067
     """
-    return np.array([np.sum(signal)])
+    return np.sum(signal)
 
 @name("sum_of_negative_values")
 def calculate_sum_of_negative_values(signal, **kwargs):
     """
-    Returns the sum of all negative values in the time series.
+    Calculates the sum of all negative values in the time series.
     
-    Parameter:
+    Parameters:
     ----------
     signal : array-like
         The input time series
         
-    Return:
+    Returns:
     -------
     float
+        The sum of all negative values in the time series
+
     """
-    return np.array([np.sum(signal[signal < 0])])
+    return np.sum(signal[signal < 0])
 
 @name("sum_of_positive_values")
 def calculate_sum_of_positive_values(signal, **kwargs):
     """
-    Returns the sum of all positive values in the time series
+    Calculates the sum of all positive values in the time series.
     
-    Parameter:
+    Parameters:
     ----------
     signal : array-like
         The input time series
         
-    Return:
+    Returns:
     -------
     float
+        The sum of all positive values in the time series
+
     """
-    return np.array([np.sum(signal[signal > 0])])
+    return np.sum(signal[signal > 0])
 
 @name("sum_of_reoccurring_values")
 def calculate_sum_of_reoccurring_values(signal, **kwargs):
@@ -2806,14 +2884,14 @@ def calculate_sum_of_reoccurring_values(signal, **kwargs):
     >>> calculate_sum_of_reoccurring_values(signal)
     5
 
-    Reference:
+    References:
     ----------
         - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
         basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
         https://doi.org/10.1016/J.NEUCOM.2018.03.067
     """
     unique, counts = np.unique(signal, return_counts=True)
-    return np.array([np.sum(unique[counts > 1])])
+    return np.sum(unique[counts > 1])
 
 @name("sum_of_reoccurring_data_points")
 def calculate_sum_of_reoccurring_data_points(signal, **kwargs):
@@ -2843,7 +2921,7 @@ def calculate_sum_of_reoccurring_data_points(signal, **kwargs):
     >>> calculate_sum_of_reoccurring_data_points(signal)
     13
 
-    Reference:
+    References:
     ----------
         - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
         basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
@@ -2851,7 +2929,7 @@ def calculate_sum_of_reoccurring_data_points(signal, **kwargs):
     """
     unique, counts = np.unique(signal, return_counts=True)
     counts[counts < 2] = 0
-    return np.array([np.sum(counts * unique)])
+    return np.sum(counts * unique)
 
 @name("variance_of_absolute_differences")
 def calculate_variance_of_absolute_differences(signal, **kwargs):
@@ -2878,7 +2956,7 @@ def calculate_variance_of_absolute_differences(signal, **kwargs):
     - This function is particularly useful in analyzing the variability of changes in a time series, 
     such as in financial data or other sequences where the magnitude of changes is of interest.
     
-    Reference:
+    References:
     ----------
     - Liang, H., & Hong, L. (2015). The Absolute Difference Law For Expectations. The American Statistician, 
     69(1), 8–10. https://doi.org/10.1080/00031305.2014.994712
@@ -2888,7 +2966,7 @@ def calculate_variance_of_absolute_differences(signal, **kwargs):
         return float('NaN')
 
     abs_diffs = np.abs(np.diff(signal))
-    return np.array([np.var(abs_diffs)])
+    return np.var(abs_diffs)
 
 @name("winsorized_mean")
 def calculate_winsorized_mean(signal, wm_limits, **kwargs):
@@ -2910,11 +2988,11 @@ def calculate_winsorized_mean(signal, wm_limits, **kwargs):
         distribution. The default is [0.05, 0.05], which means 5% of the data is 
         Winsorized from both ends. The values should be between 0 and 0.5.
         
-    Reference:
+    References:
     ----------
         https://www.investopedia.com/terms/w/winsorized_mean.asp
     """
-    return np.array([stats.mstats.winsorize(signal, limits=wm_limits).mean()])
+    return stats.mstats.winsorize(signal, limits=wm_limits).mean()
 
 @name("zero_crossing_rate")
 def calculate_zero_crossing_rate(signal, **kwargs):
@@ -2934,7 +3012,7 @@ def calculate_zero_crossing_rate(signal, **kwargs):
     float
         The Zero Crossing Rate.
         
-    Reference:
+    References:
     ---------
         Based on the implementation from the librosa library: 
         - McFee, B., Matt McVicar, Daniel Faronbi, Iran Roman, Matan Gover, Stefan Balke, Scott Seyfarth, Ayoub Malek, 
@@ -2943,8 +3021,9 @@ def calculate_zero_crossing_rate(signal, **kwargs):
         Zenodo. https://doi.org/10.5281/zenodo.11192913
     """
     zero_crossings = np.where(np.diff(np.signbit(signal)))[0]
-    return np.array([len(zero_crossings) / len(signal)])
+    return len(zero_crossings) / len(signal)
 
+#TODO: NEED TO FIX THIS
 @name(["detrended_fluctuation_analysis_segments", "detrended_fluctuation_analysis_values"])
 def calculate_detrended_fluctuation_analysis(signal, order=1, minimal=20, **kwargs):
     """
@@ -2952,7 +3031,7 @@ def calculate_detrended_fluctuation_analysis(signal, order=1, minimal=20, **kwar
         
     Parameters:
     ----------
-    signal: array
+    signal : array
         The input time series.
     order: integer
         The order of the polynomial fit for local detrending default is 1 for linear detrending).
@@ -3027,10 +3106,16 @@ def calculate_hurst_exponent(signal, **kwargs):
     or a mean-reverting series (H < 0.5). This function estimates the Hurst Exponent 
     using the Detrended Fluctuation Analysis (DFA) method.
         
-    Parameter:
-    ---------
-    signal: 
+    Parameters:
+    ----------
+    signal : np.array
         The input time series
+
+    Returns:
+    -------
+    float
+        The Hurst exponent of the given time series.
+
     References:
     ----------
     [1] Bryce, R. M., & Sprague, K. B. (2012). Revisiting detrended 
@@ -3045,7 +3130,7 @@ def calculate_hurst_exponent(signal, **kwargs):
 
     poly = np.polyfit(np.log(segment_size), np.log(fluctuation_values), 1)
     hurst = poly[0]
-    return np.array([hurst])
+    return hurst
 
 @name(["adf_teststats", "adf_pvalue", "adf_usedlag"])
 def calculate_augmented_dickey_fuller_test(signal, **kwargs):
@@ -3057,15 +3142,16 @@ def calculate_augmented_dickey_fuller_test(signal, **kwargs):
 
     Parameters:
     ----------
-    signal (array-like): 
+    signal : np.array
         The time series data to be tested for stationarity.
 
     Returns:
     -------
-    np.array or float:
-                A numpy array containing the test statistic, p-value, and number of lags used in the test.
-                If the test fails due to an exception, returns NaN.
-    Reference:
+    np.array
+        A numpy array containing the test statistic, p-value, and number of lags used in the test.
+        If the test fails due to an exception, returns NaN.
+
+    References:
     ---------
         Christ et al., 2018, https://doi.org/10.1016/J.NEUCOM.2018.03.067
     """
@@ -3083,16 +3169,16 @@ def calculate_duplicates(signal, **kwargs):
     
     Parameters:
     ----------
-        signal (array-like): 
-            The input time series.
+    signal : np.array
+        The input time series.
 
     Returns:
-    --------
+    -------
     boolean
         True: duplicates present
         False: No duplicates
     
-    Reference:
+    References:
     ----------
         - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
         basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
@@ -3100,7 +3186,7 @@ def calculate_duplicates(signal, **kwargs):
     """
     unique, counts = np.unique(signal, return_counts=True)
     result = True if len(counts[counts > 1]) else False
-    return np.array([result])
+    return result
 
 @name("max_has_duplicates")   
 def calculate_max_duplicates(signal, **kwargs):
@@ -3109,8 +3195,8 @@ def calculate_max_duplicates(signal, **kwargs):
     
     Parameters:
     ----------
-        signal (array-like): 
-            The input time series.
+    signal : np.array
+        The input time series.
 
     Returns:
     --------
@@ -3118,7 +3204,7 @@ def calculate_max_duplicates(signal, **kwargs):
         True: maximum value has duplicates 
         False: maximum value has no duplicates
     
-    Reference:
+    References:
     ----------
         - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
         basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
@@ -3127,7 +3213,7 @@ def calculate_max_duplicates(signal, **kwargs):
     max_value = np.max(signal)
     unique, counts = np.unique(signal, return_counts=True)
     result = True if counts[np.where(unique == max_value)[0][0]] > 1 else False
-    return np.array([result])
+    return result
 
 @name("min_has_duplicates")
 def calculate_min_duplicates(signal, **kwargs):
@@ -3136,8 +3222,8 @@ def calculate_min_duplicates(signal, **kwargs):
     
     Parameters:
     ----------
-        signal (array-like): 
-            The input time series.
+    signal : np.array 
+        The input time series.
 
     Returns:
     --------
@@ -3145,7 +3231,7 @@ def calculate_min_duplicates(signal, **kwargs):
         True: minimum value has duplicates 
         False: minimum value has no duplicates
     
-    Reference:
+    References:
     ----------
         - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
         basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
@@ -3154,7 +3240,7 @@ def calculate_min_duplicates(signal, **kwargs):
     max_value = np.min(signal)
     unique, counts = np.unique(signal, return_counts=True)
     result = True if counts[np.where(unique == max_value)[0][0]] > 1 else False
-    return np.array([result])
+    return result
 
 @name("large_std")
 def calculate_large_std(signal, **kwargs):
@@ -3184,7 +3270,7 @@ def calculate_large_std(signal, **kwargs):
     - The function is particularly useful for detecting whether the signal exhibits high 
     variability relative to its range.
 
-    Reference:
+    References:
     ---------
         - Wan, X., Wang, W., Liu, J., & Tong, T. (2014). Estimating the sample mean and standard 
         deviation from the sample size, median, range and/or interquartile range. BMC Medical 
@@ -3197,7 +3283,7 @@ def calculate_large_std(signal, **kwargs):
     N = len(signal)
     r = 4 if 15 < N <=70 else 6
 
-    return np.array([np.std(signal) > (r * range)])
+    return np.std(signal) > (r * range)
 
 @name("lempel_ziv_complexity")
 def calculate_lempel_ziv_complexity(signal, lz_bins, **kwargs):
@@ -3250,7 +3336,7 @@ def calculate_lempel_ziv_complexity(signal, lz_bins, **kwargs):
             ind += inc
             inc = 1
 
-    return np.array([len(unique_subsequences) / length])
+    return len(unique_subsequences) / length
 
 @name("cid_ce")
 def calculate_cid_ce(signal, cid_ce_normalize, **kwargs):
@@ -3277,7 +3363,7 @@ def calculate_cid_ce(signal, cid_ce_normalize, **kwargs):
     float
         The complexity estimate of the signal. A higher value indicates a more complex signal.
 
-    Reference:
+    References:
     ---------
     - Batista, G. E. A. P. A., Wang, X., & Keogh, E. J. (2011). A complexity-invariant distance measure 
     for time series. Proceedings of the 11th SIAM International Conference on Data Mining, SDM 2011, 
@@ -3301,7 +3387,7 @@ def calculate_cid_ce(signal, cid_ce_normalize, **kwargs):
             return 0.0
 
     signal = np.diff(signal)
-    return np.array([np.sqrt(np.dot(signal, signal))])
+    return np.sqrt(np.dot(signal, signal))
 
 @exclude()
 @name("conditional_entropy")
@@ -3316,7 +3402,7 @@ def calculate_conditional_entropy(signal, **kwargs):
     Returns:
         array: An array containing the conditional entropy of the signal.
         
-    Reference:
+    References:
     ---------
     
     """

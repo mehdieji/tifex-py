@@ -11,6 +11,8 @@ from scipy import stats
 
 from package_name.utils.utils import name, exclude
 
+# def extract_all_features
+
 @name("mean")
 def calculate_mean(signal, **kwargs):
     """

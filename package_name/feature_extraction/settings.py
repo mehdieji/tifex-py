@@ -222,7 +222,7 @@ class StatisticalFeatureParams(BaseFeatureParams):
 class SpectralFeatureParams(BaseFeatureParams):
     def __init__(self,
                  fs,
-                 f_bands,
+                 f_bands=[[0.5,4], [4,8], [8,12], [12,30], [30,100]],
                  n_dom_freqs=5,
                  cumulative_power_thresholds=None):
         self.fs = fs

@@ -9,7 +9,7 @@ from itertools import groupby
 from scipy.ndimage.filters import convolve
 from scipy import stats
 
-from package_name.utils.utils import name, exclude
+from package_name.utils.decorators import name, exclude
 
 # def extract_all_features
 

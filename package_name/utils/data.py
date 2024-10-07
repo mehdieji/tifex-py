@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-
+from scipy.signal import welch
 
 class TimeSeries():
     def __init__(self, data, columns=None, name=None):
@@ -68,9 +68,9 @@ class TimeSeries():
                 label = f"{name}_{column}"
             else:
                 label = column
-            ts_list.append((label, data[column].values))
+            ts_list.append(self.create_data_dict(data[column].values, label))
         return ts_list
-    
+
     def parse_from_array(self, data, columns=None, name=None):
         """
         Parse an array into a list of univariate time series.
@@ -91,7 +91,7 @@ class TimeSeries():
             List of tuples with the series name and the corresponding time series.
         """
         ts_list = []
-    
+
         if len(data.shape) == 1:
             if columns is None:
                 columns = [0]
@@ -108,7 +108,7 @@ class TimeSeries():
                     label = f"{name}_{i}"
                 else:
                     label = i
-                ts_list.append((label, data[:, i]))
+                ts_list.append(self.create_data_dict(data[:, i], label))
         else:
             raise ValueError("Arrays with more than 2 dimensions are not supported.")
         return ts_list
@@ -133,4 +133,40 @@ class TimeSeries():
             name = f"{name}_{data.name}"
         else:
             name = data.name
-        return [(name, data.values)]
+        return [self.create_data_dict(data.values, name)]
+
+    def create_data_dict(self, signal, name):
+        return {"signal": signal, "label": name}
+
+
+class SpectralTimeSeries(TimeSeries):
+    def __init__(self, data, columns=None, name=None, fs=1.0):
+        """
+        Parameters:
+        ----------
+        data: pandas.DataFrame or array-like
+            The dataset to calculate features for.
+        columns: list
+            List of columns to parse. If None, all columns are parsed.
+            If data is an array, this is the list of column names.
+        name: str
+            Name to prepend to the column names.
+        """
+        self.fs = fs
+        super().__init__(data, columns=columns, name=name)
+
+    def create_data_dict(self, signal, name):
+        # FFT (only positive frequencies)
+        spectrum = np.fft.rfft(signal)  # Spectrum of positive frequencies
+        spectrum_magnitudes = np.abs(spectrum)  # Magnitude of positive frequencies
+        spectrum_magnitudes_normalized = spectrum_magnitudes / np.sum(spectrum_magnitudes)
+        length = len(signal)
+        freqs_spectrum = np.abs(np.fft.fftfreq(length, 1.0 / self.fs)[:length // 2 + 1])
+
+        # Calculating the power spectral density using Welch's method.
+        freqs_psd, psd = welch(signal, fs=self.fs)
+        psd_normalized = psd / np.sum(psd)
+
+        return {"signal": signal, "spectrum": spectrum, "magnitudes": spectrum_magnitudes,
+                "magnitudes_normalized": spectrum_magnitudes_normalized, "freqs": freqs_spectrum,
+                "psd": psd, "psd_normalized": psd_normalized, "freqs_psd": freqs_psd, "label": name}

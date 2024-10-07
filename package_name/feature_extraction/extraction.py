@@ -4,9 +4,9 @@ from functools import partial
 
 import package_name.feature_extraction.statistical_feature_calculators as statistical_feature_calculators
 import package_name.feature_extraction.spectral_features_calculators as spectral_features_calculators
-from package_name.feature_extraction.settings import StatisticalFeatureParams, TimeFrequencyFeatureParams
+from package_name.feature_extraction.settings import StatisticalFeatureParams, SpectralFeatureParams, TimeFrequencyFeatureParams
 from package_name.utils.utils import get_calculators, calculate_features
-from package_name.utils.data import TimeSeries
+from package_name.utils.data import TimeSeries, SpectralTimeSeries
 
 def calculate_all_features(data, params=None, window_size=None, columns=None, signal_name=None, njobs=None):
     """
@@ -60,32 +60,35 @@ def calculate_statistical_features(data, params=None, window_size=None, columns=
     features: pandas.DataFrame
         DataFrame of calculated features.
     """
-    features = calculate_ts_features(data, ["statistical"], params=params, window_size=window_size,
+    if params is None:
+        params = StatisticalFeatureParams(window_size)
+
+    time_series = TimeSeries(data, columns=columns, name=signal_name)
+
+    features = calculate_ts_features(time_series, ["statistical"], params=params, window_size=window_size,
                                      columns=columns, signal_name=signal_name, njobs=njobs)
     return features
 
-def calculate_spectral_features():
-    pass
+def calculate_spectral_features(data, params=None, window_size=None, columns=None, signal_name=None, njobs=None):
+    if params is None:
+        params = SpectralFeatureParams(window_size)
+    time_series = SpectralTimeSeries(data, columns=columns, name=signal_name, fs=params.fs)
+    features = calculate_ts_features(time_series, ["spectral"], params=params, window_size=window_size,
+                                     columns=columns, signal_name=signal_name, njobs=njobs)
+    return features
 
 def calculate_time_frequency_features(data, params=None, window_size=None, columns=None, signal_name=None, njobs=None):
     features = None
     index = None
 
-    time
-    
+    # time
 
-def calculate_ts_features(data, modules, params=None, window_size=None, columns=None, signal_name=None, njobs=None):
+def calculate_ts_features(time_series, modules, params=None, window_size=None, columns=None, signal_name=None, njobs=None):
     """
     Calculate features for the given time series data.
     """
     features = []
     index = []
-
-    # Standardize data format
-    time_series = TimeSeries(data, columns=columns, name=signal_name)
-
-    if params is None:
-        params = StatisticalFeatureParams(window_size)
 
     param_dict = params.get_settings_as_dict()
 

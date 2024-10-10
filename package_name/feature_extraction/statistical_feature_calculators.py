@@ -79,7 +79,7 @@ def calculate_harmonic_mean(signal, **kwargs):
     signal = signal[signal > 0]
     return hmean(signal)
 
-@name("geometric_mean")
+@name("trimmed_mean_{}", "trimmed_mean_thresholds")
 def calculate_trimmed_mean(signal, trimmed_mean_thresholds, **kwargs):
     """
     Calculate the trimmed mean of the given signal for different proportions.

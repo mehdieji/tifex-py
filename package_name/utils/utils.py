@@ -1,8 +1,11 @@
-from package_name.feature_extraction import statistical_feature_calculators, spectral_features_calculators
+import package_name.feature_extraction as fe
 
 # Description: Utility functions for the package.
 
-   
+class SignalFeatures():
+    def __init__(self, label, features) -> None:
+        self.label = label
+        self.features = features
 
 def get_calculators(modules):
     """
@@ -42,12 +45,30 @@ def get_modules(module_str):
     modules = []
     for name in module_str:
         if name=="statistical":
-            modules.append(statistical_feature_calculators)
+            modules.append(fe.statistical_feature_calculators)
         elif name=="spectral":
-            modules.append(spectral_features_calculators)
+            modules.append(fe.spectral_features_calculators)
+        elif name=="time_frequency":
+            modules.append(fe.time_frequency_feature_calculators)
     return modules
 
-def calculate_features(series, modules, param_dict):
+def calculate_time_freq_features(series, params):
+    features = {}
+    param_dict = params.get_settings_as_dict()
+    calculators = get_calculators(get_modules(["time_frequency"]))
+    for calculate in calculators:
+        feature = calculate(**series, **param_dict)
+        name = getattr(calculate, "names")
+
+        if isinstance(name, list):
+            for n, f in zip(name, feature):
+                features[n] = f
+        else:
+            features[name] = feature
+
+    return [series["label"]], [features]
+
+def extract_features(series, modules, params):
     """
     Calculate features for the given univariate time series data.
 
@@ -67,15 +88,26 @@ def calculate_features(series, modules, param_dict):
         Dictionary of calculated features.
     """
     features = {}
+    param_dict = params.get_settings_as_dict()
     calculators = get_calculators(get_modules(modules))
     for calculate in calculators:
         feature = calculate(**series, **param_dict)
         name = getattr(calculate, "names")
 
-        if isinstance(name, list):
-            for n, f in zip(name, feature):
-                features[n] = f
+        if isinstance(feature, SignalFeatures):
+            for k, v in feature.features.items():
+                features[f'{name}_{k}'] = v
         else:
-            features[name] = feature
+            if isinstance(name, list):
+                for n, f in zip(name, feature):
+                    features[n] = f
+            else:
+                features[name] = feature
 
-    return series["label"], features
+    if "label" in series:
+        label = series["label"]
+    else:
+        label = ""
+
+    return SignalFeatures(label, features)
+

@@ -18,9 +18,9 @@ def calculate_spectral_centroid(freqs, magnitudes, order=1, **kwargs):
 
     Parameters:
     ----------
-    freqs : numpy.array
+    freqs : np.array
         An array of frequencies corresponding to the spectrum bins.
-    magnitudes : numpy.array
+    magnitudes : np.array
         An array of magnitude values of the spectrum at the corresponding frequencies.
     order : int, optional
         The order of the centroid calculation. Default is 1, which calculates the standard spectral centroid (mean frequency).
@@ -28,7 +28,7 @@ def calculate_spectral_centroid(freqs, magnitudes, order=1, **kwargs):
 
     Returns:
     -------
-    numpy.array
+    np.array
         An array containing the calculated spectral centroid. The array is of length 1 for consistency in return type.
         
     Reference:
@@ -39,7 +39,7 @@ def calculate_spectral_centroid(freqs, magnitudes, order=1, **kwargs):
         TSFEL: Time Series Feature Extraction Library. SoftwareX, 11. https://doi.org/10.1016/j.softx.2020.100456
     """     
     spectral_centroid = np.sum(magnitudes * (freqs ** order)) / np.sum(magnitudes)
-    return np.array([spectral_centroid])
+    return spectral_centroid
 
 @name("spectral_variance")
 def calculate_spectral_variance(freqs, magnitudes, **kwargs):
@@ -51,14 +51,14 @@ def calculate_spectral_variance(freqs, magnitudes, **kwargs):
 
     Parameters:
     ----------
-    freqs : numpy.array
+    freqs : np.array
         An array of frequencies corresponding to the spectrum bins.
-    magnitudes : numpy.array
+    magnitudes : np.array
         An array of magnitude values of the spectrum at the corresponding frequencies.
 
     Returns:
     -------
-    numpy.array
+    np.array
         An array containing the calculated spectral variance.
     
     Reference:
@@ -68,7 +68,7 @@ def calculate_spectral_variance(freqs, magnitudes, **kwargs):
     """
     mean_frequency = calculate_spectral_centroid(freqs, magnitudes)
     spectral_variance = np.sum(((freqs - mean_frequency) ** 2) * magnitudes) / np.sum(magnitudes)
-    return np.array([spectral_variance])
+    return spectral_variance
     
 # def calculate_spectral_standard_deviation(freqs, magnitudes, **kwargs):
 #     """
@@ -79,14 +79,14 @@ def calculate_spectral_variance(freqs, magnitudes, **kwargs):
     
 #     Parameters:
 #         ----------
-#         freqs : numpy.array
+#         freqs : np.array
 #             An array of frequencies corresponding to the spectrum bins.
-#         magnitudes : numpy.array
+#         magnitudes : np.array
 #             An array of magnitude values of the spectrum at the corresponding frequencies.
 
 #         Returns:
 #         -------
-#         numpy.array
+#         np.array
 #             An array containing the calculated spectral standard deviation.
     
 #     Reference:
@@ -110,9 +110,9 @@ def calculate_spectral_skewness(freqs, magnitudes, **kwargs):
 
     Parameters:
     ----------
-    freqs : numpy.array
+    freqs : np.array
         An array of frequencies corresponding to the spectrum bins.
-    magnitudes : numpy.array
+    magnitudes : np.array
         An array of magnitude values of the spectrum at the corresponding frequencies.
 
     Returns:
@@ -141,9 +141,9 @@ def calculate_spectral_kurtosis(freqs, magnitudes, **kwargs):
 
     Parameters:
     ----------
-    freqs : numpy.array
+    freqs : np.array
         An array of frequencies corresponding to the spectrum bins.
-    magnitudes : numpy.array
+    magnitudes : np.array
         An array of magnitude values of the spectrum at the corresponding frequencies.
 
     Returns:
@@ -170,14 +170,14 @@ def calculate_median_frequency(freqs_psd, psd, **kwargs):
 
     Parameters:
     ----------
-    freqs_psd : numpy.array
+    freqs_psd : np.array
         An array of frequencies corresponding to the PSD bins.
-    psd : numpy.array
+    psd : np.array
         An array of power spectral density values at the corresponding frequencies.
 
     Returns:
     -------
-    numpy.array
+    np.array
         An array containing the calculated median frequency.
         
     Reference:
@@ -189,7 +189,7 @@ def calculate_median_frequency(freqs_psd, psd, **kwargs):
     """
     cdf = np.cumsum(psd)
     median_freq = freqs_psd[np.searchsorted(cdf, cdf[-1] / 2)]
-    return np.array([median_freq])
+    return median_freq
 
 @name("spectral_flatness")
 def calculate_spectral_flatness(magnitudes, **kwargs):
@@ -202,12 +202,12 @@ def calculate_spectral_flatness(magnitudes, **kwargs):
 
     Parameters:
     ----------
-    magnitudes : numpy.array
+    magnitudes : np.array
         An array of magnitude values of the spectrum.
 
     Returns:
     -------
-    numpy.array
+    np.array
         An array containing the calculated spectral flatness.
 
     Reference:
@@ -217,7 +217,7 @@ def calculate_spectral_flatness(magnitudes, **kwargs):
         Signal Analysis and Processing: A Comprehensive Reference, 693–743. https://doi.org/10.1016/B978-0-12-398499-9.00012-1
     """
     spectral_flatness = np.exp(np.mean(np.log(magnitudes))) / np.mean(magnitudes)
-    return np.array([spectral_flatness])
+    return spectral_flatness
 
 @exclude()
 @name("spectral_slope_logarithmic")
@@ -230,14 +230,14 @@ def calculate_spectral_slope_logarithmic(freqs, magnitudes, **kwargs):
 
     Parameters:
     ----------
-    freqs : numpy.array
+    freqs : np.array
         An array of frequencies corresponding to the magnitude spectrum bins.
-    magnitudes : numpy.array
+    magnitudes : np.array
         An array of magnitude values of the spectrum at the corresponding frequencies.
 
     Returns:
     -------
-    numpy.array
+    np.array
         An array containing the calculated logarithmic spectral slope. The array is of length 1 for consistency in return type.
 
     Reference:
@@ -246,7 +246,7 @@ def calculate_spectral_slope_logarithmic(freqs, magnitudes, **kwargs):
         TSFEL: Time Series Feature Extraction Library. SoftwareX, 11. https://doi.org/10.1016/j.softx.2020.100456
     """
     slope = np.polyfit(freqs, np.log(magnitudes), 1)[0]
-    return np.array([slope])
+    return slope
 
 # TODO: Figure out how to handle difference parameter inputs
 @exclude()
@@ -261,14 +261,14 @@ def calculate_spectral_slope_linear(freqs, magnitudes, **kwargs):
 
     Parameters:
     ---------
-    freqs: numpy.array 
+    freqs: np.array 
         An array of frequency values.
-    magnitudes: numpy.array
+    magnitudes: np.array
         An array of magnitude values corresponding to the frequencies.
 
     Returns:
     -------
-    numpy.array
+    np.array
         A numpy array containing a single element, the slope of the linear fit.
         
     Reference:
@@ -277,7 +277,7 @@ def calculate_spectral_slope_linear(freqs, magnitudes, **kwargs):
         TSFEL: Time Series Feature Extraction Library. SoftwareX, 11. https://doi.org/10.1016/j.softx.2020.100456
     """
     slope = np.polyfit(freqs, magnitudes, 1)[0]
-    return np.array([slope])
+    return slope
 
 @name("peak_freq_{}", "n_dom_freqs")
 def calculate_peak_frequencies(freqs_psd, psd, n_dom_freqs, **kwargs):
@@ -286,14 +286,14 @@ def calculate_peak_frequencies(freqs_psd, psd, n_dom_freqs, **kwargs):
 
     Parameters:
     ----------
-    freqs_psd: numpy.array
+    freqs_psd: np.array
         An array of frequency values.
-    psd: numpy.array
+    psd: np.array
         An array of Power Spectral Density (PSD) values corresponding to the frequencies.
 
     Returns:
     -------
-    numpy.array
+    np.array
         A numpy array containing the peak frequencies.
     
     Reference:
@@ -323,14 +323,14 @@ def calculate_spectral_edge_frequency(freqs_psd, psd, cumulative_power_threshold
 
     Parameters:
     ----------
-    freqs_psd: numpy.array
+    freqs_psd: np.array
         An array of frequency values.
-    psd: numpy.array
+    psd: np.array
         An array of Power Spectral Density (PSD) values corresponding to the frequencies.
 
     Returns:
     -------
-    numpy.array: 
+    np.array
         A numpy array containing the spectral edge frequencies for each threshold.
     
     Reference:
@@ -353,14 +353,14 @@ def calculate_band_power(freqs_psd, psd, f_bands, **kwargs):
     
     Parameters:
     ----------
-    freqs_psd: numpy.array
+    freqs_psd: np.array
         An array of frequency values.
-    psd: numpy.array
+    psd: np.array
         An array of Power Spectral Density (PSD) values corresponding to the frequencies.
 
     Returns:
     -------
-    numpy.array: 
+    np.array: 
         An array containing the total power, followed by the absolute and relative
         power for each specified frequency band.
 
@@ -401,12 +401,13 @@ def calculate_spectral_entropy(psd, **kwargs):
     distribution.
     
     Parameters:
-    ---------
-    psd: numpy.array
+    -----------
+    psd: np.array
         An array of Power Spectral Density (PSD) values corresponding to the frequencies.
         
     Returns:
-    numpy.array: 
+    --------
+    np.array: 
         A numpy array containing the spectral entropy value.
         
     Reference:
@@ -436,16 +437,16 @@ def calculate_spectral_contrast(freqs_psd, psd, f_bands, **kwargs):
     
     Parameters:
     ----------
-    freqs_psd: numpy.array
+    freqs_psd: np.array
         An array of frequency values.
-    psd: numpy.array
+    psd: np.array
         An array of Power Spectral Density (PSD) values corresponding to the frequencies.
     f_bands: list
         A list of tuples specifying the frequency bands for which to calculate the spectral contrast.
 
     Returns:
     -------
-    numpy.array:
+    np.array:
         An array containing the spectral contrast values for each specified frequency band.
 
     Reference:
@@ -480,9 +481,9 @@ def calculate_spectral_bandwidth(freqs, magnitudes, order, **kwargs):
     
     Parameters:
     ----------
-    freqs : numpy.array
+    freqs : np.array
         An array of frequencies corresponding to the magnitude spectrum bins.
-    magnitudes : numpy.array
+    magnitudes : np.array
         An array of magnitude values of the spectrum at the corresponding frequencies.
 
     order : int
@@ -494,7 +495,7 @@ def calculate_spectral_bandwidth(freqs, magnitudes, order, **kwargs):
     
     Returns:
     --------
-        np.ndarray
+        np.array
             A 1D numpy array containing the calculated spectral bandwidth value.
     
     References:
@@ -506,7 +507,7 @@ def calculate_spectral_bandwidth(freqs, magnitudes, order, **kwargs):
     normalized_magnitudes = magnitudes / np.sum(magnitudes)
     mean_frequency = calculate_spectral_centroid(freqs, magnitudes)
     spectral_bandwidth = ((np.sum(((freqs - mean_frequency) ** order) * normalized_magnitudes)) ** (1 / order))
-    return np.array([spectral_bandwidth])
+    return spectral_bandwidth
 
 @exclude()
 @name("spectral_absolute_deviation")
@@ -522,9 +523,9 @@ def calculate_spectral_absolute_deviation(freqs, magnitudes, order=1, **kwargs):
 
     Parameters:
     -----------
-    freqs : numpy.array
+    freqs : np.array
         An array of frequencies corresponding to the magnitude spectrum bins.
-    magnitudes : numpy.array
+    magnitudes : np.array
         An array of magnitude values of the spectrum at the corresponding frequencies.
 
     order : int, optional default=1)
@@ -533,7 +534,7 @@ def calculate_spectral_absolute_deviation(freqs, magnitudes, order=1, **kwargs):
 
     Returns:
     --------
-    np.ndarray
+    np.array
         A 1D numpy array containing the calculated spectral absolute deviation.
         
     References:
@@ -544,7 +545,7 @@ def calculate_spectral_absolute_deviation(freqs, magnitudes, order=1, **kwargs):
     normalized_magnitudes = magnitudes / np.sum(magnitudes)
     mean_frequency = calculate_spectral_centroid(freqs, magnitudes)
     spectral_absolute_deviation = ((np.sum((np.abs(freqs - mean_frequency) ** order) * normalized_magnitudes)) ** (1 / order))
-    return np.array([spectral_absolute_deviation])
+    return spectral_absolute_deviation
 
 @name("spectral_covariance")
 def calculate_spectral_cov(freqs, magnitudes, **kwargs):
@@ -608,7 +609,7 @@ def calculate_spectral_flux(magnitudes, order=2, **kwargs):
     Proceedings, 1104–1107. https://doi.org/10.1109/ICALIP.2012.6376781
     """
     spectral_flux = (np.sum(np.abs(np.diff(magnitudes)) ** order)) ** (1 / order)
-    return np.array([spectral_flux])
+    return spectral_flux
 
 @name("spectral_rolloff")
 def calculate_spectral_rolloff(freqs, magnitudes, roll_percent=0.85, **kwargs):
@@ -620,16 +621,16 @@ def calculate_spectral_rolloff(freqs, magnitudes, roll_percent=0.85, **kwargs):
 
     Parameters:
     -----------
-    freqs : numpy.ndarray
+    freqs : np.array
         Array of frequencies corresponding to the frequency components of the signal.
-    magnitudes : numpy.ndarray
+    magnitudes : np.array
         Array of magnitudes (or power) corresponding to the frequencies.
     roll_percent : float, optional
         The percentage of total spectral energy below the rolloff point. Default is 0.85 (85%).
 
     Returns:
     --------
-    numpy.ndarray
+    np.array
         The frequency at which the spectral rolloff occurs.
 
     References:
@@ -639,7 +640,7 @@ def calculate_spectral_rolloff(freqs, magnitudes, roll_percent=0.85, **kwargs):
     """
     cumulative_magnitudes = np.cumsum(magnitudes)
     rolloff_frequency = np.min(freqs[np.where(cumulative_magnitudes >= roll_percent * cumulative_magnitudes[-1])])
-    return np.array([rolloff_frequency])
+    return rolloff_frequency
 
 @name("harmonic_ratio")
 def calculate_harmonic_ratio(signal, **kwargs):
@@ -652,12 +653,12 @@ def calculate_harmonic_ratio(signal, **kwargs):
 
     Parameters:
     -----------
-    signal : numpy.ndarray
+    signal : np.array
         The input audio signal as a 1D numpy array.
 
     Returns:
     --------
-    numpy.ndarray
+    np.array
         The harmonic ratio of the signal as a 1D numpy array.
 
     References:
@@ -666,7 +667,7 @@ def calculate_harmonic_ratio(signal, **kwargs):
         https://www.mathworks.com/help/audio/ref/harmonicratio.html
     """
     harmonic_ratio = librosa.effects.harmonic(signal).mean()
-    return np.array([harmonic_ratio])
+    return harmonic_ratio
 
 @name("fundamental_frequency")
 def calculate_fundamental_frequency(signal, **kwargs):
@@ -679,12 +680,12 @@ def calculate_fundamental_frequency(signal, **kwargs):
 
     Parameters:
     -----------
-    signal : numpy.ndarray
+    signal : np.array
         The input audio signal as a 1D numpy array.
 
     Returns:
     --------
-    numpy.ndarray
+    np.array
         The average fundamental frequency (F0) of the signal as a 1D numpy array.
         
     Reference:
@@ -695,7 +696,7 @@ def calculate_fundamental_frequency(signal, **kwargs):
 
     """
     f0 = librosa.yin(signal, fmin=librosa.note_to_hz('C1'), fmax=librosa.note_to_hz('C8'))
-    return np.array([np.mean(f0)])
+    return np.mean(f0)
 
 @name("spectral_crest_factor")
 def calculate_spectral_crest_factor(magnitudes, **kwargs):
@@ -707,12 +708,12 @@ def calculate_spectral_crest_factor(magnitudes, **kwargs):
 
     Parameters:
     -----------
-    magnitudes : numpy.ndarray
+    magnitudes : np.array
         Array of magnitudes (or power) corresponding to the frequencies in the signal's spectrum.
 
     Returns:
     --------
-    numpy.ndarray
+    np.array
         The spectral crest factor of the signal as a 1D numpy array.
 
     References:
@@ -721,7 +722,7 @@ def calculate_spectral_crest_factor(magnitudes, **kwargs):
         https://www.mathworks.com/help/signal/ref/spectralcrest.html#d126e220002
     """
     crest_factor = np.max(magnitudes) / np.mean(magnitudes)
-    return np.array([crest_factor])
+    return crest_factor
 
 @name("spectral_decrease")
 def calculate_spectral_decrease(freqs, magnitudes, **kwargs):
@@ -735,14 +736,14 @@ def calculate_spectral_decrease(freqs, magnitudes, **kwargs):
 
     Parameters:
     -----------
-    freqs : numpy.ndarray
+    freqs : np.array
         Array of frequencies corresponding to the frequency components of the signal.
-    magnitudes : numpy.ndarray
+    magnitudes : np.array
         Array of magnitudes corresponding to the frequencies in the signal's spectrum.
 
     Returns:
     --------
-    numpy.ndarray
+    np.array
         The spectral decrease value of the signal as a 1D numpy array.
 
     References:
@@ -752,7 +753,7 @@ def calculate_spectral_decrease(freqs, magnitudes, **kwargs):
     """
     k = np.arange(1, len(magnitudes) + 1)
     spectral_decrease = np.sum((magnitudes[1:] - magnitudes[0]) / k[1:])
-    return np.array([spectral_decrease])
+    return spectral_decrease
 
 @name("spectral_irregularity")
 def calculate_spectral_irregularity(magnitudes, **kwargs):
@@ -764,7 +765,7 @@ def calculate_spectral_irregularity(magnitudes, **kwargs):
 
     Parameters:
     -----------
-    magnitudes : numpy.ndarray
+    magnitudes : np.array
         Array of magnitudes corresponding to the frequencies in the signal's spectrum.
 
     Returns:
@@ -779,7 +780,7 @@ def calculate_spectral_irregularity(magnitudes, **kwargs):
         - 
     """
     irregularity = np.sum(np.abs(magnitudes[1:] - magnitudes[:-1])) / (len(magnitudes) - 1)
-    return np.array([irregularity])
+    return irregularity
 
 @name("spectral_winsorized_mean")
 def calculate_spectral_winsorized_mean(freqs, magnitudes, limits=(0.05, 0.95), **kwargs):
@@ -788,9 +789,9 @@ def calculate_spectral_winsorized_mean(freqs, magnitudes, limits=(0.05, 0.95), *
     
     Parameters:
     -----------
-    freqs : np.ndarray
+    freqs : np.array
         Array of frequency values corresponding to the magnitudes.
-    magnitudes : np.ndarray
+    magnitudes : np.array
         Array of magnitude values corresponding to the frequencies.
     limits : tuple, optional
         A tuple specifying the lower and upper percentage of magnitudes to be trimmed 
@@ -798,7 +799,7 @@ def calculate_spectral_winsorized_mean(freqs, magnitudes, limits=(0.05, 0.95), *
     
     Returns:
     --------
-    np.ndarray
+    np.array
         A numpy array containing the winsorized mean of the trimmed frequency values.    
         
     Reference:
@@ -819,7 +820,7 @@ def calculate_spectral_winsorized_mean(freqs, magnitudes, limits=(0.05, 0.95), *
     trimmed_indices = sorted_indices[lower_limit:upper_limit]
     winsorized_mean = np.mean(freqs[trimmed_indices])
     
-    return np.array([winsorized_mean])
+    return winsorized_mean
 
 @name("total_harmonic_distortion")
 def calculate_total_harmonic_distortion(signal, fs, harmonics=5, **kwargs):
@@ -831,7 +832,7 @@ def calculate_total_harmonic_distortion(signal, fs, harmonics=5, **kwargs):
     harmonic_power = sum([np.sum(np.abs(np.fft.rfft(signal * np.sin(2 * np.pi * harmonic_freq * np.arange(len(signal)) / fs)))) for harmonic_freq in harmonic_frequencies])
     total_power = np.sum(np.abs(np.fft.rfft(signal))**2)
     thd = harmonic_power / total_power
-    return np.array([thd])
+    return thd
 
 @name("inharmonicity")
 def calculate_inharmonicity(signal, fs, **kwargs):
@@ -850,7 +851,7 @@ def calculate_inharmonicity(signal, fs, **kwargs):
         inharmonicity = sum([np.abs(harmonic - fundamental_freq * (i+1)) for i, harmonic in enumerate(harmonics)]) / len(harmonics)
     except ZeroDivisionError:
         inharmonicity = np.nan
-    return np.array([inharmonicity])
+    return inharmonicity
 
 @name("tristimulus")
 def calculate_tristimulus(magnitudes, **kwargs):
@@ -867,7 +868,7 @@ def calculate_spectral_rollon(freqs, magnitudes, roll_percent=0.85, **kwargs):
     # https://doi.org/10.1016/j.softx.2020.100456
     cumulative_magnitudes = np.cumsum(magnitudes)
     rollon_frequency = np.min(freqs[np.where(cumulative_magnitudes >= roll_percent * cumulative_magnitudes[-1])])
-    return np.array([rollon_frequency])
+    return rollon_frequency
 
 @name("spectral_hole_count")
 def calculate_spectral_hole_count(magnitudes, threshold=0.05, **kwargs):
@@ -886,14 +887,14 @@ def calculate_spectral_autocorrelation(magnitudes, **kwargs):
 def calculate_spectral_variability(magnitudes, **kwargs):
     # https://doi.org/10.1016/j.dsp.2015.10.011
     variability = np.var(magnitudes)
-    return np.array([variability])
+    return variability
 
 @name("spectral_spread_ratio")
 def calculate_spectral_spread_ratio(freqs, magnitudes, reference_value=1.0, **kwargs):
     # https://doi.org/10.1016/j.softx.2020.100456
     spread = np.sqrt(np.sum((freqs - np.mean(freqs))**2 * magnitudes) / np.sum(magnitudes))
     spread_ratio = spread / reference_value
-    return np.array([spread_ratio])
+    return spread_ratio
 
 @name("spectral_skewness_ratio")
 def calculate_spectral_skewness_ratio(freqs, magnitudes, reference_value=1.0, **kwargs):
@@ -901,7 +902,7 @@ def calculate_spectral_skewness_ratio(freqs, magnitudes, reference_value=1.0, **
     mean_freq = np.mean(freqs)
     skewness = np.sum((freqs - mean_freq)**3 * magnitudes) / (len(freqs) * (np.std(freqs)**3))
     skewness_ratio = skewness / reference_value
-    return np.array([skewness_ratio])
+    return skewness_ratio
 
 @name("spectral_kurtosis_ratio")
 def calculate_spectral_kurtosis_ratio(freqs, magnitudes, reference_value=1.0, **kwargs):
@@ -909,7 +910,7 @@ def calculate_spectral_kurtosis_ratio(freqs, magnitudes, reference_value=1.0, **
     mean_freq = np.mean(freqs)
     kurtosis = np.sum((freqs - mean_freq)**4 * magnitudes) / (len(freqs) * (np.std(freqs)**4)) - 3
     kurtosis_ratio = kurtosis / reference_value
-    return np.array([kurtosis_ratio])
+    return kurtosis_ratio
 
 @name("spectral_tonal_power_ratio")
 def calculate_spectral_tonal_power_ratio(signal, **kwargs):
@@ -917,7 +918,7 @@ def calculate_spectral_tonal_power_ratio(signal, **kwargs):
     harmonic_power = np.sum(librosa.effects.harmonic(signal)**2)
     total_power = np.sum(signal**2)
     tonal_power_ratio = harmonic_power / total_power
-    return np.array([tonal_power_ratio])
+    return tonal_power_ratio
 
 @name("spectral_noise_to_harmonics_ratio")
 def calculate_spectral_noise_to_harmonics_ratio(signal, **kwargs):
@@ -927,7 +928,7 @@ def calculate_spectral_noise_to_harmonics_ratio(signal, **kwargs):
     noise_energy = np.sum(noise_part**2)
     harmonic_energy = np.sum(harmonic_part**2)
     noise_to_harmonics_ratio = noise_energy / harmonic_energy
-    return np.array([noise_to_harmonics_ratio])
+    return noise_to_harmonics_ratio
 
     #def calculate_spectral_even_to_odd_harmonic_energy_ratio(signal, **kwargs):
         # https://zenodo.org/badge/latestdoi/6309729
@@ -956,7 +957,7 @@ def calculate_spectral_strongest_frequency_phase(spectrum, **kwargs):
     
     Returns
     -------
-    numpy.ndarray
+    np.array
         A single-element array containing the phase (in radians) of the strongest frequency component.
     
     Reference:
@@ -965,7 +966,7 @@ def calculate_spectral_strongest_frequency_phase(spectrum, **kwargs):
     """
     strongest_frequency_index = np.argmax(np.abs(spectrum))
     phase = np.angle(spectrum[strongest_frequency_index])
-    return np.array([phase])
+    return phase
 
 @name("spectral_frequency_below_peak")
 def calculate_spectral_frequency_below_peak(freqs, magnitudes, **kwargs):
@@ -984,7 +985,7 @@ def calculate_spectral_frequency_below_peak(freqs, magnitudes, **kwargs):
     
     Returns
     -------
-    numpy.ndarray
+    np.array
         A single-element array containing the frequency just below the peak frequency.
         If the peak is at the first frequency, returns the first frequency itself.
     
@@ -995,7 +996,7 @@ def calculate_spectral_frequency_below_peak(freqs, magnitudes, **kwargs):
     """
     peak_index = np.argmax(magnitudes)
     frequency_below_peak = freqs[max(0, peak_index - 1)]
-    return np.array([frequency_below_peak])
+    return frequency_below_peak
 
 @name("spectral_frequency_above_peak")
 def calculate_spectral_frequency_above_peak(freqs, magnitudes, **kwargs):
@@ -1014,7 +1015,7 @@ def calculate_spectral_frequency_above_peak(freqs, magnitudes, **kwargs):
     
     Returns
     -------
-    numpy.ndarray
+    np.array
         A single-element array containing the frequency just above the peak frequency.
         If the peak is at the last frequency, returns the last frequency itself.
     
@@ -1025,7 +1026,7 @@ def calculate_spectral_frequency_above_peak(freqs, magnitudes, **kwargs):
     """
     peak_index = np.argmax(magnitudes)
     frequency_above_peak = freqs[min(len(freqs) - 1, peak_index + 1)]
-    return np.array([frequency_above_peak])
+    return frequency_above_peak
 
 @exclude() #TODO: Figure out how tobest allow multiple options
 @name("spectral_cumulative_frequency")
@@ -1033,7 +1034,7 @@ def calculate_spectral_cumulative_frequency(freqs, magnitudes, threshold, **kwar
     # https://doi.org/10.48550/arXiv.0901.3708
     cumulative_power = np.cumsum(magnitudes) / np.sum(magnitudes)
     frequency = freqs[np.where(cumulative_power >= threshold)[0][0]]
-    return np.array([frequency])
+    return frequency
 
 @exclude()
 @name("spectral_cumulative_frequency_above")
@@ -1041,7 +1042,7 @@ def calculate_spectral_cumulative_frequency_above(freqs, magnitudes, threshold, 
     # https://doi.org/10.48550/arXiv.0901.3708
     cumulative_power = np.cumsum(magnitudes) / np.sum(magnitudes)
     frequency = freqs[np.where(cumulative_power <= threshold)[-1][-1]]
-    return np.array([frequency])
+    return frequency
 
 @name("spectral_change_vector_magnitude")
 def calculate_spectral_change_vector_magnitude(magnitudes, **kwargs):
@@ -1056,7 +1057,7 @@ def calculate_spectral_change_vector_magnitude(magnitudes, **kwargs):
     
     Returns
     -------
-    numpy.ndarray
+    np.array
         An array containing the spectral change vector magnitude.
         
     Reference:
@@ -1066,19 +1067,19 @@ def calculate_spectral_change_vector_magnitude(magnitudes, **kwargs):
         Vol. 3, Pages 2473-2493, 3(11), 2473–2493. https://doi.org/10.3390/RS3112473
     """
     change_vector_magnitude = np.linalg.norm(np.diff(magnitudes))
-    return np.array([change_vector_magnitude])
+    return change_vector_magnitude
 
 @name("spectral_low_frequency_content")
 def calculate_spectral_low_frequency_content(freqs, magnitudes, low_freq_threshold=300, **kwargs):
     # https://resources.pcb.cadence.com/blog/2022-an-overview-of-frequency-bands-and-their-applications
     low_freq_content = np.sum(magnitudes[freqs < low_freq_threshold])
-    return np.array([low_freq_content])
+    return low_freq_content
 
 @name("spectral_mid_frequency_content")
 def calculate_spectral_mid_frequency_content(freqs, magnitudes, mid_freq_range=(300, 3000), **kwargs):
     # https://resources.pcb.cadence.com/blog/2022-an-overview-of-frequency-bands-and-their-applications
     mid_freq_content = np.sum(magnitudes[(freqs >= mid_freq_range[0]) & (freqs <= mid_freq_range[1])])
-    return np.array([mid_freq_content])
+    return mid_freq_content
 
 @name("spectral_peak_to_valley_ratio")
 def calculate_spectral_peak_to_valley_ratio(magnitudes, **kwargs):
@@ -1113,7 +1114,7 @@ def calculate_spectral_peak_to_valley_ratio(magnitudes, **kwargs):
         return np.array([np.nan])
     
     peak_to_valley_ratio = np.max(magnitudes[peaks]) / np.min(magnitudes[valleys])
-    return np.array([peak_to_valley_ratio])
+    return peak_to_valley_ratio
 
 @name("spectral_valley_depth_mean")
 def calculate_spectral_valley_depth_mean(magnitudes, **kwargs):
@@ -1124,15 +1125,15 @@ def calculate_spectral_valley_depth_mean(magnitudes, **kwargs):
     in the negative of the magnitudes (indicating valleys) and computes the mean 
     depth of these valleys. If no valleys are found, it returns NaN.
 
-    Parameter:
+    Parameters:
     ---------
-        magnitudes (array-like)
-            A 1D array representing the magnitudes corresponding to each frequency component.
+    magnitudes : array-like
+        A 1D array representing the magnitudes corresponding to each frequency component.
 
     Returns:
     -------
-        np.ndarray
-            Mean of the valley depths or NaN if no valleys are found.
+    np.array
+        Mean of the valley depths or NaN if no valleys are found.
         
     Reference:
     ---------
@@ -1144,7 +1145,7 @@ def calculate_spectral_valley_depth_mean(magnitudes, **kwargs):
     if len(valleys) == 0:
         return np.array([np.nan])
     valley_depth_mean = np.mean(magnitudes[valleys])
-    return np.array([valley_depth_mean])
+    return valley_depth_mean
 
 @name("spectral_valley_depth_std")
 def calculate_spectral_valley_depth_std(magnitudes, **kwargs):
@@ -1155,15 +1156,15 @@ def calculate_spectral_valley_depth_std(magnitudes, **kwargs):
     in the negative of the magnitudes (indicating valleys) and computes the standard 
     deviation of the valley depths. If no valleys are found, it returns NaN.
 
-    Parameter:
+    Parameters:
     ---------
-        magnitudes (array-like)
-            A 1D array representing the magnitudes corresponding to each frequency component.
+    magnitudes : array-like
+        A 1D array representing the magnitudes corresponding to each frequency component.
 
     Returns:
     --------
-        np.ndarray
-            Standard deviation of the valley depths or NaN if no valleys are found.
+    np.array
+        Standard deviation of the valley depths or NaN if no valleys are found.
             
     Reference:
     ---------
@@ -1175,7 +1176,7 @@ def calculate_spectral_valley_depth_std(magnitudes, **kwargs):
     if len(valleys) == 0:
         return np.array([np.nan])
     valley_depth_std = np.std(magnitudes[valleys])
-    return np.array([valley_depth_std])
+    return valley_depth_std
 
 @name("spectral_valley_depth_variance")
 def calculate_spectral_valley_depth_variance(magnitudes, **kwargs):
@@ -1186,15 +1187,15 @@ def calculate_spectral_valley_depth_variance(magnitudes, **kwargs):
     in the negative of the magnitudes (indicating valleys) and computes the variance 
     of these valleys' depths. If no valleys are found, it returns NaN.
 
-    Parameter:
+    Parameters:
     ---------
-        magnitudes (array-like)
-            A 1D array representing the magnitudes corresponding to each frequency component.
+    magnitudes : array-like
+        A 1D array representing the magnitudes corresponding to each frequency component.
 
     Returns:
     --------
-        np.ndarray
-            Variance of the valley depths or NaN if no valleys are found.
+    np.array
+        Variance of the valley depths or NaN if no valleys are found.
             
     Reference:
     ---------
@@ -1206,7 +1207,7 @@ def calculate_spectral_valley_depth_variance(magnitudes, **kwargs):
     if len(valleys) == 0:
         return np.array([np.nan])
     valley_depth_variance = np.var(magnitudes[valleys])
-    return np.array([valley_depth_variance])
+    return valley_depth_variance
 
 @name("spectral_valley_width_mode")
 def calculate_spectral_valley_width_mode(magnitudes, **kwargs):
@@ -1217,15 +1218,15 @@ def calculate_spectral_valley_width_mode(magnitudes, **kwargs):
     in the negative of the magnitudes. It then calculates the mode of the widths 
     between consecutive valleys. If fewer than two valleys are found, it returns NaN.
 
-    Parameter:
+    Parameters:
     ---------
-        magnitudes (array-like)
-            A 1D array representing the magnitudes corresponding to each frequency component.
+    magnitudes : array-like
+        A 1D array representing the magnitudes corresponding to each frequency component.
 
     Returns:
     --------
-        np.ndarray
-            Mode of the valley widths or NaN if fewer than two valleys are found.
+    np.array
+        Mode of the valley widths or NaN if fewer than two valleys are found.
     
     Reference:
     ---------
@@ -1238,7 +1239,7 @@ def calculate_spectral_valley_width_mode(magnitudes, **kwargs):
         return np.array([np.nan])
     valley_widths = np.diff(valleys)
     valley_width_mode = mode(valley_widths)[0]
-    return np.array([valley_width_mode])
+    return valley_width_mode
 
 @name("spectral_valley_width_std")
 def calculate_spectral_valley_width_std(magnitudes, **kwargs):
@@ -1249,15 +1250,15 @@ def calculate_spectral_valley_width_std(magnitudes, **kwargs):
     in the negative of the magnitudes and calculates the standard deviation of the 
     widths between consecutive valleys. If fewer than two valleys are found, it returns NaN.
 
-    Parameter:
+    Parameters:
     ----------
-        magnitudes (array-like)
-            A 1D array representing the magnitudes corresponding to each frequency component.
+    magnitudes : array-like
+        A 1D array representing the magnitudes corresponding to each frequency component.
 
     Returns:
     --------
-        np.ndarray
-            Standard deviation of the valley widths or NaN if fewer than two valleys are found.
+    np.array
+        Standard deviation of the valley widths or NaN if fewer than two valleys are found.
             
     Reference:
     ---------
@@ -1270,29 +1271,29 @@ def calculate_spectral_valley_width_std(magnitudes, **kwargs):
         return np.array([np.nan])
     valley_widths = np.diff(valleys)
     valley_width_std = np.std(valley_widths)
-    return np.array([valley_width_std])
+    return valley_width_std
 
 @name("spectral_subdominant_valley")
 def calculate_spectral_subdominant_valley(magnitudes, **kwargs):
     """
     Calculate the second-largest valley in the magnitude spectrum.
 
-    Parameter:
+    Parameters:
     ----------
-        magnitudes (array-like)
-            A 1D array representing the magnitudes corresponding to each frequency component.
+    magnitudes : array-like
+        A 1D array representing the magnitudes corresponding to each frequency component.
 
     Returns:
     ---------
-        np.array
-            An array containing the second-largest valley value or NaN if there are fewer than two valleys.
+    np.array
+        An array containing the second-largest valley value or NaN if there are fewer than two valleys.
     """
     valleys, _ = find_peaks(-magnitudes)
     if len(valleys) < 2:
         return np.array([np.nan])
     sorted_valleys = np.sort(magnitudes[valleys])
     subdominant_valley = sorted_valleys[-2] if len(sorted_valleys) >= 2 else np.nan
-    return np.array([subdominant_valley])
+    return subdominant_valley
 
 @name("spectral_valley_count")
 def calculate_spectral_valley_count(magnitudes, **kwargs):
@@ -1300,10 +1301,13 @@ def calculate_spectral_valley_count(magnitudes, **kwargs):
     Calculate the number of valleys in the magnitude spectrum.
 
     Parameters:
-    magnitudes (array, **kwargs): Array of magnitude values from the spectrum.
+    ----------
+    magnitudes : array-like
+        Array of magnitude values from the spectrum.
 
     Returns:
-    np.array: An array containing the number of valleys in the magnitude spectrum.
+    np.array
+        An array containing the number of valleys in the magnitude spectrum.
     
     Reference:
     ---------
@@ -1312,7 +1316,7 @@ def calculate_spectral_valley_count(magnitudes, **kwargs):
         distinction of vowel sounds. 2. https://arxiv.org/abs/1506.04828v2
     """
     valleys, _ = find_peaks(-magnitudes)
-    return np.array([len(valleys)])
+    return len(valleys)
 
 @name("spectral_peak_broadness")
 def calculate_spectral_peak_broadness(freqs, magnitudes, **kwargs):
@@ -1321,15 +1325,15 @@ def calculate_spectral_peak_broadness(freqs, magnitudes, **kwargs):
 
     Parameters:
     ----------
-        freqs (array)
-            Array of frequency values.
-        magnitudes (array)
-            Array of magnitude values from the spectrum.
+    freqs : array-like
+        Array of frequency values.
+    magnitudes : array-like
+        Array of magnitude values from the spectrum.
 
     Returns:
     --------
-        np.array
-            An array containing the average distance between peaks or NaN if there are fewer than two peaks.
+    np.array
+        An array containing the average distance between peaks or NaN if there are fewer than two peaks.
                 
         
     Reference:
@@ -1341,7 +1345,7 @@ def calculate_spectral_peak_broadness(freqs, magnitudes, **kwargs):
         return np.array([np.nan])
     peak_widths = np.diff(peaks)
     peak_broadness = np.mean(peak_widths)
-    return np.array([peak_broadness])
+    return peak_broadness
 
 @name("spectral_valley_broadness")
 def calculate_spectral_valley_broadness(freqs, magnitudes, **kwargs):
@@ -1350,15 +1354,15 @@ def calculate_spectral_valley_broadness(freqs, magnitudes, **kwargs):
 
     Parameters:
     -----------
-        freqs (array)
-            Array of frequency values.
-        magnitudes (array)
-            Array of magnitude values from the spectrum.
+    freqs : array-like
+        Array of frequency values.
+    magnitudes : array-like
+        Array of magnitude values from the spectrum.
 
     Returns:
     --------
-        np.array
-            An array containing the average distance between valleys or NaN if there are fewer than two valleys.
+    np.array
+        An array containing the average distance between valleys or NaN if there are fewer than two valleys.
         
     Reference:
     ---------
@@ -1371,7 +1375,7 @@ def calculate_spectral_valley_broadness(freqs, magnitudes, **kwargs):
         return np.array([np.nan])
     valley_widths = np.diff(valleys)
     valley_broadness = np.mean(valley_widths)
-    return np.array([valley_broadness])
+    return valley_broadness
 
 @name("spectral_range")
 def calculate_spectral_range(freqs, **kwargs):
@@ -1380,13 +1384,13 @@ def calculate_spectral_range(freqs, **kwargs):
 
     Parameters:
     -----------
-        freqs (array)
-            Array of frequency values.
+    freqs : array-like
+        Array of frequency values.
 
     Returns:
     --------
-        np.array
-            An array containing the range of frequencies.
+    np.array
+        An array containing the range of frequencies.
             
     Reference
     ---------
@@ -1394,37 +1398,37 @@ def calculate_spectral_range(freqs, **kwargs):
         https://doi.org/10.1016/B978-0-12-811153-6.00003-8
     """
     freq_range = np.max(freqs) - np.min(freqs)
-    return np.array([freq_range])
+    return freq_range
 
 @name("spectral_trimmed_mean")
 def calculate_spectral_trimmed_mean(freqs, magnitudes, trim_percent=0.1, **kwargs):
-        # https://doi.org/10.1016/B978-0-12-811153-6.00003-8
-        sorted_indices = np.argsort(magnitudes)
-        lower_limit = int(trim_percent * len(magnitudes))
-        upper_limit = int((1 - trim_percent) * len(magnitudes))
-        trimmed_indices = sorted_indices[lower_limit:upper_limit]
-        trimmed_mean = np.mean(freqs[trimmed_indices])
-        return np.array([trimmed_mean])
+    # https://doi.org/10.1016/B978-0-12-811153-6.00003-8
+    sorted_indices = np.argsort(magnitudes)
+    lower_limit = int(trim_percent * len(magnitudes))
+    upper_limit = int((1 - trim_percent) * len(magnitudes))
+    trimmed_indices = sorted_indices[lower_limit:upper_limit]
+    trimmed_mean = np.mean(freqs[trimmed_indices])
+    return trimmed_mean
 
 @name("harmonic_product_spectrum")
 def calculate_harmonic_product_spectrum(magnitudes, **kwargs):
-        # 10.1109/MHS.2018.8886911
-        hps = np.copy(magnitudes)
-        for h in range(2, 5):
-            decimated = magnitudes[::h]
-            hps[:len(decimated)] *= decimated
-        return np.array([np.sum(hps)])
+    # 10.1109/MHS.2018.8886911
+    hps = np.copy(magnitudes)
+    for h in range(2, 5):
+        decimated = magnitudes[::h]
+        hps[:len(decimated)] *= decimated
+    return np.sum(hps)
 
 @name("smoothness")
 def calculate_smoothness(magnitudes, **kwargs):
-        # https://doi.org/10.3390/rs13163196
-        smoothness = np.sum(np.diff(magnitudes)**2)
-        return np.array([smoothness])
+    # https://doi.org/10.3390/rs13163196
+    smoothness = np.sum(np.diff(magnitudes)**2)
+    return smoothness
 
 @name("roughness")
 def calculate_roughness(magnitudes, **kwargs):
-        roughness = np.sum(np.abs(np.diff(magnitudes)))
-        return np.array([roughness])
+    roughness = np.sum(np.abs(np.diff(magnitudes)))
+    return roughness
 
 
 # features haven't been implemented yet and cannot find reference

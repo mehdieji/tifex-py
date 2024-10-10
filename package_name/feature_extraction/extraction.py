@@ -4,8 +4,9 @@ from functools import partial
 
 import package_name.feature_extraction.statistical_feature_calculators as statistical_feature_calculators
 import package_name.feature_extraction.spectral_features_calculators as spectral_features_calculators
+import package_name.feature_extraction.time_frequency_feature_calculators as time_frequency_feature_calculators
 from package_name.feature_extraction.settings import StatisticalFeatureParams, SpectralFeatureParams, TimeFrequencyFeatureParams
-from package_name.utils.utils import get_calculators, calculate_features
+from package_name.utils.utils import get_calculators, extract_features
 from package_name.utils.data import TimeSeries, SpectralTimeSeries
 
 def calculate_all_features(data, params=None, window_size=None, columns=None, signal_name=None, njobs=None):
@@ -65,40 +66,43 @@ def calculate_statistical_features(data, params=None, window_size=None, columns=
 
     time_series = TimeSeries(data, columns=columns, name=signal_name)
 
-    features = calculate_ts_features(time_series, ["statistical"], params=params, window_size=window_size,
-                                     columns=columns, signal_name=signal_name, njobs=njobs)
+    features = calculate_ts_features(time_series, ["statistical"], params, njobs=njobs)
     return features
 
 def calculate_spectral_features(data, params=None, window_size=None, columns=None, signal_name=None, njobs=None):
     if params is None:
         params = SpectralFeatureParams(window_size)
     time_series = SpectralTimeSeries(data, columns=columns, name=signal_name, fs=params.fs)
-    features = calculate_ts_features(time_series, ["spectral"], params=params, window_size=window_size,
-                                     columns=columns, signal_name=signal_name, njobs=njobs)
+    features = calculate_ts_features(time_series, ["spectral"], params,  njobs=njobs)
     return features
 
 def calculate_time_frequency_features(data, params=None, window_size=None, columns=None, signal_name=None, njobs=None):
     features = None
     index = None
 
-    # time
+    if params is None:
+        params = TimeFrequencyFeatureParams
+        (window_size)
+    
+    time_series = TimeSeries(data, columns=columns, name=signal_name)
+    features = calculate_ts_features(time_series, ["time_frequency"], params, njobs=njobs)
+    return features
 
-def calculate_ts_features(time_series, modules, params=None, window_size=None, columns=None, signal_name=None, njobs=None):
+
+def calculate_ts_features(time_series, modules, params, njobs=None, f_calculator=extract_features):
     """
     Calculate features for the given time series data.
     """
     features = []
     index = []
 
-    param_dict = params.get_settings_as_dict()
-
     pool = mp.Pool(njobs)
 
-    results = pool.imap(partial(calculate_features, modules=modules, param_dict=param_dict), time_series)
+    results = pool.imap(partial(f_calculator, modules=modules, params=params), time_series)
 
     for r in results:
-        index.append(r[0])
-        features.append(r[1])
+        index.append(r.label)
+        features.append(r.features)
 
     features_df = pd.DataFrame(features, index=index)
     return features_df

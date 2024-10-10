@@ -7,7 +7,6 @@ def name(strname, argname=None):
     """
     def decorator(func):
         def wrapper(*args, **kwargs):
-            print(strname)
             names = []
             if argname:
                 label = kwargs[argname]

@@ -251,3 +251,4 @@ class TimeFrequencyFeatureParams(BaseFeatureParams):
             self.decomposition_level = int(np.round(np.log2(self.window_size/wavelet_length) - 1))
         else:
             self.decomposition_level = decomposition_level
+        self.sf_params = StatisticalFeatureParams(window_size)

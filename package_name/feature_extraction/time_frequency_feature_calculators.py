@@ -3,7 +3,7 @@ import numpy as np
 
 from scipy.signal import spectrogram, stft, chirp
 
-from package_name.utils.utils import extract_features
+from package_name.utils.extraction_utils import extract_features
 from package_name.utils.decorators import name, exclude
 
 def teager_kaiser_energy_operator(signal):

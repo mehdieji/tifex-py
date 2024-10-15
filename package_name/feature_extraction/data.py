@@ -2,6 +2,12 @@ import pandas as pd
 import numpy as np
 from scipy.signal import welch
 
+
+class SignalFeatures():
+    def __init__(self, label, features) -> None:
+        self.label = label
+        self.features = features
+
 class TimeSeries():
     def __init__(self, data, columns=None, name=None):
         """

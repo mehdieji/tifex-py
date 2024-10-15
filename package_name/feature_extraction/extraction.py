@@ -3,11 +3,11 @@ import multiprocessing as mp
 from functools import partial
 
 import package_name.feature_extraction.statistical_feature_calculators as statistical_feature_calculators
-import package_name.feature_extraction.spectral_features_calculators as spectral_features_calculators
+import package_name.feature_extraction.spectral_feature_calculators as spectral_feature_calculators
 import package_name.feature_extraction.time_frequency_feature_calculators as time_frequency_feature_calculators
 from package_name.feature_extraction.settings import StatisticalFeatureParams, SpectralFeatureParams, TimeFrequencyFeatureParams
-from package_name.utils.utils import get_calculators, extract_features
-from package_name.utils.data import TimeSeries, SpectralTimeSeries
+from package_name.utils.extraction_utils import get_calculators, extract_features
+from package_name.feature_extraction.data import TimeSeries, SpectralTimeSeries
 
 def calculate_all_features(data, stat_params, spec_params, tf_params, columns=None, signal_name=None, njobs=None):
     """

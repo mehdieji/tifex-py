@@ -2466,7 +2466,7 @@ def calculate_mode(signal, **kwargs):
     -----------
     
     """
-    return mode(signal)[0]
+    return mode(signal)[0][0]
 
 @name("number_of_inflection_points")
 def calculate_number_of_inflection_points(signal, **kwargs):

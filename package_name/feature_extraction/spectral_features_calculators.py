@@ -875,7 +875,7 @@ def calculate_spectral_hole_count(magnitudes, threshold=0.05, **kwargs):
     # https://doi.org/10.1103/PhysRevA.104.063111
     peaks, _ = find_peaks(magnitudes, height=threshold)
     dips, _ = find_peaks(-magnitudes, height=-threshold)
-    return np.array([len(dips)])
+    return len(dips)
 
 @name("spectral_autocorrelation")
 def calculate_spectral_autocorrelation(magnitudes, **kwargs):
@@ -1239,7 +1239,7 @@ def calculate_spectral_valley_width_mode(magnitudes, **kwargs):
         return np.array([np.nan])
     valley_widths = np.diff(valleys)
     valley_width_mode = mode(valley_widths)[0]
-    return valley_width_mode
+    return valley_width_mode[0]
 
 @name("spectral_valley_width_std")
 def calculate_spectral_valley_width_std(magnitudes, **kwargs):

@@ -7,7 +7,7 @@ class SignalFeatures():
         self.label = label
         self.features = features
 
-def get_calculators(modules):
+def get_calculators(module):
     """
     Get all calculator functions from the given modules. Will exclude functions
     with the 'exclude' attribute.
@@ -22,13 +22,10 @@ def get_calculators(modules):
     calculators: list
         List of calculator functions.
     """
-    calculators = []
-    for m in modules:
-        module_calculators = [v for k, v in m.__dict__.items() if k.startswith("calculate_") and not hasattr(v, 'exclude')]
-        calculators.extend(module_calculators)
+    calculators = [v for k, v in module.__dict__.items() if k.startswith("calculate_") and not hasattr(v, 'exclude')]
     return calculators
 
-def get_modules(module_str):
+def get_module(module_str):
     """
     Get a list of modules corresponding to the given module strings.
 
@@ -42,33 +39,16 @@ def get_modules(module_str):
     modules: list
         List of modules.
     """
-    modules = []
-    for name in module_str:
-        if name=="statistical":
-            modules.append(fe.statistical_feature_calculators)
-        elif name=="spectral":
-            modules.append(fe.spectral_features_calculators)
-        elif name=="time_frequency":
-            modules.append(fe.time_frequency_feature_calculators)
-    return modules
+    module = None
+    if module_str=="statistical":
+        module = fe.statistical_feature_calculators
+    elif module_str=="spectral":
+        module = fe.spectral_features_calculators
+    elif module_str=="time_frequency":
+        module = fe.time_frequency_feature_calculators
+    return module
 
-def calculate_time_freq_features(series, params):
-    features = {}
-    param_dict = params.get_settings_as_dict()
-    calculators = get_calculators(get_modules(["time_frequency"]))
-    for calculate in calculators:
-        feature = calculate(**series, **param_dict)
-        name = getattr(calculate, "names")
-
-        if isinstance(name, list):
-            for n, f in zip(name, feature):
-                features[n] = f
-        else:
-            features[name] = feature
-
-    return [series["label"]], [features]
-
-def extract_features(series, modules, params):
+def extract_features(series, module, param_dict):
     """
     Calculate features for the given univariate time series data.
 
@@ -88,21 +68,31 @@ def extract_features(series, modules, params):
         Dictionary of calculated features.
     """
     features = {}
-    param_dict = params.get_settings_as_dict()
-    calculators = get_calculators(get_modules(modules))
+    calculators = get_calculators(get_module(module))
     for calculate in calculators:
-        feature = calculate(**series, **param_dict)
+        try:
+            feature = calculate(**series, **param_dict)
+        except Exception as e:
+            name = getattr(calculate, "names")
+            print(f"Error calculating feature(s) {name}: {e}")
+            print(f"Feature(s) {name} will be excluded.")
+            continue
+
         name = getattr(calculate, "names")
 
         if isinstance(feature, SignalFeatures):
             for k, v in feature.features.items():
                 features[f'{name}_{k}'] = v
-        else:
-            if isinstance(name, list):
+        elif isinstance(name, list):
+            if isinstance(feature[0], SignalFeatures):
+                for n, f in zip(name, feature):
+                    for k, v in f.features.items():
+                        features[f'{n}_{k}'] = v
+            else:
                 for n, f in zip(name, feature):
                     features[n] = f
-            else:
-                features[name] = feature
+        else:
+            features[name] = feature
 
     if "label" in series:
         label = series["label"]

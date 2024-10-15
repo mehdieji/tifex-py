@@ -3,16 +3,14 @@ import json
 import yaml
 import pywt
 from typing import List
-# from feature_extraction.extraction import calculate_statistical_features
-# from feature_extraction.extraction import calculate_frequency_features
 
 
 class BaseFeatureParams:
     def __init__(self):
         pass
 
-    @staticmethod
-    def from_json(file_path):
+    @classmethod
+    def from_json(cls, file_path):
         """
         Load the settings from a json file. Overwrites the current settings.
 
@@ -23,10 +21,10 @@ class BaseFeatureParams:
         """
         with open(file_path, 'r') as file:
             settings = json.load(file)
-        return StatisticalFeatureParams(**settings)
+        return cls(**settings)
 
-    @staticmethod
-    def from_yaml(file_path):
+    @classmethod
+    def from_yaml(cls, file_path):
         """
         Load the settings from a yaml file. Overwrites the current settings.
 
@@ -37,8 +35,8 @@ class BaseFeatureParams:
         """
         with open(file_path, 'r') as file:
             settings = yaml.safe_load(file)
-        return StatisticalFeatureParams(**settings)
-    
+        return cls(**settings)
+
     def to_json(self, file_path):
         """
         Save the settings to a json file.
@@ -51,7 +49,7 @@ class BaseFeatureParams:
         settings = self.get_settings_as_dict()
         with open(file_path, 'w') as file:
             json.dump(settings, file, indent=4)
-    
+
     def to_yaml(self, file_path):
         """
         Save the settings to a yaml file.
@@ -229,7 +227,7 @@ class SpectralFeatureParams(BaseFeatureParams):
         self.f_bands = f_bands
         self.n_dom_freqs = n_dom_freqs
         if cumulative_power_thresholds is None:
-            self.cumulative_power_thresholds = np.array([.5, .75, .85, .9, 0.95])
+            self.cumulative_power_thresholds = [.5, .75, .85, .9, 0.95]
         else:
             self.cumulative_power_thresholds = cumulative_power_thresholds
 
@@ -240,7 +238,11 @@ class TimeFrequencyFeatureParams(BaseFeatureParams):
                  wavelet="db4",
                  decomposition_level=None,
                  stft_window="hann",
-                 nperseg=None
+                 nperseg=None,
+                 tkeo_sf_params=None,
+                 wavelet_sf_params=None,
+                 spectogram_sf_params=None,
+                 stft_sf_params=None
                 ):
         self.window_size = window_size
         self.wavelet = wavelet
@@ -251,4 +253,48 @@ class TimeFrequencyFeatureParams(BaseFeatureParams):
             self.decomposition_level = int(np.round(np.log2(self.window_size/wavelet_length) - 1))
         else:
             self.decomposition_level = decomposition_level
-        self.sf_params = StatisticalFeatureParams(window_size)
+        if tkeo_sf_params:
+            self.tkeo_sf_params = tkeo_sf_params
+        else:
+            self.tkeo_sf_params = StatisticalFeatureParams(window_size)
+        if wavelet_sf_params:
+            self.wavelet_sf_params = wavelet_sf_params
+        else:
+            self.wavelet_sf_params = StatisticalFeatureParams(window_size)
+        if spectogram_sf_params:
+            self.spectogram_sf_params = spectogram_sf_params
+        else:
+            self.spectogram_sf_params = StatisticalFeatureParams(window_size)
+        if stft_sf_params:
+            self.stft_sf_params = stft_sf_params
+        else:
+            self.stft_sf_params = StatisticalFeatureParams(window_size)
+
+    def get_settings_as_dict(self):
+        d = super().get_settings_as_dict()
+        d["tkeo_sf_params"] = self.tkeo_sf_params.get_settings_as_dict()
+        d["wavelet_sf_params"] = self.wavelet_sf_params.get_settings_as_dict()
+        d["spectogram_sf_params"] = self.spectogram_sf_params.get_settings_as_dict()
+        d["stft_sf_params"] = self.stft_sf_params.get_settings_as_dict()
+        return d
+    
+    @classmethod
+    def from_json(cls, file_path):
+        with open(file_path, 'r') as file:
+            settings = json.load(file)
+        settings["tkeo_sf_params"] = StatisticalFeatureParams(**settings["tkeo_sf_params"])
+        settings["wavelet_sf_params"] = StatisticalFeatureParams(**settings["wavelet_sf_params"])
+        settings["spectogram_sf_params"] = StatisticalFeatureParams(**settings["spectogram_sf_params"])
+        settings["stft_sf_params"] = StatisticalFeatureParams(**settings["stft_sf_params"])
+        return TimeFrequencyFeatureParams(**settings)
+
+    @classmethod
+    def from_yaml(cls, file_path):
+        with open(file_path, 'r') as file:
+            settings = yaml.safe_load(file)
+        settings["tkeo_sf_params"] = StatisticalFeatureParams(**settings["tkeo_sf_params"])
+        settings["wavelet_sf_params"] = StatisticalFeatureParams(**settings["wavelet_sf_params"])
+        settings["spectogram_sf_params"] = StatisticalFeatureParams(**settings["spectogram_sf_params"])
+        settings["stft_sf_params"] = StatisticalFeatureParams(**settings["stft_sf_params"])
+        return TimeFrequencyFeatureParams(**settings)
+        

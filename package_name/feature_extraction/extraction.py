@@ -9,7 +9,7 @@ from package_name.feature_extraction.settings import StatisticalFeatureParams, S
 from package_name.utils.utils import get_calculators, extract_features
 from package_name.utils.data import TimeSeries, SpectralTimeSeries
 
-def calculate_all_features(data, params=None, window_size=None, columns=None, signal_name=None, njobs=None):
+def calculate_all_features(data, stat_params, spec_params, tf_params, columns=None, signal_name=None, njobs=None):
     """
     Calculates statisctical, spectral, and time frequency features for the
     given dataset.
@@ -18,10 +18,12 @@ def calculate_all_features(data, params=None, window_size=None, columns=None, si
     ----------
     data: pandas.DataFrame or array-like
         The dataset to calculate features for.
-    params: BaseFeatureParams
-        Parameters to use in feature extraction.
-    window_size: int
-        Window size to use for feature extraction.
+    stat_params: StatisticalFeatureParams
+        Parameters to use in statistical feature extraction.
+    spec_params: SpectralFeatureParams
+        Parameters to use in spectral feature extraction.
+    tf_params: TimeFrequencyFeatureParams
+        Parameters to use in time frequency feature extraction.
     columns: list
         Columns to calculate features for or names of the np.array columns.
     signal_name: str
@@ -32,9 +34,14 @@ def calculate_all_features(data, params=None, window_size=None, columns=None, si
     
     Returns:
     -------
-
+    features: pandas.DataFrame
+        DataFrame of calculated features.
     """
-    pass
+    stat_features = calculate_statistical_features(data, stat_params, columns=columns, signal_name=signal_name, njobs=njobs)
+    spec_features = calculate_spectral_features(data, spec_params, columns=columns, signal_name=signal_name, njobs=njobs)
+    tf_features = calculate_time_frequency_features(data, tf_params, columns=columns, signal_name=signal_name, njobs=njobs)
+    return pd.concat([stat_features, spec_features, tf_features], axis=1)
+
 
 def calculate_statistical_features(data, params=None, window_size=None, columns=None, signal_name=None, njobs=None):
     """
@@ -44,7 +51,7 @@ def calculate_statistical_features(data, params=None, window_size=None, columns=
     ----------
     data: pandas.DataFrame or array-like
         The dataset to calculate features for.
-    params: BaseFeatureParams
+    params: StatisticalFeatureParams
         Parameters to use in feature extraction.
     window_size: int
         Window size to use for feature extraction.
@@ -66,39 +73,101 @@ def calculate_statistical_features(data, params=None, window_size=None, columns=
 
     time_series = TimeSeries(data, columns=columns, name=signal_name)
 
-    features = calculate_ts_features(time_series, ["statistical"], params, njobs=njobs)
+    features = calculate_ts_features(time_series, "statistical", params, njobs=njobs)
     return features
 
-def calculate_spectral_features(data, params=None, window_size=None, columns=None, signal_name=None, njobs=None):
+def calculate_spectral_features(data, params=None, fs=None, columns=None, signal_name=None, njobs=None):
+    """
+    Calculates all spectral features for the given dataset.
+
+    Parameters:
+    ----------
+    data: pandas.DataFrame or array-like
+        The dataset to calculate features for.
+    params: SpectralFeatureParams
+        Parameters to use in feature extraction.
+    fs: float
+        Sampling frequency of the data.
+    columns: list
+        Columns to calculate features for or names of the np.array columns.
+    signal_name: str
+        Name to prepend to the column names.
+    njobs: int
+        Number of worker processes to use. If None, the number returned by
+        os.cpu_count() is used.
+
+    Returns:
+    -------
+    features: pandas.DataFrame
+        DataFrame of calculated features.
+    """
     if params is None:
-        params = SpectralFeatureParams(window_size)
+        params = SpectralFeatureParams(fs)
     time_series = SpectralTimeSeries(data, columns=columns, name=signal_name, fs=params.fs)
-    features = calculate_ts_features(time_series, ["spectral"], params,  njobs=njobs)
+    features = calculate_ts_features(time_series, "spectral", params,  njobs=njobs)
     return features
 
 def calculate_time_frequency_features(data, params=None, window_size=None, columns=None, signal_name=None, njobs=None):
-    features = None
-    index = None
+    """
+    Calculates all time frequency features for the given dataset.
 
+    Parameters:
+    ----------
+    data: pandas.DataFrame or array-like
+        The dataset to calculate features for.
+    params: TimeFrequencyFeatureParams
+        Parameters to use in feature extraction.
+    window_size: int
+        Window size to use for feature extraction.
+    columns: list
+        Columns to calculate features for or names of the np.array columns.
+    signal_name: str
+        Name to prepend to the column names.
+    njobs: int
+        Number of worker processes to use. If None, the number returned by
+        os.cpu_count() is used.
+
+    Returns:
+    -------
+    features: pandas.DataFrame
+        DataFrame of calculated features.
+    """
     if params is None:
-        params = TimeFrequencyFeatureParams
-        (window_size)
-    
+        params = TimeFrequencyFeatureParams(window_size)
+
     time_series = TimeSeries(data, columns=columns, name=signal_name)
-    features = calculate_ts_features(time_series, ["time_frequency"], params, njobs=njobs)
+    features = calculate_ts_features(time_series, "time_frequency", params, njobs=njobs)
     return features
 
-
-def calculate_ts_features(time_series, modules, params, njobs=None, f_calculator=extract_features):
+def calculate_ts_features(time_series, module, params, njobs=None):
     """
-    Calculate features for the given time series data.
+    Calculate features from the given module for the given time series data.
+
+    Parameters:
+    ----------
+    time_series: TimeSeries
+        The time series data to calculate features for.
+    module: str
+        The module with the feature calculators to use.
+    params: BaseFeatureParams
+        Parameters to use in feature extraction.
+    njobs: int
+        Number of worker processes to use. If None, the number returned by
+        os.cpu_count() is used.
+    
+    Returns:
+    -------
+    features_df: pandas.DataFrame
+        DataFrame of calculated features.
     """
     features = []
     index = []
 
     pool = mp.Pool(njobs)
 
-    results = pool.imap(partial(f_calculator, modules=modules, params=params), time_series)
+    param_dict = params.get_settings_as_dict()
+
+    results = pool.imap(partial(extract_features, module=module, param_dict=param_dict), time_series)
 
     for r in results:
         index.append(r.label)
@@ -106,25 +175,3 @@ def calculate_ts_features(time_series, modules, params, njobs=None, f_calculator
 
     features_df = pd.DataFrame(features, index=index)
     return features_df
-
-
-# def get_calculators(modules):
-#     """
-#     Get all calculator functions from the given modules. Will exclude functions
-#     with the 'exclude' attribute.
-
-#     Parameters:
-#     ----------
-#     modules: list
-#         List of modules to get the calculators from.
-    
-#     Returns:
-#     -------
-#     calculators: list
-#         List of calculator functions.
-#     """
-#     calculators = []
-#     for m in modules:
-#         module_calculators = [v for k, v in m.__dict__.items() if k.startswith("calculate_") and not hasattr(v, 'exclude')]
-#         calculators.extend(module_calculators)
-#     return calculators

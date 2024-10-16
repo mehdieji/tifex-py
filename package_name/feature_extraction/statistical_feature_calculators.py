@@ -1235,10 +1235,7 @@ def calculate_impulse_factor(signal, **kwargs):
     impulse_factor = np.max(np.abs(signal)) / np.mean(np.abs(signal))
     return impulse_factor
 
-# TODO: Make sure integer argument works
-# Compare to old implementation
-@exclude()
-@name("mean_of_auto_corr_lag_1_to_{}", "n_lags_auto_correlation")
+@name("mean_of_auto_corr_lags")
 def calculate_mean_auto_correlation(signal, n_lags_auto_correlation, **kwargs):
     """
     Calculate the mean of the auto-correlation values of a time series signal.
@@ -1269,7 +1266,7 @@ def calculate_mean_auto_correlation(signal, n_lags_auto_correlation, **kwargs):
         39(9), 8013–8021. https://doi.org/10.1016/J.ESWA.2012.01.164
     
     """
-    auto_correlation_values = acf(signal, nlags= n_lags_auto_correlation)[1:]
+    auto_correlation_values = acf(signal, nlags=n_lags_auto_correlation)[1:]
     return np.mean(auto_correlation_values)
 
 @name("moment_order_{}", "moment_orders")

@@ -1,13 +1,12 @@
-import numpy as np
 import json
 import yaml
 import pywt
-from typing import List
+import numpy as np
 
 
 class BaseFeatureParams:
-    def __init__(self):
-        pass
+    def __init__(self, calculators=None):
+        self.calculators = calculators
 
     @classmethod
     def from_json(cls, file_path):
@@ -169,8 +168,10 @@ class StatisticalFeatureParams(BaseFeatureParams):
                  hist_bins=10,
                  q=[0.1, 0.2, 0.25, 0.3, 0.4, 0.6, 0.7, 0.75, 0.8, 0.9],
                  r_sigma=[1, 2],
-                 lz_bins=10
+                 lz_bins=10,
+                 calculators=None
                 ):
+        super().__init__(calculators)
         self.window_size = window_size
         self.tsallis_q_parameter = tsallis_q_parameter
         self.renyi_alpha_parameter = renyi_alpha_parameter
@@ -222,7 +223,15 @@ class SpectralFeatureParams(BaseFeatureParams):
                  fs,
                  f_bands=[[0.5,4], [4,8], [8,12], [12,30], [30,100]],
                  n_dom_freqs=5,
-                 cumulative_power_thresholds=None):
+                 cumulative_power_thresholds=None,
+                 centroid_orders=[1, 2, 3, 4, 5],
+                 bandwidth_orders=[1, 2, 3, 4],
+                 abs_dev_orders=[1, 3],
+                 flux_orders=[2],
+                 thresholds_freq_below=[0.5, 0.75],
+                 thresholds_freq_above=[0.5, 0.75],
+                 calculators=None):
+        super().__init__(calculators)
         self.fs = fs
         self.f_bands = f_bands
         self.n_dom_freqs = n_dom_freqs
@@ -230,6 +239,12 @@ class SpectralFeatureParams(BaseFeatureParams):
             self.cumulative_power_thresholds = [.5, .75, .85, .9, 0.95]
         else:
             self.cumulative_power_thresholds = cumulative_power_thresholds
+        self.centroid_orders = centroid_orders
+        self.bandwidth_orders = bandwidth_orders
+        self.abs_dev_orders = abs_dev_orders
+        self.flux_orders = flux_orders
+        self.thresholds_freq_below = thresholds_freq_below
+        self.thresholds_freq_above = thresholds_freq_above
 
 
 class TimeFrequencyFeatureParams(BaseFeatureParams):
@@ -242,8 +257,10 @@ class TimeFrequencyFeatureParams(BaseFeatureParams):
                  tkeo_sf_params=None,
                  wavelet_sf_params=None,
                  spectogram_sf_params=None,
-                 stft_sf_params=None
+                 stft_sf_params=None,
+                 calculators=None
                 ):
+        super().__init__(calculators)
         self.window_size = window_size
         self.wavelet = wavelet
         self.stft_window = stft_window
@@ -277,7 +294,7 @@ class TimeFrequencyFeatureParams(BaseFeatureParams):
         d["spectogram_sf_params"] = self.spectogram_sf_params.get_settings_as_dict()
         d["stft_sf_params"] = self.stft_sf_params.get_settings_as_dict()
         return d
-    
+
     @classmethod
     def from_json(cls, file_path):
         with open(file_path, 'r') as file:
@@ -297,4 +314,3 @@ class TimeFrequencyFeatureParams(BaseFeatureParams):
         settings["spectogram_sf_params"] = StatisticalFeatureParams(**settings["spectogram_sf_params"])
         settings["stft_sf_params"] = StatisticalFeatureParams(**settings["stft_sf_params"])
         return TimeFrequencyFeatureParams(**settings)
-        

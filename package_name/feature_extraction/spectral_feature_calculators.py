@@ -6,9 +6,8 @@ import librosa
 
 from package_name.utils.decorators import name, exclude
 
-@exclude()
-@name("spectral_centroid")
-def calculate_spectral_centroid(freqs, magnitudes, order=1, **kwargs):
+@name("spectral_centroid_order_{}", "centroid_orders")
+def calculate_spectral_centroid(freqs, magnitudes, centroid_orders=1, **kwargs):
     """
     Calculates the spectral centroid of the given spectrum.
 
@@ -37,9 +36,14 @@ def calculate_spectral_centroid(freqs, magnitudes, order=1, **kwargs):
         of Alzheimer Disease, 47–59. https://doi.org/10.1016/B978-0-12-815392-5.00004-6
         - Barandas, M., Folgado, D., Fernandes, L., Santos, S., Abreu, M., Bota, P., Liu, H., Schultz, T., & Gamboa, H. (2020). 
         TSFEL: Time Series Feature Extraction Library. SoftwareX, 11. https://doi.org/10.1016/j.softx.2020.100456
-    """     
-    spectral_centroid = np.sum(magnitudes * (freqs ** order)) / np.sum(magnitudes)
-    return spectral_centroid
+    """
+    if isinstance(centroid_orders, int):
+        return np.sum(magnitudes * (freqs ** centroid_orders)) / np.sum(magnitudes)
+    else:
+        centroids = []
+        for order in centroid_orders:
+            centroids.append(np.sum(magnitudes * (freqs ** order)) / np.sum(magnitudes))
+        return np.array(centroids)
 
 @name("spectral_variance")
 def calculate_spectral_variance(freqs, magnitudes, **kwargs):
@@ -125,8 +129,8 @@ def calculate_spectral_skewness(freqs, magnitudes, **kwargs):
         - Barandas, M., Folgado, D., Fernandes, L., Santos, S., Abreu, M., Bota, P., Liu, H., Schultz, T., & Gamboa, H. (2020). 
         TSFEL: Time Series Feature Extraction Library. SoftwareX, 11. https://doi.org/10.1016/j.softx.2020.100456
     """
-    mu1 = calculate_spectral_centroid(freqs, magnitudes, order=1)
-    mu2 = calculate_spectral_centroid(freqs, magnitudes, order=2)
+    mu1 = calculate_spectral_centroid(freqs, magnitudes, centroid_orders=1)
+    mu2 = calculate_spectral_centroid(freqs, magnitudes, centroid_orders=2)
     spectral_skewness = np.sum(magnitudes * (freqs - mu1) ** 3) / (np.sum(magnitudes) * mu2 ** 3)
     return spectral_skewness
 
@@ -158,8 +162,8 @@ def calculate_spectral_kurtosis(freqs, magnitudes, **kwargs):
         - Barandas, M., Folgado, D., Fernandes, L., Santos, S., Abreu, M., Bota, P., Liu, H., Schultz, T., & Gamboa, H. (2020). 
         TSFEL: Time Series Feature Extraction Library. SoftwareX, 11. https://doi.org/10.1016/j.softx.2020.100456
     """
-    mu1 = calculate_spectral_centroid(freqs, magnitudes, order=1)
-    mu2 = calculate_spectral_centroid(freqs, magnitudes, order=2)
+    mu1 = calculate_spectral_centroid(freqs, magnitudes, centroid_orders=1)
+    mu2 = calculate_spectral_centroid(freqs, magnitudes, centroid_orders=2)
     spectral_kurtosis = np.sum(magnitudes * (freqs - mu1) ** 4) / (np.sum(magnitudes) * mu2 ** 4)
     return spectral_kurtosis
 
@@ -219,7 +223,6 @@ def calculate_spectral_flatness(magnitudes, **kwargs):
     spectral_flatness = np.exp(np.mean(np.log(magnitudes))) / np.mean(magnitudes)
     return spectral_flatness
 
-@exclude()
 @name("spectral_slope_logarithmic")
 def calculate_spectral_slope_logarithmic(freqs, magnitudes, **kwargs):
     """
@@ -248,8 +251,34 @@ def calculate_spectral_slope_logarithmic(freqs, magnitudes, **kwargs):
     slope = np.polyfit(freqs, np.log(magnitudes), 1)[0]
     return slope
 
+@name("spectral_slope_logarithmic_psd")
+def calculate_spectral_slope_logarithmic_psd(freqs_psd, psd, **kwargs):
+    """
+    Calculate the logarithmic spectral slope of the given Power Spectral Density (PSD) values.
+
+    The logarithmic spectral slope provides a measure of the rate at which the PSD changes
+    across frequencies on a logarithmic scale.
+
+    Parameters:
+    ----------
+    freqs_psd : np.array
+        An array of frequency values.
+    psd : np.array
+        An array of Power Spectral Density (PSD) values corresponding to the frequencies.
+
+    Returns:
+    -------
+    np.array
+        A numpy array containing a single element, the slope of the linear fit.
+        
+    Reference:
+    ---------
+        - Barandas, M., Folgado, D., Fernandes, L., Santos, S., Abreu, M., Bota, P., Liu, H., Schultz, T., & Gamboa, H. (2020). 
+        TSFEL: Time Series Feature Extraction Library. SoftwareX, 11. https://doi.org/10.1016/j.softx.2020.100456
+    """
+    return calculate_spectral_slope_logarithmic(freqs_psd, psd)
+
 # TODO: Figure out how to handle difference parameter inputs
-@exclude()
 @name("spectral_slope_linear")
 def calculate_spectral_slope_linear(freqs, magnitudes, **kwargs):
     """
@@ -278,6 +307,13 @@ def calculate_spectral_slope_linear(freqs, magnitudes, **kwargs):
     """
     slope = np.polyfit(freqs, magnitudes, 1)[0]
     return slope
+
+@name("spectral_slope_linear_psd")
+def calculate_spectral_slope_linear_psd(freqs_psd, psd, **kwargs):
+    """
+    TODO: Update
+    """
+    return calculate_spectral_slope_linear(freqs_psd, psd)
 
 @name("peak_freq_{}", "n_dom_freqs")
 def calculate_peak_frequencies(freqs_psd, psd, n_dom_freqs, **kwargs):
@@ -467,9 +503,8 @@ def calculate_spectral_contrast(freqs_psd, psd, f_bands, **kwargs):
             feats.append(np.nan)
     return np.array(feats)
 
-@exclude()
-@name("spectral_bandwidth")
-def calculate_spectral_bandwidth(freqs, magnitudes, order, **kwargs):
+@name("spectral_bandwidth_order_{}", "bandwidth_orders")
+def calculate_spectral_bandwidth(freqs, magnitudes, bandwidth_orders, **kwargs):
     """
     Calculate the spectral bandwidth of a given frequency spectrum.
     
@@ -506,12 +541,16 @@ def calculate_spectral_bandwidth(freqs, magnitudes, order, **kwargs):
     """
     normalized_magnitudes = magnitudes / np.sum(magnitudes)
     mean_frequency = calculate_spectral_centroid(freqs, magnitudes)
-    spectral_bandwidth = ((np.sum(((freqs - mean_frequency) ** order) * normalized_magnitudes)) ** (1 / order))
-    return spectral_bandwidth
+    if isinstance(bandwidth_orders, int):
+        return ((np.sum(((freqs - mean_frequency) ** bandwidth_orders) * normalized_magnitudes)) ** (1 / bandwidth_orders))
+    else:
+        spectral_bandwidth = []
+        for order in bandwidth_orders:
+            spectral_bandwidth.append(((np.sum(((freqs - mean_frequency) ** order) * normalized_magnitudes)) ** (1 / order)))
+        return np.array(spectral_bandwidth)
 
-@exclude()
-@name("spectral_absolute_deviation")
-def calculate_spectral_absolute_deviation(freqs, magnitudes, order=1, **kwargs):
+@name("spectral_absolute_deviation_order_{}", "abs_dev_orders")
+def calculate_spectral_absolute_deviation(freqs, magnitudes, abs_dev_orders=1, **kwargs):
     """
     Calculate the spectral absolute deviation of a given frequency spectrum.
 
@@ -544,8 +583,13 @@ def calculate_spectral_absolute_deviation(freqs, magnitudes, order=1, **kwargs):
     # The even order spectral absolute deviation is the same as spectral bandwidth of the same order
     normalized_magnitudes = magnitudes / np.sum(magnitudes)
     mean_frequency = calculate_spectral_centroid(freqs, magnitudes)
-    spectral_absolute_deviation = ((np.sum((np.abs(freqs - mean_frequency) ** order) * normalized_magnitudes)) ** (1 / order))
-    return spectral_absolute_deviation
+    if isinstance(abs_dev_orders, int):
+        return ((np.sum((np.abs(freqs - mean_frequency) ** abs_dev_orders) * normalized_magnitudes)) ** (1 / abs_dev_order))
+    else:
+        spectral_absolute_deviation = []
+        for order in abs_dev_orders:
+            spectral_absolute_deviation.append(((np.sum((np.abs(freqs - mean_frequency) ** order) * normalized_magnitudes)) ** (1 / order)))
+        return np.array(spectral_absolute_deviation)
 
 @name("spectral_covariance")
 def calculate_spectral_cov(freqs, magnitudes, **kwargs):
@@ -583,9 +627,8 @@ def calculate_spectral_cov(freqs, magnitudes, **kwargs):
     coefficient_of_variation = (frequency_std / mean_frequency) * 100
     return coefficient_of_variation
 
-@exclude()
-@name("spectral_flux")
-def calculate_spectral_flux(magnitudes, order=2, **kwargs):
+@name("spectral_flux_order_{}", "flux_orders")
+def calculate_spectral_flux(magnitudes, flux_orders=2, **kwargs):
     """
     Calculates the flux of the spectrum.
 
@@ -608,8 +651,13 @@ def calculate_spectral_flux(magnitudes, order=2, **kwargs):
     for audio retrieval. ICALIP 2012 - 2012 International Conference on Audio, Language and Image Processing, 
     Proceedings, 1104–1107. https://doi.org/10.1109/ICALIP.2012.6376781
     """
-    spectral_flux = (np.sum(np.abs(np.diff(magnitudes)) ** order)) ** (1 / order)
-    return spectral_flux
+    if isinstance(flux_orders, int):
+        spectral_flux = (np.sum(np.abs(np.diff(magnitudes)) ** flux_orders)) ** (1 / flux_orders)
+    else:
+        spectral_flux = []
+        for order in flux_orders:
+            spectral_flux.append((np.sum(np.abs(np.diff(magnitudes)) ** order)) ** (1 / order))
+        return np.array(spectral_flux)
 
 @name("spectral_rolloff")
 def calculate_spectral_rolloff(freqs, magnitudes, roll_percent=0.85, **kwargs):
@@ -1028,21 +1076,29 @@ def calculate_spectral_frequency_above_peak(freqs, magnitudes, **kwargs):
     frequency_above_peak = freqs[min(len(freqs) - 1, peak_index + 1)]
     return frequency_above_peak
 
-@exclude() #TODO: Figure out how tobest allow multiple options
-@name("spectral_cumulative_frequency")
-def calculate_spectral_cumulative_frequency(freqs, magnitudes, threshold, **kwargs):
+@name("spectral_cumulative_frequency_below_threshold_{}", "thresholds_freq_below")
+def calculate_spectral_cumulative_frequency_below(freqs, magnitudes, thresholds_freq_below, **kwargs):
     # https://doi.org/10.48550/arXiv.0901.3708
     cumulative_power = np.cumsum(magnitudes) / np.sum(magnitudes)
-    frequency = freqs[np.where(cumulative_power >= threshold)[0][0]]
-    return frequency
+    if isinstance(thresholds_freq_below, float):
+        return freqs[np.where(cumulative_power >= thresholds_freq_below)[0][0]]
+    else:  
+        frequency = []
+        for threshold in thresholds_freq_below:
+            frequency.append(freqs[np.where(cumulative_power >= threshold)[0][0]])
+        return np.array(frequency)
 
-@exclude()
-@name("spectral_cumulative_frequency_above")
-def calculate_spectral_cumulative_frequency_above(freqs, magnitudes, threshold, **kwargs):
+@name("spectral_cumulative_frequency_above_threshold_{}", "thresholds_freq_above")
+def calculate_spectral_cumulative_frequency_above(freqs, magnitudes, thresholds_freq_above, **kwargs):
     # https://doi.org/10.48550/arXiv.0901.3708
     cumulative_power = np.cumsum(magnitudes) / np.sum(magnitudes)
-    frequency = freqs[np.where(cumulative_power <= threshold)[-1][-1]]
-    return frequency
+    if isinstance(thresholds_freq_above, float):
+        return freqs[np.where(cumulative_power <= thresholds_freq_above)[-1][-1]]
+    else:
+        frequency = []
+        for threshold in thresholds_freq_above:
+            frequency.append(freqs[np.where(cumulative_power <= threshold)[-1][-1]])
+        return np.array(frequency)
 
 @name("spectral_change_vector_magnitude")
 def calculate_spectral_change_vector_magnitude(magnitudes, **kwargs):

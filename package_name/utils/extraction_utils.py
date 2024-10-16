@@ -3,7 +3,7 @@ import package_name.feature_extraction as fe
 
 # Description: Utility functions for the package.
 
-def get_calculators(module):
+def get_calculators(module, calculator_list=None):
     """
     Get all calculator functions from the given modules. Will exclude functions
     with the 'exclude' attribute.
@@ -18,7 +18,14 @@ def get_calculators(module):
     calculators: list
         List of calculator functions.
     """
-    calculators = [v for k, v in module.__dict__.items() if k.startswith("calculate_") and not hasattr(v, 'exclude')]
+    calculators = []
+    for k, v in module.__dict__.items():
+        if k.startswith("calculate_") and not hasattr(v, 'exclude'):
+            if calculator_list is not None:
+                if k.replace("calculate_", "") in calculator_list:
+                    calculators.append(v)
+            else:
+                calculators.append(v)
     return calculators
 
 def get_module(module_str):
@@ -64,7 +71,7 @@ def extract_features(series, module, param_dict):
         Dictionary of calculated features.
     """
     features = {}
-    calculators = get_calculators(get_module(module))
+    calculators = get_calculators(get_module(module), param_dict["calculators"])
     for calculate in calculators:
         try:
             feature = calculate(**series, **param_dict)

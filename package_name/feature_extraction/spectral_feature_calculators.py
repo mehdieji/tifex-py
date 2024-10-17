@@ -72,36 +72,8 @@ def calculate_spectral_variance(freqs, magnitudes, **kwargs):
     """
     mean_frequency = calculate_spectral_centroid(freqs, magnitudes)
     spectral_variance = np.sum(((freqs - mean_frequency) ** 2) * magnitudes) / np.sum(magnitudes)
-    return spectral_variance
-    
-# def calculate_spectral_standard_deviation(freqs, magnitudes, **kwargs):
-#     """
-#     Calculates the spectral standard deviation of the given spectrum. This is another form of spectral spread.
-    
-#     It is a measure of the spread of the spectrum around its centroid.It quantifies how much the frequencies in the spectrum deviate 
-#     from the spectral centroid.
-    
-#     Parameters:
-#         ----------
-#         freqs : np.array
-#             An array of frequencies corresponding to the spectrum bins.
-#         magnitudes : np.array
-#             An array of magnitude values of the spectrum at the corresponding frequencies.
+    return np.array([spectral_variance])
 
-#         Returns:
-#         -------
-#         np.array
-#             An array containing the calculated spectral standard deviation.
-    
-#     Reference:
-#     ----------
-#         - Giannakopoulos, T., & Pikrakis, A. (2014). Audio Features. Introduction to Audio Analysis, 
-#         59–103. https://doi.org/10.1016/B978-0-08-099388-1.00004-2
-    
-#     """
-#     mean_frequency = calculate_spectral_centroid(freqs, magnitudes)
-#     spectral_standard_deviation = np.sqrt(np.sum(((freqs - mean_frequency) ** 2) * magnitudes) / np.sum(magnitudes))
-#     return np.array([spectral_standard_deviation])
 
 @name("spectral_skewness")
 def calculate_spectral_skewness(freqs, magnitudes, **kwargs):
@@ -130,7 +102,7 @@ def calculate_spectral_skewness(freqs, magnitudes, **kwargs):
         TSFEL: Time Series Feature Extraction Library. SoftwareX, 11. https://doi.org/10.1016/j.softx.2020.100456
     """
     mu1 = calculate_spectral_centroid(freqs, magnitudes, centroid_orders=1)
-    mu2 = calculate_spectral_centroid(freqs, magnitudes, centroid_orders=2)
+    mu2 = calculate_spectral_bandwidth(freqs, magnitudes, bandwidth_order=2)
     spectral_skewness = np.sum(magnitudes * (freqs - mu1) ** 3) / (np.sum(magnitudes) * mu2 ** 3)
     return spectral_skewness
 
@@ -163,7 +135,7 @@ def calculate_spectral_kurtosis(freqs, magnitudes, **kwargs):
         TSFEL: Time Series Feature Extraction Library. SoftwareX, 11. https://doi.org/10.1016/j.softx.2020.100456
     """
     mu1 = calculate_spectral_centroid(freqs, magnitudes, centroid_orders=1)
-    mu2 = calculate_spectral_centroid(freqs, magnitudes, centroid_orders=2)
+    mu2 = calculate_spectral_bandwidth(freqs, magnitudes, bandwidth_order=2)
     spectral_kurtosis = np.sum(magnitudes * (freqs - mu1) ** 4) / (np.sum(magnitudes) * mu2 ** 4)
     return spectral_kurtosis
 

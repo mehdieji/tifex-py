@@ -844,14 +844,53 @@ def calculate_spectral_winsorized_mean(freqs, magnitudes, limits=(0.05, 0.95), *
 
 @name("total_harmonic_distortion")
 def calculate_total_harmonic_distortion(signal, fs, harmonics=5, **kwargs):
-    # 10.1109/TCOMM.2011.061511.100749
-    # https://zenodo.org/badge/latestdoi/6309729
+    """
+    Calculate the Total Harmonic Distortion (THD) of a signal.
+    
+    THD is a measure of the distortion in a signal caused by the presence of 
+    harmonics (integer multiples of the fundamental frequency). It is calculated 
+    as the square root of the ratio of harmonic power to the fundamental power.
+    
+    Parameters:
+    -----------
+    signal : array-like
+        The input signal for which the THD is being calculated.
+        
+    fs : int or float
+        The sampling frequency of the input signal, in Hz.
+        
+    harmonics : int, optional
+        The number of harmonic frequencies to consider for THD calculation.
+        Default is 5.
+    
+    Returns:
+    --------
+    thd : float
+    The total harmonic distortion of the input signal, as a ratio of harmonic 
+    power to the fundamental power.
+    References
+    ----------
+        - Blagouchine, I. v., & Moreau, E. (2011). Analytic method for the computation 
+        of the total harmonic distortion by the cauchy method of residues. IEEE Transactions 
+        on Communications, 59(9), 2478–2491. https://doi.org/10.1109/TCOMM.2011.061511.100749
+        - McFee, B., Matt McVicar, Daniel Faronbi, Iran Roman, Matan Gover, Stefan Balke, Scott Seyfarth, Ayoub Malek, 
+        Colin Raffel, Vincent Lostanlen, Benjamin van Niekirk, Dana Lee, Frank Cwitkowitz, Frank Zalkow, Oriol Nieto, 
+        Dan Ellis, Jack Mason, Kyungyun Lee, Bea Steers, … Waldir Pimenta. (2024). librosa/librosa: 0.10.2.post1 (0.10.2.post1). 
+        Zenodo. https://doi.org/10.5281/zenodo.11192913
+    """
     f0 = librosa.yin(signal, fmin=librosa.note_to_hz('C1'), fmax=librosa.note_to_hz('C8'))
     fundamental_freq = np.mean(f0)
-    harmonic_frequencies = [(i+1) * fundamental_freq for i in range(harmonics)]
-    harmonic_power = sum([np.sum(np.abs(np.fft.rfft(signal * np.sin(2 * np.pi * harmonic_freq * np.arange(len(signal)) / fs)))) for harmonic_freq in harmonic_frequencies])
-    total_power = np.sum(np.abs(np.fft.rfft(signal))**2)
-    thd = harmonic_power / total_power
+    fft_spectrum = np.fft.rfft(signal)
+    freqs = np.fft.rfftfreq(len(signal), 1/fs)
+    fundamental_idx = np.argmin(np.abs(freqs - fundamental_freq))
+    fundamental_power = np.abs(fft_spectrum[fundamental_idx])**2 # power of the fundamental frequency
+    
+    # Harmonic power (sum of harmonics' power starting from the 2nd harmonic)
+    harmonic_power = 0
+    for i in range(2, harmonics+1):  # Start from the second harmonic 
+        harmonic_idx = np.argmin(np.abs(freqs - i * fundamental_freq))
+        harmonic_power += np.abs(fft_spectrum[harmonic_idx])**2
+    thd = np.sqrt(harmonic_power / fundamental_power)
     return thd
 
 @name("inharmonicity")
@@ -884,8 +923,37 @@ def calculate_tristimulus(magnitudes, **kwargs):
     return np.array([t1, t2, t3])
 
 @name("spectral_rollon")
-def calculate_spectral_rollon(freqs, magnitudes, roll_percent=0.85, **kwargs):
-    # https://doi.org/10.1016/j.softx.2020.100456
+def calculate_spectral_rollon(freqs, magnitudes, roll_percent=0.05, **kwargs):
+    """
+    Calculate the spectral roll-on point of a signal.
+    
+    The spectral roll-on is the frequency below which a specified percentage 
+    (e.g., 5%) of the total spectral magnitude is contained. It is used to 
+    determine the low-frequency cutoff for a given signal's spectrum.
+    
+    Parameters:
+    -----------
+    freqs : array-like
+        Array of frequencies corresponding to the magnitude spectrum of the signal.
+        
+    magnitudes : array-like
+        Array of magnitudes corresponding to the frequency spectrum of the signal.
+        
+    roll_percent : float, optional
+        The percentage of the total spectral energy below which the roll-on 
+        frequency is calculated. The default is 0.05 (5%).
+    
+    Returns:
+    --------
+    rollon_frequency : float
+        The frequency at which the cumulative magnitude reaches the specified 
+        percentage of the total energy (the roll-on point).
+    
+    Reference:
+    ----------
+        - Barandas, M., Folgado, D., Fernandes, L., Santos, S., Abreu, M., Bota, P., Liu, H., Schultz, T., & Gamboa, 
+        H. (2020). TSFEL: Time Series Feature Extraction Library. SoftwareX, 11. https://doi.org/10.1016/j.softx.2020.100456
+    """
     cumulative_magnitudes = np.cumsum(magnitudes)
     rollon_frequency = np.min(freqs[np.where(cumulative_magnitudes >= roll_percent * cumulative_magnitudes[-1])])
     return rollon_frequency

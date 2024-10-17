@@ -29,7 +29,9 @@ def calculate_mean(signal, **kwargs):
         The mean of the signal.
     
     References:
-        Manolopoulos et al., 2001, https://www.researchgate.net/publication/234800113
+    ----------
+        - Nanopoulos, A., Alcock, R., & Manolopoulos, Y. (2001). Feature-based 
+        Classification of Time-series Data. https://www.researchgate.net/publication/234800113_Feature-based_Classification_of_Time-series_Data
     """
     return np.mean(signal)
 
@@ -50,7 +52,8 @@ def calculate_geometric_mean(signal, **kwargs):
     
     References:
     ----------
-        Chaddad et al., 2014, DOI: 10.1117/12.2062143
+        - Chaddad, A., & M.D., R. R. C. (2014). Statistical feature selection for enhanced detection of brain tumor. 
+        Https://Doi.Org/10.1117/12.2062143, 9217, 260–267. https://doi.org/10.1117/12.2062143
     """
     signal = signal[signal > 0]
     return gmean(signal)
@@ -69,11 +72,12 @@ def calculate_harmonic_mean(signal, **kwargs):
     Returns:
     -------
     float
-       The harmonic mean of the signal.
+        The harmonic mean of the signal.
     
     References:
     ----------
-        Chaddad et al., 2014, DOI: 10.1117/12.2062143
+        - Chaddad, A., & M.D., R. R. C. (2014). Statistical feature selection for enhanced detection of brain tumor. 
+        Https://Doi.Org/10.1117/12.2062143, 9217, 260–267. https://doi.org/10.1117/12.2062143
     """
     # Filter out non-positive values
     signal = signal[signal > 0]
@@ -101,7 +105,8 @@ def calculate_trimmed_mean(signal, trimmed_mean_thresholds, **kwargs):
     
     References:
     ----------
-        Chaddad et al., 2014, DOI: 10.1117/12.2062143
+        - Chaddad, A., & M.D., R. R. C. (2014). Statistical feature selection for enhanced detection of brain tumor. 
+        Https://Doi.Org/10.1117/12.2062143, 9217, 260–267. https://doi.org/10.1117/12.2062143
     """
     feats = []
     for proportiontocut in trimmed_mean_thresholds:
@@ -128,8 +133,13 @@ def calculate_mean_abs(signal, **kwargs):
         - Myroniv, B., Wu, C.-W., Ren, Y., Christian, A., Bajo, E., & Tseng, 
         Y.-C. (2017). Analyzing User Emotions via Physiology Signals. 
         https://www.researchgate.net/publication/323935725
-        - Phinyomark et al., 2012, DOI: 10.1016/j.eswa.2012.01.102
-        - Purushothaman et al., 2018, DOI: 10.1007/s13246-018-0646-7
+        - Phinyomark, A., Phukpattaranont, P., & Limsakul, C. (2012). Feature reduction 
+        and selection for EMG signal classification. Expert Systems with Applications, 39(8), 
+        7420–7431. https://doi.org/10.1016/J.ESWA.2012.01.102
+        - Purushothaman, G., & Vikas, · Raunak. (2018). Identification of a feature selection
+        based pattern recognition scheme for finger movement recognition from multichannel 
+        EMG signals. Australasian Physical & Engineering Sciences in Medicine, 41, 549–559. 
+        https://doi.org/10.1007/s13246-018-0646-7
     """
     return np.mean(np.abs(signal))
 
@@ -147,10 +157,12 @@ def calculate_geometric_mean_abs(signal, **kwargs):
     -------
     float
         An array containing the geometric mean of the absolute values of the signal.
-   
+
     References:
     ----------
-        DOI:10.1134/S1064226917050060
+        - Gil’mutdinov, A. K., & Ushakov, P. A. (2017). Physical implementation of elements with fractal 
+        impedance: State of the art and prospects. Journal of Communications Technology and Electronics, 
+        62(5), 441–453. https://doi.org/10.1134/S1064226917050060/METRICS
     """
     return gmean(np.abs(signal))
 
@@ -168,10 +180,6 @@ def calculate_harmonic_mean_abs(signal, **kwargs):
     -------
         float
             An array containing the harmonic mean of the absolute values of the signal.
-
-    References:
-    ---------
-    
     """
     return hmean(np.abs(signal))
 
@@ -195,10 +203,6 @@ def calculate_trimmed_mean_abs(signal, trimmed_mean_thresholds, **kwargs):
     -------
     np.array
         An array containing the trimmed means for each proportion.
-
-    References:
-    ---------
-    ---------
     """
     feats = []
     for proportiontocut in trimmed_mean_thresholds:
@@ -222,7 +226,8 @@ def calculate_std(signal, **kwargs):
         
     References:
     ---------
-        Manolopoulos et al., 2001, https://www.researchgate.net/publication/234800113
+        - Nanopoulos, A., Alcock, R., & Manolopoulos, Y. (2001). Feature-based Classification 
+        of Time-series Data. https://www.researchgate.net/publication/234800113_Feature-based_Classification_of_Time-series_Data
     """
     return np.std(signal)
 
@@ -240,9 +245,6 @@ def calculate_std_abs(signal, **kwargs):
     -------
     float
         An array containing the standard deviation of the absolute values of the signal.
-        
-    References:
-    ---------
     """
     return np.std(np.abs(signal))
 
@@ -263,8 +265,11 @@ def calculate_skewness(signal, **kwargs):
         
     References:
     ----------
-        Manolopoulos et al., 2001, https://www.researchgate.net/publication/234800113
-        Khorshidtalab et al., 2013 , DOI: 10.1088/0967-3334/34/11/1563
+        - Nanopoulos, A., Alcock, R., & Manolopoulos, Y. (2001). Feature-based Classification 
+        of Time-series Data. https://www.researchgate.net/publication/234800113_Feature-based_Classification_of_Time-series_Data
+        - Whitaker, B. M., Suresha, P. B., Liu, C., -,  al, Wang, G., Huang, J., Zhang -, F., Mohd Khan, S., Ali Khan, A., 
+        Farooq -, O., Khorshidtalab, A., E Salami, M. J., & Hamedi, M. (2013). Robust classification of motor imagery EEG signals 
+        using statistical time–domain features. Physiological Measurement, 34(11), 1563. https://doi.org/10.1088/0967-3334/34/11/1563
     """ 
     return skew(signal)
 
@@ -282,9 +287,6 @@ def calculate_skewness_abs(signal, **kwargs):
     -------
     float
         An array containing the skewness of the absolute values of the signal.
-        
-    References:
-    ---------
     """
     return skew(np.abs(signal))
 
@@ -305,8 +307,11 @@ def calculate_kurtosis(signal, **kwargs):
         
     References:
     ----------
-        Manolopoulos et al., 2001, https://www.researchgate.net/publication/234800113
-        Khorshidtalab et al., 2013 , DOI: 10.1088/0967-3334/34/11/1563
+        - Nanopoulos, A., Alcock, R., & Manolopoulos, Y. (2001). Feature-based Classification 
+        of Time-series Data. https://www.researchgate.net/publication/234800113_Feature-based_Classification_of_Time-series_Data
+        - Whitaker, B. M., Suresha, P. B., Liu, C., -,  al, Wang, G., Huang, J., Zhang -, F., Mohd Khan, S., Ali Khan, A., 
+        Farooq -, O., Khorshidtalab, A., E Salami, M. J., & Hamedi, M. (2013). Robust classification of motor imagery EEG signals 
+        using statistical time–domain features. Physiological Measurement, 34(11), 1563. https://doi.org/10.1088/0967-3334/34/11/1563
     """
     return kurtosis(signal)
 
@@ -324,8 +329,6 @@ def calculate_kurtosis_abs(signal, **kwargs):
     -------
     float
         The kurtosis of the absolute values of the signal.
-        
-    References:
     """
     return kurtosis(np.abs(signal))
 
@@ -346,7 +349,9 @@ def calculate_median(signal, **kwargs):
         
     References:
     ---------
-        Banos et al., 2012, DOI: 10.1016/j.eswa.2012.01.164
+        - Banos, O., Damas, M., Pomares, H., Prieto, A., & Rojas, I. (2012). Daily living activity recognition 
+        based on statistical feature quality group selection. Expert Systems with Applications, 39(9), 8013–8021.
+        https://doi.org/10.1016/J.ESWA.2012.01.164
     """
     return np.median(signal)
 
@@ -364,9 +369,6 @@ def calculate_median_abs(signal, **kwargs):
     -------
     float
         The median of the absolute values of the signal.
-        
-    References:
-    ---------
     """
     return np.median(np.abs(signal))
 
@@ -409,9 +411,6 @@ def calculate_min_abs(signal, **kwargs):
     -------
     float
         The minimum value of the absolute values of the signal.
-        
-    References:
-    ---------
     """
     min_abs_val = np.min(np.abs(signal))
     return min_abs_val
@@ -433,7 +432,9 @@ def calculate_max(signal, **kwargs):
         
     References:
     ---------
-        Khorshidtalab et al., 2013 , DOI: 10.1088/0967-3334/34/11/1563
+        - Whitaker, B. M., Suresha, P. B., Liu, C., -,  al, Wang, G., Huang, J., Zhang -, F., Mohd Khan, S., Ali Khan, A., 
+        Farooq -, O., Khorshidtalab, A., E Salami, M. J., & Hamedi, M. (2013). Robust classification of motor imagery EEG signals 
+        using statistical time–domain features. Physiological Measurement, 34(11), 1563. https://doi.org/10.1088/0967-3334/34/11/1563
     """
     max_val = np.max(signal)
     return max_val
@@ -499,9 +500,6 @@ def calculate_range_abs(signal, **kwargs):
     -------
     float
         The range of the absolute values of the signal.
-        
-    References:
-    ---------
     """
     abs_signal = np.abs(signal)
     return np.max(abs_signal) - np.min(abs_signal)
@@ -523,7 +521,9 @@ def calculate_variance(signal, **kwargs):
         
     References:
     ---------
-        Khorshidtalab et al., 2013 , DOI: 10.1088/0967-3334/34/11/1563
+        - Whitaker, B. M., Suresha, P. B., Liu, C., -,  al, Wang, G., Huang, J., Zhang -, F., Mohd Khan, S., Ali Khan, A., 
+        Farooq -, O., Khorshidtalab, A., E Salami, M. J., & Hamedi, M. (2013). Robust classification of motor imagery EEG signals 
+        using statistical time–domain features. Physiological Measurement, 34(11), 1563. https://doi.org/10.1088/0967-3334/34/11/1563
     """
     return np.var(signal)
 
@@ -541,9 +541,6 @@ def calculate_variance_abs(signal, **kwargs):
     -------
     float
         The variance of the absolute values of the signal.
-        
-    References:
-    ---------
     """
     return np.var(np.abs(signal))
 
@@ -556,7 +553,7 @@ def calculate_interquartile_range(signal, **kwargs):
 
     Parameters:
     ----------
-    signal : np,array
+    signal : np.array
         The input time series.
 
     Returns:
@@ -566,7 +563,8 @@ def calculate_interquartile_range(signal, **kwargs):
     
     References:
     ----------
-        Bedeeuzzaman et al., 2012, DOI: 10.5120/6304-8614
+        - Bedeeuzzaman, M., Farooq, O., & U Khan, Y. (2012). Automatic Seizure Detection using Inter Quartile Range. 
+        International Journal of Computer Applications, 44(11), 1–5. https://doi.org/10.5120/6304-8614
     """
     return np.percentile(signal, 75) - np.percentile(signal, 25)
 
@@ -586,9 +584,6 @@ def calculate_quantile(signal, q, **kwargs):
     -------
     np.array
         An array containing the quantile values of the signal
-    
-    References:
-    ----------
     """
     if len(signal) == 0:
         return np.NaN
@@ -662,7 +657,10 @@ def calculate_signal_energy(signal, **kwargs):
         The energy of the signal.
     
     References:
-        Rafiuddin et al., 2011, DOI: 10.1109/MSPCT.2011.6150470
+    -----------
+        - Rafiuddin, N., Khan, Y. U., & Farooq, O. (2011). Feature extraction and classification of EEG for automatic 
+        seizure detection. 2011 International Conference on Multimedia, Signal Processing and Communication Technologies, 
+        IMPACT 2011, 184–187. https://doi.org/10.1109/MSPCT.2011.6150470
     """
     return np.sum(signal**2)
 
@@ -684,8 +682,9 @@ def calculate_log_energy(signal, **kwargs):
         The logarithm of the energy of the signal.
         
     References:
-    ---------
-    https://mathworks.com/help/audio/ref/mfcc.html
+    -----------
+    Implementation based on:
+        https://mathworks.com/help/audio/ref/mfcc.html
     """
     return np.log(np.sum(signal**2))
 
@@ -709,7 +708,8 @@ def calculate_entropy(signal, window_size, **kwargs):
     
     References:
     ----------
-        Guido, 2018, DOI: 10.1016/j.inffus.2017.09.006
+        - Guido, R. C. (2018). A tutorial review on entropy-based handcrafted feature extraction for information fusion.
+        Information Fusion, 41, 161–175. https://doi.org/10.1016/J.INFFUS.2017.09.006
     """
     try:
         # Calculate the histogram
@@ -1023,8 +1023,11 @@ def calculate_permutation_entropy(signal, window_size, permutation_entropy_order
 
     References:
     -----------
-        Bandt et al., 2002, DOI: 10.1103/PhysRevLett.88.174102
-        Zanin et al., 2012, DOI: 10.3390/e14081553
+        - Bandt, C., & Pompe, B. (2002). Permutation Entropy: A Natural Complexity Measure for Time Series. 
+        https://doi.org/10.1103/PhysRevLett.88.174102
+        - Zanin, M., Zunino, L., Rosso, O. A., & Papo, D. (2012). Permutation Entropy and Its Main Biomedical 
+        and Econophysics Applications: A Review. Entropy 2012, Vol. 14, Pages 1553-1577, 14(8), 1553–1577.
+        https://doi.org/10.3390/E14081553
     """
     try:
         order = permutation_entropy_order
@@ -1230,7 +1233,8 @@ def calculate_impulse_factor(signal, **kwargs):
 
     References:
     -----------
-        Cempel, 1980, DOI: 10.1016/0022-460X(80)90667-7
+        - Cempel, C. (1980). Diagnostically oriented measures of vibroacoustical processes. 
+        Journal of Sound and Vibration, 73(4), 547–561. https://doi.org/10.1016/0022-460X(80)90667-7
     """
     impulse_factor = np.max(np.abs(signal)) / np.mean(np.abs(signal))
     return impulse_factor
@@ -1448,15 +1452,15 @@ def calculate_higuchi_fractal_dimensions(signal, higuchi_k_values, **kwargs):
         
     References:
     ----------
-    - Higuchi, T. (1988). Approach to an irregular time series on the basis of the fractal theory. 
-    Physica D: Nonlinear Phenomena, 31(2), 277–283. https://doi.org/10.1016/0167-2789(88)90081-4
-    - Wijayanto, I., Hartanto, R., & Nugroho, H. A. (2019). Higuchi and Katz Fractal Dimension for
-    Detecting Interictal and Ictal State in Electroencephalogram Signal. 2019 11th International
-    Conference on Information Technology and Electrical Engineering, ICITEE 2019. 
-    https://doi.org/10.1109/ICITEED.2019.8929940
-    - Wanliss, J. A., & Wanliss, G. E. (2022). Efficient calculation of fractal properties via
-    the Higuchi method. Nonlinear Dynamics, 109(4), 2893–2904. 
-    https://doi.org/10.1007/S11071-022-07353-2/FIGURES/8
+        - Higuchi, T. (1988). Approach to an irregular time series on the basis of the fractal theory. 
+        Physica D: Nonlinear Phenomena, 31(2), 277–283. https://doi.org/10.1016/0167-2789(88)90081-4
+        - Wijayanto, I., Hartanto, R., & Nugroho, H. A. (2019). Higuchi and Katz Fractal Dimension for
+        Detecting Interictal and Ictal State in Electroencephalogram Signal. 2019 11th International
+        Conference on Information Technology and Electrical Engineering, ICITEE 2019. 
+        https://doi.org/10.1109/ICITEED.2019.8929940
+        - Wanliss, J. A., & Wanliss, G. E. (2022). Efficient calculation of fractal properties via
+        the Higuchi method. Nonlinear Dynamics, 109(4), 2893–2904. 
+        https://doi.org/10.1007/S11071-022-07353-2/FIGURES/8
     """
 
     def compute_length_for_interval(data, interval, start_time):
@@ -1540,27 +1544,14 @@ def calculate_petrosian_fractal_dimension(signal, **kwargs):
     float
         The Petrosian Fractal Dimension of the signal.
 
-    Example:
-    --------
-    >>> signal = [1, 2, 1, 2, 1, 2]
-    >>> calculate_petrosian_fractal_dimension(signal)
-    0.985756
-
-    Notes:
-    ------
-    - The 'calculate_zero_crossings' function is assumed to count the number of zero crossings 
-    in the first difference (derivative) of the signal.
-    - Petrosian Fractal Dimension is particularly useful for characterizing signals in the context 
-    of noise and structure.
-
     References:
     -----------
-    - Petrosian, A. (1995). Kolmogorov complexity of finite sequences and recognition of different
-    preictal EEG patterns. Proceedings of the IEEE Symposium on Computer-Based Medical Systems, 212–217. 
-    https://doi.org/10.1109/CBMS.1995.465426
-    - Alfredo, M. L., Marta, M., Alfredo, M. L., & Marta, M. (2020). Classification of low-density EEG for 
-    epileptic seizures by energy and fractal features based on EMD. The Journal of Biomedical Research, 
-    2020, Vol. 34,  Issue 3, Pages: 180-190, 34(3), 180–190. https://doi.org/10.7555/JBR.33.20190009
+        - Petrosian, A. (1995). Kolmogorov complexity of finite sequences and recognition of different
+        preictal EEG patterns. Proceedings of the IEEE Symposium on Computer-Based Medical Systems, 212–217. 
+        https://doi.org/10.1109/CBMS.1995.465426
+        - Alfredo, M. L., Marta, M., Alfredo, M. L., & Marta, M. (2020). Classification of low-density EEG for 
+        epileptic seizures by energy and fractal features based on EMD. The Journal of Biomedical Research, 
+        2020, Vol. 34,  Issue 3, Pages: 180-190, 34(3), 180–190. https://doi.org/10.7555/JBR.33.20190009
     """
     N = len(signal)
     nzc = calculate_zero_crossings(np.diff(signal))
@@ -1586,7 +1577,6 @@ def calculate_hjorth_mobility_and_complexity(signal, **kwargs):
     ---------
         - Hjorth, B. (1970). EEG analysis based on time domain properties. Electroencephalography
         and Clinical Neurophysiology, 29(3), 306–310. https://doi.org/10.1016/0013-4694(70)90143-4
-        
     """
     try:
         signal = np.asarray(signal)
@@ -1633,9 +1623,6 @@ def calculate_rms_to_mean_abs(signal, **kwargs):
     float
         The ratio of the root-mean-squared value to the mean
         absolute value.
-    
-    References:
-    ---------
     """
     rms_val = np.sqrt(np.mean(signal ** 2))
     mean_abs_val = np.mean(np.abs(signal))
@@ -1868,6 +1855,18 @@ def calculate_covariance(signal, other_signal, **kwargs):
 @name("cumulative_sum")
 def calculate_cumulative_sum(signal, **kwargs):
     """
+    Calculate the cumulative sum of a signal.
+    
+    Parameters:
+    ----------
+    signal: array-like
+        The input time series data
+
+    Returns:
+    -------
+    cumulative_sum: float
+        The last value of the cumulative sum of the input signal.
+        
     References:
     ----------
         https://docs.amd.com/r/2020.2-English/ug1483-model-composer-sys-gen-user-guide/Cumulative-Sum
@@ -1978,9 +1977,11 @@ def calculate_weighted_moving_average(signal, weights, mode, **kwargs):
     --------
     np.ndarray
         The weighted moving average of the signal. If the signal is shorter than the weights, NaN is returned.
-
+        
+    References:
+    -----------
+        - https://www.mathworks.com/help/signal/ug/signal-smoothing.html
     """
-        # https://www.mathworks.com/help/signal/ug/signal-smoothing.html
     if weights is None:
         weights = np.linspace(1, 0, num=len(signal))
     else:
@@ -2212,14 +2213,32 @@ def calculate_linear_trend_with_full_linear_regression_results(signal, **kwargs)
 
     References:
     -----------
-    - "Linear Regression", MATLAB Documentation: https://www.mathworks.com/help/matlab/data_analysis/linear-regression.html
+        - "Linear Regression", MATLAB Documentation: https://www.mathworks.com/help/matlab/data_analysis/linear-regression.html
     """
     slope, intercept, r_value, p_value, std_err = linregress(np.arange(len(signal)), signal)
     return slope, intercept, r_value**2, p_value, std_err
 
 @name(["local_maxima", "local_minima"])
 def calculate_local_maxima_and_minima(signal, **kwargs):
-    # https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.find_peaks.html
+    """
+    Calculate the number of local maxima and minima in a signal.
+    
+    Parameters:
+    ----------
+    signal : array-like
+        The input time series
+    
+    Returns:
+    -------
+    local_max: int
+        The number of local maxima in the signal.
+    local_min: int
+        The number of local minima in the signal.
+
+    References:
+    ----------
+        - https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.find_peaks.html
+    """
     local_max = find_peaks(signal)[0]
     local_min = find_peaks(-signal)[0]
     return len(local_max), len(local_min)
@@ -2252,7 +2271,7 @@ def calculate_log_return(signal, **kwargs):
     
     References:
     ----------
-    Based on concepts from: https://pypi.org/project/stockstats/
+        - Based on concepts from: https://pypi.org/project/stockstats/
     """
     # Ensure the signal is a numpy array
     signal = np.asarray(signal)
@@ -2458,10 +2477,6 @@ def calculate_mode(signal, **kwargs):
     --------
     float
         The mode of the input signal.
-        
-    References:
-    -----------
-    
     """
     return mode(signal)[0][0]
 
@@ -2485,12 +2500,9 @@ def calculate_number_of_inflection_points(signal, **kwargs):
             
     References:
     ---------
-        https://en.wikipedia.org/wiki/Inflection_point
+        - https://en.wikipedia.org/wiki/Inflection_point
     """
-    # Compute the second derivative of the signal
     second_derivative = np.diff(signal, n=2)
-
-    # Calculate the number of sign changes in the second derivative
     inflection_points = np.sum(np.diff(np.sign(second_derivative)) != 0)
 
     return inflection_points
@@ -2723,7 +2735,6 @@ def calculate_signal_resultant(signal, **kwargs):
     --------
     float
         The square root of the sum of squares of the signal values.
-
     """
     return np.sqrt(np.sum(signal**2))
 
@@ -2746,7 +2757,8 @@ def calculate_signal_to_noise_ratio(signal, **kwargs):
     References:
     -----------
         - https://en.wikipedia.org/wiki/Signal-to-noise_ratio
-        - DOI:10.4249/SCHOLARPEDIA.2088
+        - Johnson, D. H. (2006). Signal-to-Noise Ratio. Scholarpedia, 1(12), 2088.
+        https://doi.org/10.4249/SCHOLARPEDIA.2088
     """
     mean_signal = np.mean(signal)
     std_noise = np.std(signal)
@@ -2836,7 +2848,6 @@ def calculate_sum_of_negative_values(signal, **kwargs):
     -------
     float
         The sum of all negative values in the time series
-
     """
     return np.sum(signal[signal < 0])
 
@@ -2854,7 +2865,6 @@ def calculate_sum_of_positive_values(signal, **kwargs):
     -------
     float
         The sum of all positive values in the time series
-
     """
     return np.sum(signal[signal > 0])
 
@@ -2951,16 +2961,11 @@ def calculate_variance_of_absolute_differences(signal, **kwargs):
     float
         The variance of the absolute differences between consecutive elements. If the signal has fewer than 
         two elements, the function returns `NaN`.
-
-    Notes:
-    ------
-    - This function is particularly useful in analyzing the variability of changes in a time series, 
-    such as in financial data or other sequences where the magnitude of changes is of interest.
     
     References:
     ----------
-    - Liang, H., & Hong, L. (2015). The Absolute Difference Law For Expectations. The American Statistician, 
-    69(1), 8–10. https://doi.org/10.1080/00031305.2014.994712
+        - Liang, H., & Hong, L. (2015). The Absolute Difference Law For Expectations. The American Statistician, 
+        69(1), 8–10. https://doi.org/10.1080/00031305.2014.994712
     """
     # Ensure the signal has at least two elements
     if len(signal) < 2:
@@ -3015,7 +3020,6 @@ def calculate_zero_crossing_rate(signal, **kwargs):
         
     References:
     ---------
-        Based on the implementation from the librosa library: 
         - McFee, B., Matt McVicar, Daniel Faronbi, Iran Roman, Matan Gover, Stefan Balke, Scott Seyfarth, Ayoub Malek, 
         Colin Raffel, Vincent Lostanlen, Benjamin van Niekirk, Dana Lee, Frank Cwitkowitz, Frank Zalkow, Oriol Nieto, 
         Dan Ellis, Jack Mason, Kyungyun Lee, Bea Steers, … Waldir Pimenta. (2024). librosa/librosa: 0.10.2.post1 (0.10.2.post1). 
@@ -3048,10 +3052,10 @@ def calculate_detrended_fluctuation_analysis(signal, order=1, minimal=20, **kwar
         
     References:
     ----------
-    [1] Bryce, R. M., & Sprague, K. B. (2012). Revisiting detrended 
+        - Bryce, R. M., & Sprague, K. B. (2012). Revisiting detrended 
         fluctuation analysis. Scientific Reports 2012 2:1, 2(1), 1–6. 
         https://doi.org/10.1038/srep00315
-    [2] Zhang, H.-Y., Feng, Z.-Q., Feng, S.-Y., & Zhou, Y. (2023). 
+        - Zhang, H.-Y., Feng, Z.-Q., Feng, S.-Y., & Zhou, Y. (2023). 
         A Survey of Methods for Estimating Hurst Exponent of Time 
         Sequence. https://arxiv.org/abs/2310.19051v1
     """
@@ -3119,13 +3123,13 @@ def calculate_hurst_exponent(signal, **kwargs):
 
     References:
     ----------
-    [1] Bryce, R. M., & Sprague, K. B. (2012). Revisiting detrended 
+        - Bryce, R. M., & Sprague, K. B. (2012). Revisiting detrended 
         fluctuation analysis. Scientific Reports 2012 2:1, 2(1), 1–6. 
         https://doi.org/10.1038/srep00315
-    [2] Zhang, H.-Y., Feng, Z.-Q., Feng, S.-Y., & Zhou, Y. (2023). 
+        - Zhang, H.-Y., Feng, Z.-Q., Feng, S.-Y., & Zhou, Y. (2023). 
         A Survey of Methods for Estimating Hurst Exponent of Time 
         Sequence. https://arxiv.org/abs/2310.19051v1
-    [3] https://github.com/GrAbsRD/HurstExponent
+        - https://github.com/GrAbsRD/HurstExponent
     """
     segment_size, fluctuation_values = calculate_detrended_fluctuation_analysis(signal)
 
@@ -3154,7 +3158,9 @@ def calculate_augmented_dickey_fuller_test(signal, **kwargs):
 
     References:
     ---------
-        Christ et al., 2018, https://doi.org/10.1016/J.NEUCOM.2018.03.067
+        - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
+        basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
+        https://doi.org/10.1016/J.NEUCOM.2018.03.067
     """
     try:
         test_stat, p_value, used_lag, _,_,_ = adfuller(signal)
@@ -3314,7 +3320,9 @@ def calculate_lempel_ziv_complexity(signal, lz_bins, **kwargs):
     ----------
     Based on the implementation from:
         - https://github.com/Naereen/Lempel-Ziv_Complexity/blob/master/src/lempel_ziv_complexity.py
-        - https://github.com/blue-yonder/tsfresh
+        - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
+        basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
+        https://doi.org/10.1016/J.NEUCOM.2018.03.067
     """
     signal = np.asarray(signal)
 
@@ -3366,19 +3374,19 @@ def calculate_cid_ce(signal, cid_ce_normalize, **kwargs):
 
     References:
     ---------
-    - Batista, G. E. A. P. A., Wang, X., & Keogh, E. J. (2011). A complexity-invariant distance measure 
-    for time series. Proceedings of the 11th SIAM International Conference on Data Mining, SDM 2011, 
-    699–710. https://doi.org/10.1137/1.9781611972818.60
-    - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series Feature 
-    Extraction on basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 
-    307, 72–77. https://doi.org/10.1016/J.NEUCOM.2018.03.067
+        - Batista, G. E. A. P. A., Wang, X., & Keogh, E. J. (2011). A complexity-invariant distance measure 
+        for time series. Proceedings of the 11th SIAM International Conference on Data Mining, SDM 2011, 
+        699–710. https://doi.org/10.1137/1.9781611972818.60
+        - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series Feature 
+        Extraction on basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 
+        307, 72–77. https://doi.org/10.1016/J.NEUCOM.2018.03.067
 
     Notes:
     -----
-    - The CID-CE measure is useful in time series analysis for comparing the complexity of different 
-    time series, as it is invariant to linear transformations when normalized.
-    - If `normalize` is set to True, the signal is scaled to have zero mean and unit variance. This 
-    step is crucial when comparing signals of different scales.
+        - The CID-CE measure is useful in time series analysis for comparing the complexity of different 
+        time series, as it is invariant to linear transformations when normalized.
+        - If `normalize` is set to True, the signal is scaled to have zero mean and unit variance. This 
+        step is crucial when comparing signals of different scales.
     """
     if cid_ce_normalize:
         s = np.std(signal)

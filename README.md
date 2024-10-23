@@ -18,42 +18,47 @@ The return is a pd dataframe with columns: 'feature name', 'feature value gpu', 
 ## Statistical Features
 
 
-|Number| Feature    | Description | Reference |
+|Number| Feature    | Description | Info |
 | -------- | ------- | ------- | ------- |
-6| calculate_harmonic_mean_abs(X)| Calculates the harmonic mean of the absolute values of X| * |
-7|calculate_trimmed_mean_abs(X)| Calculates the trimmed mean of absolute values of X| * |
-9|calculate_std_abs(X) | Calculates the standard deviation of the absolute values of X | * |
-11|calculate_skewness_abs(X)| Calculate skewness of absolute values of X|*|
-13|calculate_kurtosis_abs(X)|Calculates the kurtosis of the absolute values of X| * |
-15|calculate_median_abs|Calculates the median of the absolute values of X|*|
-17|calculate_min_abs(X)|Calculates the minimum value of the absolute values of X| *|
-21|calculate_range_abs(X)|Calculates the range of the absolute values of X|*|
-23|calculate_variance_abs(X)|Calculates the variance of the absolute values of X|*|
-25|calculate_mean_absolute_deviation(X)|Calculates the mean of the absolute deviation of X | ~|
-40|calculate_signal_magnitude_area(X)|Calculates the magnitude area of X. The sum of the absolute values of X| ~|
-47|calculate_cardinality(X)||*|
-48|calculate_rms_to_mean_abs(X)|Computes the ratio of the RMS value to mean absolute value of X|*|
-53|calculate_area_under_squared_curve(X)|Computed the area under the curve of X squared|*|
- 65|calculate_exponential_moving_average(X, param)|Calculates the exponential moving average of X|*|
-70|calculate_fisher_information(X)|Computes the Fisher information of X|
-77|calculate_local_maxima_and_minima(X)|Calculates the local maxima and minima of X|*|
-78|calculate_log_return(X)|Returns the logarithm of the ratio between the last and first values of  which is a measure of the percentage change in X|~|
-81|calculate_lower_complete_moment(X)||*|
-85|calculate_mean_second_derivative_central(X)|Returns the mean of the second derivative of X|
-86|calculate_median_second_derivative_central(X)|Calculates the median of the second derivative of X|*|
-99|calculate_ratio_of_fluctuations(X)|Computes the ratio of positive and negative fluctuations in X|*|
-100|calculate_ratio_value_number_to_sequence_length(X)|Returns the ratio of length of a set of X to the length X|*|
-102|calculate_second_order_difference(X)|Returns the second differential of X|**|
-103|calculate_signal_resultant(X)||*|
-109|calculate_sum_of_negative_values(X)|Calculates the sum of negative values in X|*|
-110|calculate_sum_of_positive_values(X)|Returns the sum of positive values in X|*|
-114|calculate_variance_of_absolute_differences(X)|Returns variance of the absolute of the first order difference of X|
-115|calculate_weighted_moving_average(X)|Returns the weighted moving average of X|
-116|calculate_winsorized_mean(X)|Calculates the winsorized mean of X which replaces the lowest and highest outliers with closer non-extreme values before calculating the average|
-117|calculate_zero_crossing_rate(X)|Returns the zero-crossing rate of X|
+1| calculate_harmonic_mean_abs(X)| Calculates the harmonic mean of the absolute values of X| * |
+2|calculate_trimmed_mean_abs(X)| Calculates the trimmed mean of absolute values of X| * |
+3|calculate_std_abs(X) | Calculates the standard deviation of the absolute values of X | * |
+4|calculate_skewness_abs(X)| Calculate skewness of absolute values of X|*|
+5|calculate_kurtosis_abs(X)|Calculates the kurtosis of the absolute values of X| * |
+6|calculate_median_abs|Calculates the median of the absolute values of X|*|
+7|calculate_min_abs(X)|Calculates the minimum value of the absolute values of X| *|
+8|calculate_range_abs(X)|Calculates the range of the absolute values of X|*|
+9|calculate_variance_abs(X)|Calculates the variance of the absolute values of X|*|
+10|calculate_mean_absolute_deviation(X)|Calculates the mean of the absolute deviation of X | ~|
+11|calculate_signal_magnitude_area(X)|Calculates the magnitude area of X. The sum of the absolute values of X| ~|
+12|calculate_cardinality(X)|~|
+13|calculate_rms_to_mean_abs(X)|Computes the ratio of the RMS value to mean absolute value of X|*|
+14|calculate_area_under_squared_curve(X)|Computed the area under the curve of X squared|*|
+15|calculate_exponential_moving_average(X, param)|Calculates the exponential moving average of X|*|
+16|calculate_fisher_information(X)|Computes the Fisher information of X|~|
+17|calculate_local_maxima_and_minima(X)|Calculates the local maxima and minima of X|*|
+18|calculate_log_return(X)|Returns the logarithm of the ratio between the last and first values of  which is a measure of the percentage change in X|~|
+19|calculate_lower_complete_moment(X)||*|
+20|calculate_mean_second_derivative_central(X)|Returns the mean of the second derivative of X|
+21|calculate_median_second_derivative_central(X)|Calculates the median of the second derivative of X|*|
+23|calculate_ratio_of_fluctuations(X)|Computes the ratio of positive and negative fluctuations in X|*|
+24|calculate_ratio_value_number_to_sequence_length(X)|Returns the ratio of length of a set of X to the length X|*|
+25|calculate_second_order_difference(X)|Returns the second differential of X|**|
+26|calculate_signal_resultant(X)||*|
+27|calculate_sum_of_negative_values(X)|Calculates the sum of negative values in X|*|
+28|calculate_sum_of_positive_values(X)|Returns the sum of positive values in X|*|
+29|calculate_variance_of_absolute_differences(X)|Returns variance of the absolute of the first order difference of X|
+30|calculate_weighted_moving_average(X)|Returns the weighted moving average of X|*
+31|calculate_covariance||~|
+
 
 <br>
 <br>
+
+## Statistical Features -  NEW!!
+|Number| Feature    | Reference |
+| -------- | ------- | ------- |
+1.|calculate_mean_to_variance| 
 <br>
 <br>
 
@@ -71,71 +76,8 @@ The return is a pd dataframe with columns: 'feature name', 'feature value gpu', 
 ## Spectral Features
 |Number| Feature    | Reference |
 | -------- | ------- | ------- |
-1|calculate_spectral_centroid|
-2|calculate_spectral_variance|
-3|calculate_spectral_skewness|
-4|calculate_spectral_kurtosis|
-5|calculate_median_frequency
-6|calculate_spectral_bandwidth (from order 1-4)|
-7|calculate_spectral_absolute_deviation|
-8|calculate_spectral_slope_linear|
-9|calculate_spectral_slope_logarithmic|
-10|calculate_spectral_flatness|
-11|calculate_peak_frequencies|
-12|calculate_spectral_edge_frequency|
-13|calculate_band_power|
-14|calculate_spectral_entropy|
-15|calculate_spectral_contrast|
-16|calculate_spectral_cov|
-|calculate_spectral_flux
-|calculate_spectral_rolloff
-|calculate_harmonic_ratio
-|calculate_fundamental_frequency
-|calculate_spectral_crest_factor
-|calculate_spectral_decrease
-|calculate_spectral_irregularity
-|calculate_mean_frequency
-|calculate_frequency_winsorized_mean
-|calculate_total_harmonic_distortion
-|calculate_inharmonicity
-|calculate_tristimulus
-|calculate_spectral_rollon
-|calculate_spectral_hole_count
-|calculate_spectral_autocorrelation
-|calculate_spectral_variability
-|calculate_spectral_spread_ratio
-|calculate_spectral_skewness_ratio
-|calculate_spectral_kurtosis_ratio
-|calculate_spectral_tonal_power_ratio
-|calculate_spectral_noise_to_harmonics_ratio
-|calculate_spectral_even_to_odd_harmonic_energy_ratio
-|calculate_spectral_strongest_frequency_phase
-|calculate_spectral_frequency_below_peak
-|calculate_spectral_frequency_above_peak
-|calculate_spectral_cumulative_frequency
-|calculate_spectral_cumulative_frequency_above
-|calculate_spectral_spread_shift
-|calculate_spectral_entropy_shift
-|calculate_spectral_change_vector_magnitude
-|calculate_spectral_low_frequency_content
-|calculate_spectral_mid_frequency_content
-|calculate_spectral_peak_to_valley_ratio
-|calculate_spectral_valley_depth_mean
-|calculate_spectral_valley_depth_std
-|calculate_spectral_valley_depth_variance
-|calculate_spectral_valley_width_mode
-|calculate_spectral_valley_width_std
-|calculate_spectral_subdominant_valley| * |
-|calculate_spectral_valley_count
-|calculate_spectral_peak_broadness
-|calculate_spectral_valley_broadness
-|calculate_frequency_variance
-|calculate_frequency_std
-|calculate_frequency_range
-|calculate_frequency_trimmed_mean
-|calculate_harmonic_product_spectrum
-|calculate_smoothness|
-|calculate_roughness|*|
+1|calculate_spectral_subdominant_valley|*
+2||
 
 
 
@@ -316,14 +258,23 @@ Number| Feature    | Reason |
 4|calculate_intercept_of_linear_fit| This feature is returned again in the calculate_linear_trend_with_full_linear_regression_results function  
 5|calculate_pearson_correlation_coefficient| Since this function calculates the Pearson correlation coefficient between the signal and its one-step lagged version, it is fundamentally calculating the autocorrelation of the signal. The autocorrelation is already present(calculate_mean_auto_correlation). Having both is redundant. 
 6|calculate_slope_of_linear_fit| This is already calculated in calculate_linear_trend_with_full_linear_regression_results
+7|calculate_frequency_std| Same implementation as calculate_spectral_bandwidth with order set to 2
+8|calculate_frequency_variance| Same implementation as calculate_spectral_variance
+9|calculate_mean_frequency(freqs, magnitudes) | Same as calculate_spectral_centroid with order set to 1
+10|calculate_first_quartile | calculate_percentile(signal, percentiles=[25, 50, 75]) returns the first, second, and third quartiles|
+11|calculate_third_quartile | calculate_percentile(signal, percentiles=[25, 50, 75]) returns the first, second, and third quartiles |
+14| calculate_spectral_entropy_shift|Same implementation as calculate_spectral_entropy but with spectrum_magnitudes as argument and not psd|
+13| calculate_spectral_spread_shift| Same spectral standard deviation
+14| calculate_spectral_autocorrelatiion| Autocorrelation of magnitudes is backed by literature
+
 
 ## Features that should be deleted
-Number| Feature    | Reason |
-| -------- | ------- | ------- |
-1|calculate_first_quartile | calculate_percentile(signal, percentiles=[25, 50, 75]) returns the first, second, and third quartiles|
-2|calculate_third_quartile | calculate_percentile(signal, percentiles=[25, 50, 75]) returns the first, second, and third quartiles |
-3| calculate_histogram_bins|
-4| calculate_signal_magnitude_area|
+Number| Feature    | Type | Reason|
+| -------- | ------- | ------- | ------- |
+1| calculate_histogram_bins| statistical
+2| calculate_signal_magnitude_area|statistical
+3| calculate_spectral_hole_count| spectral | Spectral holes are typically of use in radio signals. Although the aim is to make this a very comprehensive toolbox, this feature is a little bit out of scope.
+
 
 ## Features in Tsfresh but not in SCAI toolbox
 Number| Feature | Description|Added yet?|
@@ -349,11 +300,9 @@ Number| Feature | Description|Added yet?|
 19| symmetry looking|Boolean variable denoting if the distribution of x looks symmetric.
 20|change_quantiles|First fixes a corridor given by the quantiles ql and qh of the distribution of x.|
 21|fft_coefficient| Calculates the fourier coefficients of the one-dimensional discrete Fourier Transform for real input by fast fourier transformation algorithm
-22|matrix_profile|	
-Calculates the 1-D Matrix Profile[1] and returns Tukey's Five Number Set plus the mean of that Matrix Profile.
+22|matrix_profile|Calculates the 1-D Matrix Profile[1] and returns Tukey's Five Number Set plus the mean of that Matrix Profile.
 23|mean_n_absolute_max|Calculates the arithmetic mean of the n absolute maximum values of the time series.
-24|number_crossing_m|	
-Calculates the number of crossings of x on m.
+24|number_crossing_m|Calculates the number of crossings of x on m.
 25|number_cwt_peaks|Number of different peaks in x.
 26|number_peaks|Calculates the number of peaks of at least support n in the time series x.
 27|partial_autocorrelation|Calculates the value of the partial autocorrelation function at the given lag.

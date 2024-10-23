@@ -1710,7 +1710,37 @@ def calculate_spectral_trimmed_mean(freqs, magnitudes, trim_percent=0.1, **kwarg
 
 @name("harmonic_product_spectrum")
 def calculate_harmonic_product_spectrum(magnitudes, **kwargs):
-    # 10.1109/MHS.2018.8886911
+    """
+    Calculate the sum of the Harmonic Product Spectrum (HPS) from the given magnitudes.
+
+    This function computes the HPS and returns its sum as a single scalar feature. It is often 
+    used as part of feature extraction pipelines in audio signal processing, 
+    particularly for pitch detection, speech/music classification, or speaker recognition.
+
+    Parameters:
+    -----------
+    magnitudes : numpy.array
+            An array of magnitude values of the spectrum at the corresponding frequencies.
+
+    Returns:
+    --------
+    float
+        A single scalar value representing the sum of the Harmonic Product Spectrum. 
+        This value reflects the overall strength of harmonic content in the input signal.
+        
+    References:
+    -----------
+        - Nhu, T. V., & Sawada, H. (2018). Intoning Speech Performance of the Talking Robot 
+        for Vietnamese Language Case. MHS 2018 - 2018 29th International Symposium on 
+        Micro-NanoMechatronics and Human Science. https://doi.org/10.1109/MHS.2018.8886911
+
+    Notes:
+    ------
+    - This function returns only the sum of the HPS, which is useful as a compact 
+    feature for tasks like classification or clustering.
+    - For more detailed analysis, you may want to retain the full HPS spectrum 
+    instead of just the sum.
+    """
     hps = np.copy(magnitudes)
     for h in range(2, 5):
         decimated = magnitudes[::h]

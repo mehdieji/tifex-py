@@ -974,11 +974,6 @@ def calculate_spectral_hole_count(magnitudes, threshold=0.05, **kwargs):
     dips, _ = find_peaks(-magnitudes, height=-threshold)
     return len(dips)
 
-@name("spectral_autocorrelation")
-def calculate_spectral_autocorrelation(magnitudes, **kwargs):
-    # https://doi.org/10.48550/arXiv.1702.00105
-    autocorrelation = np.correlate(magnitudes, magnitudes, mode='full')
-    return autocorrelation[autocorrelation.size // 2:]
 
 @name("spectral_variability")
 def calculate_spectral_variability(magnitudes, **kwargs):

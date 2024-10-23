@@ -4,23 +4,39 @@ from scipy.signal import welch
 
 
 class SignalFeatures():
+    """
+    Container class for the features of a time series and its labels.
+
+    Attributes:
+    -----------
+    label : str
+        The label of the time series.
+    features : dict
+        Dictionary with the features of the time series.
+    """
     def __init__(self, label, features) -> None:
         self.label = label
         self.features = features
 
 class TimeSeries():
+    """
+    Class to parse a dataset into a list of univariate time series. The class
+    can parse data from a pandas DataFrame, a pandas Series or an array-like
+    object. The class is iterable, so it can be used in a for loop to iterate
+    over the time series.
+
+    Attributes:
+    -----------
+    data : list
+        List of tuples with the series name and the corresponding time series.
+    columns : list
+        List of columns to parse. If None, all columns are parsed.
+    name : str
+        Name to prepend to the column names.
+    index : int
+        Index to keep track of the current time series.
+    """
     def __init__(self, data, columns=None, name=None):
-        """
-        Parameters:
-        ----------
-        data: pandas.DataFrame or array-like
-            The dataset to calculate features for.
-        columns: list
-            List of columns to parse. If None, all columns are parsed.
-            If data is an array, this is the list of column names.
-        name: str
-            Name to prepend to the column names.
-        """
         if isinstance(data, pd.DataFrame):
             self.data = self.parse_from_dataframe(data, columns=columns, name=name)
         elif isinstance(data, pd.Series):
@@ -105,15 +121,15 @@ class TimeSeries():
                 label = f"{name}_{columns[0]}"
             else:
                 label = columns[0]
-            ts_list.append((label, data))
+            ts_list.append(self.create_data_dict(data, label))
         elif len(data.shape) == 2:
             if columns is None:
                 columns = list(range(data.shape[1]))
-            for i in columns:
+            for i, c in enumerate(columns):
                 if name is not None:
-                    label = f"{name}_{i}"
+                    label = f"{name}_{c}"
                 else:
-                    label = i
+                    label = c
                 ts_list.append(self.create_data_dict(data[:, i], label))
         else:
             raise ValueError("Arrays with more than 2 dimensions are not supported.")
@@ -142,6 +158,21 @@ class TimeSeries():
         return [self.create_data_dict(data.values, name)]
 
     def create_data_dict(self, signal, name):
+        """
+        Create a dictionary with the signal and the label.
+
+        Parameters:
+        -----------
+        signal : np.array
+            The time series data.
+        name : str
+            The name of the time series.
+
+        Returns:
+        --------
+        dict
+            Dictionary with the signal and the label.
+        """    
         return {"signal": signal, "label": name}
 
 
@@ -162,6 +193,23 @@ class SpectralTimeSeries(TimeSeries):
         super().__init__(data, columns=columns, name=name)
 
     def create_data_dict(self, signal, name):
+        """
+        Creates a dictionary with the signal and its label as well as the
+        frequency spectrum and the power spectral density of the signal.
+
+        Parameters:
+        -----------
+        signal : np.array
+            The time series data.
+        name : str
+            The name of the time series.
+        
+        Returns:
+        --------
+        dict
+            Dictionary with the signal, the label, the frequency spectrum
+            and the power spectral density.
+        """
         # FFT (only positive frequencies)
         spectrum = np.fft.rfft(signal)  # Spectrum of positive frequencies
         spectrum_magnitudes = np.abs(spectrum)  # Magnitude of positive frequencies

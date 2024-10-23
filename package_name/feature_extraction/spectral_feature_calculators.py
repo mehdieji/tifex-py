@@ -72,7 +72,7 @@ def calculate_spectral_variance(freqs, magnitudes, **kwargs):
     """
     mean_frequency = calculate_spectral_centroid(freqs, magnitudes)
     spectral_variance = np.sum(((freqs - mean_frequency) ** 2) * magnitudes) / np.sum(magnitudes)
-    return np.array([spectral_variance])
+    return spectral_variance
 
 
 @name("spectral_skewness")

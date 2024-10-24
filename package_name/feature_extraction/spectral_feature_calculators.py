@@ -1332,7 +1332,7 @@ def calculate_spectral_low_frequency_content(freqs, magnitudes, psd, method="fix
     return low_freq_content
 
 @name("spectral_mid_frequency_content")
-def calculate_spectral_mid_frequency_content(freqs, magnitudes, psd, method="fixed", mid_freq_range=(300, 3000), percentile=50 **kwargs):
+def calculate_spectral_mid_frequency_content(freqs, magnitudes, psd, method="fixed", mid_freq_range=(300, 3000), percentile=50, **kwargs):
     """
     Calculate the mid-frequency content in the spectral data by summing the magnitudes 
     in the specified or dynamically determined mid-frequency range.

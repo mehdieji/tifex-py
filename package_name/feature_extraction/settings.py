@@ -79,7 +79,7 @@ class BaseFeatureParams:
 
 class StatisticalFeatureParams(BaseFeatureParams):
     """
-    Parameters for the statistical features.
+    Parameters for statistical feature extraftion.
 
     Attributes:
     ----------

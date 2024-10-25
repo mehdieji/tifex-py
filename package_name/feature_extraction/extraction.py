@@ -11,7 +11,7 @@ from package_name.feature_extraction.data import TimeSeries, SpectralTimeSeries
 
 def calculate_all_features(data, stat_params, spec_params, tf_params, columns=None, signal_name=None, njobs=None):
     """
-    Calculates statisctical, spectral, and time frequency features for the
+    Calculates statistical, spectral, and time frequency features for the
     given dataset.
 
     Parameters:
@@ -45,7 +45,7 @@ def calculate_all_features(data, stat_params, spec_params, tf_params, columns=No
 
 def calculate_statistical_features(data, params=None, window_size=None, columns=None, signal_name=None, njobs=None):
     """
-    Calculates all statistical features for the given dataset.
+    Calculates statistical features for the given dataset.
 
     Parameters:
     ----------
@@ -78,7 +78,7 @@ def calculate_statistical_features(data, params=None, window_size=None, columns=
 
 def calculate_spectral_features(data, params=None, fs=None, columns=None, signal_name=None, njobs=None):
     """
-    Calculates all spectral features for the given dataset.
+    Calculates spectral features for the given dataset.
 
     Parameters:
     ----------
@@ -109,7 +109,7 @@ def calculate_spectral_features(data, params=None, fs=None, columns=None, signal
 
 def calculate_time_frequency_features(data, params=None, window_size=None, columns=None, signal_name=None, njobs=None):
     """
-    Calculates all time frequency features for the given dataset.
+    Calculates time frequency features for the given dataset.
 
     Parameters:
     ----------

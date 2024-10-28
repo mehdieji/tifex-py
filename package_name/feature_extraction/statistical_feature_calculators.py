@@ -2414,7 +2414,26 @@ def calculate_mean_relative_change(signal, **kwargs):
     ----------
         - https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/j.1365-2745.2007.01281.x
     """
-    return np.mean(np.abs(np.diff(signal) / signal[:-1]))
+    epsilon = 1e-10  # Small constant to avoid division by zero
+    
+    if len(signal) < 2: return np.nan
+    
+    denominator = signal[:-1].copy()
+    
+    # Replace zeros and very small values with eps
+    mask = np.abs(denominator) < epsilon
+    denominator[mask] = epsilon * np.sign(denominator[mask])
+    denominator[denominator == 0] = epsilon 
+    
+    diffs = np.diff(signal)
+    ratios = np.abs(diffs / denominator)
+    
+    # Remove infinite or nan values before taking mean
+    valid_ratios = ratios[np.isfinite(ratios)]
+    
+    if len(valid_ratios) == 0: return np.nan
+        
+    return np.mean(valid_ratios)
 
 @name("mean_second_derivative_central")
 def calculate_mean_second_derivative_central(signal, **kwargs):

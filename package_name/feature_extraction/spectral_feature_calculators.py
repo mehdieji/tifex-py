@@ -1216,13 +1216,24 @@ def calculate_spectral_harmonics_to_noise_ratio(signal, **kwargs):
 @name("spectral_noise_to_harmonics_ratio")
 def calculate_spectral_noise_to_harmonics_ratio(signal, **kwargs):
     """
-    References:
+    Calculate the ratio of noise energy to harmonic energy in an audio signal.
+    
+    Parameters
     ----------
-        - McFee, B., Matt McVicar, Daniel Faronbi, Iran Roman, Matan Gover, Stefan Balke, Scott Seyfarth, Ayoub Malek, 
-        Colin Raffel, Vincent Lostanlen, Benjamin van Niekirk, Dana Lee, Frank Cwitkowitz, Frank Zalkow, Oriol Nieto, 
-        Dan Ellis, Jack Mason, Kyungyun Lee, Bea Steers, … Waldir Pimenta. (2024). librosa/librosa: 0.10.2.post1 (0.10.2.post1). 
-        Zenodo. https://doi.org/10.5281/zenodo.11192913
-    """
+    signal : np.ndarray
+        Input audio signal
+        
+    Returns
+    -------
+    signal : np.ndarray
+        Single-element array containing the noise-to-harmonics ratio
+        
+    Reference
+    ----------
+        - Pereira Jotz, G., Cervantes, O., Abrahão, M., Parente Settanni, F. A., & Carrara de Angelis, E. C. (2002). 
+        Noise-to-harmonics ratio as an acoustic measure of voice disorders in boys. Journal of Voice : Official 
+        Journal of the Voice Foundation, 16(1), 28–31. https://doi.org/10.1016/S0892-1997(02)00068-1
+    """        
     harmonic_part = librosa.effects.harmonic(signal)
     noise_part = signal - harmonic_part
     
@@ -1232,9 +1243,11 @@ def calculate_spectral_noise_to_harmonics_ratio(signal, **kwargs):
         
     noise_energy = np.sum(noise_part**2)
     nhr_db = 10 * np.log10(noise_energy / harmonic_energy)
+
     return nhr_db
 
-def calculate_spectral_even_to_odd_harmonic_energy_ratio(signal, fs):
+@name("spectral_even_to_odd_harmonic_energy_ratio")
+def calculate_spectral_even_to_odd_harmonic_energy_ratio(signal, fs, **kwargs):
     """
     Calculate the ratio of spectral energy between even and odd harmonics in the signal.
 

@@ -695,7 +695,16 @@ def calculate_harmonic_ratio(signal, **kwargs):
         This function is based on the harmonic ratio calculation methodology as described in:
             https://www.mathworks.com/help/audio/ref/harmonicratio.html
     """
-    harmonic_ratio = librosa.effects.harmonic(signal).mean()
+    harmonic_component = librosa.effects.harmonic(signal)
+    
+    # Calculate mean absolute amplitudes
+    mean_abs_harmonic = np.mean(np.abs(harmonic_component))
+    mean_abs_signal = np.mean(np.abs(signal))
+    
+    # Avoid division by zero
+    if mean_abs_signal == 0:
+        return np.array([0.0])
+    harmonic_ratio = mean_abs_harmonic / mean_abs_signal
     return harmonic_ratio
 
 @name("fundamental_frequency")
@@ -903,27 +912,94 @@ def calculate_total_harmonic_distortion(signal, fs, harmonics=5, **kwargs):
     return thd
 
 @name("inharmonicity")
-def calculate_inharmonicity(signal, fs, **kwargs):
+def calculate_inharmonicity(signal, freqs, magnitudes, **kwargs):
     """
-    Reference:
-    ----------
-        - McFee, B., Matt McVicar, Daniel Faronbi, Iran Roman, Matan Gover, Stefan Balke, Scott Seyfarth, Ayoub Malek, 
-        Colin Raffel, Vincent Lostanlen, Benjamin van Niekirk, Dana Lee, Frank Cwitkowitz, Frank Zalkow, Oriol Nieto, 
-        Dan Ellis, Jack Mason, Kyungyun Lee, Bea Steers, … Waldir Pimenta. (2024). librosa/librosa: 0.10.2.post1 (0.10.2.post1). 
-        Zenodo. https://doi.org/10.5281/zenodo.11192913
+    Calculate inharmonicity coefficient from audio signal. Inharmonicity is the measure of 
+    how partial tones deviate from harmonics.
+    
+    Parameters:
+    -----------
+    signal : np.ndarray
+        Input audio signal
+    freqs : np.ndarray
+        Array of frequency values corresponding to the magnitudes.
+    magnitudes : np.ndarray
+        Array of magnitude values corresponding to the frequencies.
+        
+    Returns:
+    --------
+    np.ndarray
+        Returns np.nan if calculation fails
+        
+    References:
+    -----------
+        - Rigaud, F., David, B., & Daudet, L. (2013). A parametric model and estimation techniques 
+        for the inharmonicity and tuning of the piano. The Journal of the Acoustical Society of America, 
+        133(5), 3107–3118. https://doi.org/10.1121/1.4799806
     """
     try:
-        f0 = librosa.yin(signal, fmin=librosa.note_to_hz('C1'), fmax=librosa.note_to_hz('C8'))
-        fundamental_freq = np.mean(f0)
-        harmonics = [(i+1) * fundamental_freq for i in range(1, int(fs/(2*fundamental_freq)))]
-        inharmonicity = sum([np.abs(harmonic - fundamental_freq * (i+1)) for i, harmonic in enumerate(harmonics)]) / len(harmonics)
-    except ZeroDivisionError:
+        # First try pYIN
+        f0, voiced_flag, voiced_probs = librosa.pyin(signal, fmin=librosa.note_to_hz('C1'), fmax=librosa.note_to_hz('C8'), frame_length=2048)
+        
+        # If pYIN fails, fallback to YIN
+        if np.all(np.isnan(f0)):
+            f0 = librosa.yin(signal, fmin=librosa.note_to_hz('C1'),fmax=librosa.note_to_hz('C8'))
+        
+        f0_clean = f0[~np.isnan(f0)]
+        
+        if len(f0_clean) == 0:
+            return np.array([np.nan])
+            
+        fundamental_freq = np.median(f0_clean)
+        
+        peak_indices, _ = find_peaks(magnitudes, height=np.max(magnitudes)*0.1)
+        harmonic_freqs = freqs[peak_indices]
+        harmonics = [f for f in harmonic_freqs if np.isclose(f % fundamental_freq, 0, atol=1)]
+        
+        if len(harmonics) == 0:
+            return np.array([np.nan])
+            
+
+        inharmonicity_sum = 0
+        for i, harmonic in enumerate(harmonics):
+            ideal_harmonic = (i+1) * fundamental_freq
+            deviation = np.abs(harmonic - ideal_harmonic) / ideal_harmonic
+            inharmonicity_sum += deviation
+        
+        inharmonicity = inharmonicity_sum / len(harmonics) if harmonics else np.nan
+        
+    except Exception as e:
         inharmonicity = np.nan
     return inharmonicity
 
 @name("tristimulus")
 def calculate_tristimulus(magnitudes, **kwargs):
-    # https://zenodo.org/badge/latestdoi/6309729
+    """
+    Calculate the tristimulus values from the magnitudes of a frequency spectrum.
+
+    Tristimulus values are used in timbral analysis of audio signals, providing a measure of how 
+    energy is distributed across different parts of the frequency spectrum. These are calculated as:
+    - T1: The proportion of energy in the first harmonic.
+    - T2: The proportion of energy in the second harmonic.
+    - T3: The proportion of energy in the remaining harmonics.
+
+    Parameters:
+    ----------
+    magnitudes : np.ndarray
+        Array of magnitude values corresponding to the frequencies.
+
+    Returns:
+    -------
+    np.array
+        A numpy array containing the three tristimulus values [T1, T2, T3].
+        If the input `magnitudes` array has fewer than 3 elements, the function returns [np.nan, np.nan, np.nan].
+        
+    References:
+    -----------
+        - Du, X., Teng, G., Wang, C., Carpentier, L., & Norton, T. (2021). A tristimulus-formant model for automatic 
+        recognition of call types of laying hens. Computers and Electronics in Agriculture, 187, 106221. 
+        https://doi.org/10.1016/J.COMPAG.2021.106221
+    """
     if len(magnitudes) < 3:
         return np.array([np.nan, np.nan, np.nan])
     t1 = magnitudes[0] / np.sum(magnitudes)
@@ -1062,17 +1138,80 @@ def calculate_spectral_kurtosis_ratio(freqs, magnitudes, reference_value=1.0, **
 @name("spectral_tonal_power_ratio")
 def calculate_spectral_tonal_power_ratio(signal, **kwargs):
     """
-    References:
+    Calculate the Spectral Tonal Power Ratio (STPR) of a signal.
+
+    The Spectral Tonal Power Ratio is a measure of the proportion of harmonic (or tonal) content 
+    in a signal relative to the total power. It provides insight into the harmonic structure of the signal, 
+    which is useful in applications such as audio analysis, music processing, and signal classification.
+
+    Parameters:
+    ----------
+    signal : array-like
+        The input audio signal in the time domain. This should be a one-dimensional array representing
+        the signal waveform.
+
+    Returns:
+    -------
+    np.array
+        A NumPy array containing the Spectral Tonal Power Ratio (STPR) as a single element.
+        If the total power of the signal is zero (i.e., an all-zero or silent signal), the function returns [0.0].
+
+    Reference:
     ----------
         - McFee, B., Matt McVicar, Daniel Faronbi, Iran Roman, Matan Gover, Stefan Balke, Scott Seyfarth, Ayoub Malek, 
         Colin Raffel, Vincent Lostanlen, Benjamin van Niekirk, Dana Lee, Frank Cwitkowitz, Frank Zalkow, Oriol Nieto, 
         Dan Ellis, Jack Mason, Kyungyun Lee, Bea Steers, … Waldir Pimenta. (2024). librosa/librosa: 0.10.2.post1 (0.10.2.post1). 
         Zenodo. https://doi.org/10.5281/zenodo.11192913
     """
-    harmonic_power = np.sum(librosa.effects.harmonic(signal)**2)
     total_power = np.sum(signal**2)
+    if total_power == 0:
+        return np.array([0.0])
+        
+    harmonic_power = np.sum(librosa.effects.harmonic(signal)**2) 
     tonal_power_ratio = harmonic_power / total_power
     return tonal_power_ratio
+
+@name("spectral_harmonics_to_noise_ratio")
+def calculate_spectral_harmonics_to_noise_ratio(signal, **kwargs):
+    """
+    Calculate the ratio of harmonic energy to noise energy in an audio signal.
+    
+    Parameters
+    ----------
+    signal : np.ndarray
+        Input audio signal. Should be a 1D numpy array.
+    
+    Returns
+    -------
+    np.ndarray
+        Array containing the harmonics-to-noise ratio(s).
+        Returns a single value for the entire signal by default
+        
+    Notes
+    -----
+    The Harmonics-to-Noise Ratio (HNR) is calculated as:
+    HNR = 10 * log10(harmonic_energy / noise_energy)
+    
+    A higher HNR indicates a more harmonic signal (e.g., clean speech, musical tones)
+    while a lower HNR indicates more noise content.
+    
+    References
+    ----------
+        - Boersma, P. (n.d.). Accurate Short-Term Analysis Of The Fundamental Frequency And The 
+        Harmonics-To-Noise Ratio Of A Sampled Sound. https://www.researchgate.net/publication/2326829
+    """    
+    harmonic_part = librosa.effects.harmonic(signal)
+    noise_part = signal - harmonic_part
+        
+    harmonic_energy = np.sum(harmonic_part**2)
+    noise_energy = np.sum(noise_part**2)
+        
+    if noise_energy == 0:
+        return np.array([100.0])
+
+    hnr_db = 10 * np.log10(harmonic_energy / noise_energy)
+        
+    return hnr_db
 
 @name("spectral_noise_to_harmonics_ratio")
 def calculate_spectral_noise_to_harmonics_ratio(signal, **kwargs):
@@ -1086,21 +1225,57 @@ def calculate_spectral_noise_to_harmonics_ratio(signal, **kwargs):
     """
     harmonic_part = librosa.effects.harmonic(signal)
     noise_part = signal - harmonic_part
-    noise_energy = np.sum(noise_part**2)
+    
     harmonic_energy = np.sum(harmonic_part**2)
-    noise_to_harmonics_ratio = noise_energy / harmonic_energy
-    return noise_to_harmonics_ratio
+    if harmonic_energy == 0:
+        return np.array([float('inf')])  
+        
+    noise_energy = np.sum(noise_part**2)
+    nhr_db = 10 * np.log10(noise_energy / harmonic_energy)
+    return nhr_db
 
-    #def calculate_spectral_even_to_odd_harmonic_energy_ratio(signal, **kwargs):
-        # https://zenodo.org/badge/latestdoi/6309729
-    #     f0 = librosa.yin(signal, fmin=librosa.note_to_hz('C1'), fmax=librosa.note_to_hz('C8'))
-    #     fundamental_freq = np.mean(f0)
-    #     even_harmonics = [(2 * i + 2) * fundamental_freq for i in range(int(fs / (2 * fundamental_freq)))]
-    #     odd_harmonics = [(2 * i + 1) * fundamental_freq for i in range(int(fs / (2 * fundamental_freq)))]
-    #     even_energy = sum([np.sum(np.abs(np.fft.rfft(signal * np.sin(2 * np.pi * harmonic * np.arange(len(signal)) / self.fs)))) for harmonic in even_harmonics])
-    #     odd_energy = sum([np.sum(np.abs(np.fft.rfft(signal * np.sin(2 * np.pi * harmonic * np.arange(len(signal)) / self.fs)))) for harmonic in odd_harmonics])
-    #     even_to_odd_ratio = even_energy / odd_energy
-    #     return np.array([even_to_odd_ratio])
+def calculate_spectral_even_to_odd_harmonic_energy_ratio(signal, fs):
+    """
+    Calculate the ratio of spectral energy between even and odd harmonics in the signal.
+
+    The even-to-odd harmonic energy ratio measures how the energy is distributed between 
+    even and odd harmonics in a signal, which is important in the timbral analysis of audio.
+    A high ratio indicates more energy in the even harmonics, while a low ratio indicates more 
+    energy in the odd harmonics.
+
+    Parameters:
+    ----------
+    signal : array-like
+        The input audio signal in the time domain. Should be a one-dimensional array.
+    
+    fs : int
+        The sampling frequency of the signal, in Hz.
+
+    Returns:
+    -------
+    np.array
+        A NumPy array containing the ratio of the energy in the even harmonics to the energy 
+        in the odd harmonics. If either energy is zero, the function returns np.inf or 0 accordingly.
+
+    Reference:
+    ----------
+    Zenodo citation: https://zenodo.org/badge/latestdoi/6309729
+    """
+    # Estimate the fundamental frequency (f0)
+    f0 = librosa.yin(signal, fmin=librosa.note_to_hz('C1'), fmax=librosa.note_to_hz('C8'))
+    fundamental_freq = np.median(f0)
+
+    # Generate lists of even and odd harmonics
+    even_harmonics = [(2 * i + 2) * fundamental_freq for i in range(int(fs / (2 * fundamental_freq)))]
+    odd_harmonics = [(2 * i + 1) * fundamental_freq for i in range(int(fs / (2 * fundamental_freq)))]
+
+    # Calculate the energy of even and odd harmonics
+    even_energy = sum([np.sum(np.abs(np.fft.rfft(signal * np.sin(2 * np.pi * harmonic * np.arange(len(signal)) / fs)))) for harmonic in even_harmonics])
+    odd_energy = sum([np.sum(np.abs(np.fft.rfft(signal * np.sin(2 * np.pi * harmonic * np.arange(len(signal)) / fs)))) for harmonic in odd_harmonics])
+    even_to_odd_ratio = 10 * np.log10(even_energy / odd_energy) if odd_energy != 0 else np.inf  # Avoid division by zero
+
+    return even_to_odd_ratio
+
 
 @name("spectral_strongest_frequency_phase")
 def calculate_spectral_strongest_frequency_phase(spectrum, **kwargs):

@@ -27,7 +27,8 @@ dependencies = [
     "scipy",
     "statsmodels",
     "numpy",
-    "librosa"
+    "librosa",
+    "PyWavelets"
 ]
 
 [project.urls]

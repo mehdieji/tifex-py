@@ -8,6 +8,7 @@ from scipy.signal import detrend, argrelextrema, find_peaks
 from itertools import groupby
 from scipy.ndimage.filters import convolve
 from scipy import stats
+import warnings
 
 from package_name.utils.decorators import name, exclude
 
@@ -54,9 +55,16 @@ def calculate_geometric_mean(signal, **kwargs):
     ----------
         - Chaddad, A., & M.D., R. R. C. (2014). Statistical feature selection for enhanced detection of brain tumor. 
         Https://Doi.Org/10.1117/12.2062143, 9217, 260–267. https://doi.org/10.1117/12.2062143
-    """
-    signal = signal[signal > 0]
-    return gmean(signal)
+    """  
+    positive_signal = signal[signal > 0]
+    
+    if len(positive_signal) == 0:
+        return np.nan
+        
+    try:
+        return gmean(positive_signal)
+    except Exception as e:
+        return np.nan
 
 @name("harmonic_mean")
 def calculate_harmonic_mean(signal, **kwargs):
@@ -80,8 +88,14 @@ def calculate_harmonic_mean(signal, **kwargs):
         Https://Doi.Org/10.1117/12.2062143, 9217, 260–267. https://doi.org/10.1117/12.2062143
     """
     # Filter out non-positive values
-    signal = signal[signal > 0]
-    return hmean(signal)
+    positive_signal = signal[signal > 0]
+    
+    if len(positive_signal) == 0:
+        return np.nan
+    try:
+        return hmean(positive_signal)
+    except Exception as e:
+        return np.nan
 
 @name("trimmed_mean_{}", "trimmed_mean_thresholds")
 def calculate_trimmed_mean(signal, trimmed_mean_thresholds, **kwargs):
@@ -2272,13 +2286,10 @@ def calculate_log_return(signal, **kwargs):
     References:
     ----------
         - Based on concepts from: https://pypi.org/project/stockstats/
-    """
-    # Ensure the signal is a numpy array
-    signal = np.asarray(signal)
-    
+    """    
     # Check if the initial or final value is non-positive
     if signal[0] <= 0 or signal[-1] <= 0:
-        return np.array([float('NaN')])
+        return np.nan
     
     # Calculate and return the log 
     log_return = np.log(signal[-1] / signal[0])

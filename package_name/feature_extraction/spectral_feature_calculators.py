@@ -1722,10 +1722,25 @@ def calculate_spectral_valley_width_mode(magnitudes, **kwargs):
     """
     valleys, _ = find_peaks(-magnitudes)
     if len(valleys) < 2:
-        return np.array([np.nan])
+        return np.nan
+    
     valley_widths = np.diff(valleys)
+    if len(valley_widths) == 0:
+        return np.nan
+    elif len(valley_widths) == 1:
+        return float(valley_widths[0])
+    
+    
     valley_width_mode = mode(valley_widths)[0]
-    return valley_width_mode[0]
+    
+    try:
+        valley_width_mode = mode(valley_widths)[0]
+        if hasattr(valley_width_mode, 'mode'):
+            return float(valley_width_mode.mode[0])
+        else:
+            return float(valley_width_mode[0][0])
+    except Exception as e:
+        return np.nan
 
 @name("spectral_valley_width_std")
 def calculate_spectral_valley_width_std(magnitudes, **kwargs):

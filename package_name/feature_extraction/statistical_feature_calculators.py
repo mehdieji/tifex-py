@@ -2286,13 +2286,10 @@ def calculate_log_return(signal, **kwargs):
     References:
     ----------
         - Based on concepts from: https://pypi.org/project/stockstats/
-    """
-    # Ensure the signal is a numpy array
-    signal = np.asarray(signal)
-    
+    """    
     # Check if the initial or final value is non-positive
     if signal[0] <= 0 or signal[-1] <= 0:
-        return np.array([float('NaN')])
+        return np.nan
     
     # Calculate and return the log 
     log_return = np.log(signal[-1] / signal[0])

@@ -558,6 +558,36 @@ def calculate_variance_abs(signal, **kwargs):
     """
     return np.var(np.abs(signal))
 
+@name("variance_larger_than_standard_deviation")
+def calculate_variance_larger_than_standard_deviation(signal,**kwargs):
+    """
+    Determine if the variance of a signal is greater than its standard deviation.
+
+    Parameters:
+    ----------
+    signal : np.array
+        The input time series.
+    
+    Returns:
+    -------
+    bool
+        True if the variance of `signal` is greater than its standard deviation, 
+        False otherwise.
+    
+    Notes:
+    -----
+    Since variance is the square of the standard deviation, the result will always 
+    be True for non-zero signals, as long as the standard deviation is a positive 
+    non-zero number.
+    
+    References:
+    -----------
+        - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
+        basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
+        https://doi.org/10.1016/J.NEUCOM.2018.03.067
+    """
+    return np.var(signal) > np.std(signal)
+
 @name("iqr")
 def calculate_interquartile_range(signal, **kwargs):
     """
@@ -1793,7 +1823,7 @@ def calculate_count_below_mean(signal, **kwargs):
 @name("count_below")
 def calculate_count_below(signal, count_below_or_above_x, **kwargs):
     """
-    Calculate the count of values below scalar x: default is 0
+    Calculate the percentage of signal that is lower than the specified value. 
     
     Parameters:
     -----------
@@ -1813,12 +1843,12 @@ def calculate_count_below(signal, count_below_or_above_x, **kwargs):
         basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
         https://doi.org/10.1016/J.NEUCOM.2018.03.067
     """
-    return np.sum(signal < count_below_or_above_x)
+    return np.sum(signal <= count_below_or_above_x) / len(signal)
 
 @name("count_above")
 def calculate_count_above(signal, count_below_or_above_x, **kwargs):
     """
-    Calculate the count of values above scalar x: default is 0
+    Calculate the percentage of signal that is above than the specified value
     
     Parameters:
     -----------
@@ -1838,7 +1868,41 @@ def calculate_count_above(signal, count_below_or_above_x, **kwargs):
         basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
         https://doi.org/10.1016/J.NEUCOM.2018.03.067
     """
-    return np.sum(signal > count_below_or_above_x)
+    return np.sum(signal >= count_below_or_above_x) / len(sum)
+
+@name("value_count")
+def calculate_value_count(signal, value):
+    """
+    Calculate the count of occurrences of a specified value in a signal.
+
+    Parameters:
+    ----------
+    signal : array-like
+        The input time series data.
+    
+    value : float or int or NaN
+        The value to count within the signal. If `value` is NaN, the function will
+        count the number of NaN entries in `signal`.
+
+    Returns:
+    -------
+    int
+        The count of occurrences of `value` in `signal`. If `value` is NaN, it
+        returns the count of NaN values.
+        
+    References:
+    -----------
+        - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
+        basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
+        https://doi.org/10.1016/J.NEUCOM.2018.03.067
+    """
+    if not isinstance(signal, np.ndarray):
+        signal = np.asarray(signal)
+
+    if np.isnan(value):
+        return np.isnan(signal).sum()
+    else:
+        return signal[signal == value].size
 
 # Also not suitable for calculate all
 @exclude()

@@ -308,8 +308,8 @@ Number| Feature | Description|Added yet?|
 27|partial_autocorrelation|Calculates the value of the partial autocorrelation function at the given lag.
 28|query_similarity_count|This feature calculator accepts an input query subsequence parameter, compares the query (under z-normalized Euclidean distance) to all subsequences within the time series, and returns a count of the number of times the query was found in the time series (within some predefined maximum distance threshold).
 29|ratio_value_number_to_time_series_length|Returns a factor which is 1 if all values in the time series occur only once, and below one if this is not the case.
-30|value_count|Count occurrences of value in time series x.
-31|variance_larger_than_standard_deviation|Is variance higher than the standard deviation?
+30|value_count|Count occurrences of value in time series x. | ✔️
+31|variance_larger_than_standard_deviation|Is variance higher than the standard deviation?|✔️
 
 
 

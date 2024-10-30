@@ -1903,7 +1903,31 @@ def calculate_spectral_range(freqs, **kwargs):
 
 @name("spectral_trimmed_mean")
 def calculate_spectral_trimmed_mean(freqs, magnitudes, trim_percent=0.1, **kwargs):
-    # https://doi.org/10.1016/B978-0-12-811153-6.00003-8
+    """
+    Calculate the spectral trimmed mean of a set of frequencies.
+    
+    The trimmed mean is calculated by sorting the magnitudes, removing the top and bottom 
+    `trim_percent` of the values, and then taking the mean of the remaining frequencies.
+    
+    Parameters:
+    -----------
+    freqs : array-like
+        The input frequencies.
+    magnitudes : array-like
+        The corresponding magnitudes of the frequencies.
+    trim_percent : float, optional (default=0.1)
+        The percentage of the top and bottom magnitudes to trim.
+        
+    Returns:
+    --------
+    float
+        The trimmed mean of the input frequencies.
+        
+    References:
+    ----------
+        - Galar, D., & Kumar, U. (2017). Preprocessing and Features. EMaintenance, 129–177. 
+        https://doi.org/10.1016/B978-0-12-811153-6.00003-8
+    """
     sorted_indices = np.argsort(magnitudes)
     lower_limit = int(trim_percent * len(magnitudes))
     upper_limit = int((1 - trim_percent) * len(magnitudes))

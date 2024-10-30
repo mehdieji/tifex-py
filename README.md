@@ -281,7 +281,7 @@ Number| Feature | Description|Added yet?|
 | -------- | ------- | ------- | -------|
 1|absolute sum of changes||✔️|
 2|ar_coefficient(x, param)| This feature calculator fits the unconditional maximum likelihood of an autoregressive AR(k) process|
-3|benford correlation|||
+3|benford correlation||✔️|
 4|c3| uses c3 statistics to measure non-linearity in the time series
 5|count_above(x, t)|Returns the percentage of values in x that are higher than t |✔️|
 6|count_below(x, t)| Returns the percentage of values in x that are lower than t|✔️|

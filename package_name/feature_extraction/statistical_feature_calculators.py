@@ -3446,3 +3446,43 @@ def calculate_conditional_entropy(signal, **kwargs):
     
     """
     pass
+
+@name("benford_correlation")
+def calculate_benford_correlation(signal, **kwargs):
+    """
+    Compute the correlation between the first digit distribution of the input data
+    and the Benford's law distribution.
+    
+    Parameters:
+    -----------
+    signal : array-like
+        The input time series.
+    
+    Returns:
+    --------
+    float: Correlation coefficient between the data distribution and Benford's law distribution
+    
+    References:
+    -----------
+        - Benford, F. (1938). The Law of Anomalous Numbers (Vol. 78, Issue 4).
+        - Newcomb, S. (1881). Note on the Frequency of Use of the Different Digits in Natural Numbers. 
+        American Journal of Mathematics, 4(1/4), 39. https://doi.org/10.2307/2369148
+        - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
+        basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
+        https://doi.org/10.1016/J.NEUCOM.2018.03.067
+    """    
+    # Handle NaN values
+    signal = np.nan_to_num(signal)
+    
+    # Get the first digit of the absolute values of the data
+    first_digit = np.array([int(str(np.format_float_scientific(i))[:1]) for i in np.abs(signal)])
+    
+    # Compute the Benford's law distribution
+    benford_distribution = np.array([np.log10(1 + 1 / n) for n in range(1, 10)])
+    
+    # Compute the data distribution
+    data_distribution = np.array([(first_digit == n).mean() for n in range(1, 10)])
+    
+    # Compute the correlation coefficient
+    return np.corrcoef(benford_distribution, data_distribution)[0, 1]
+

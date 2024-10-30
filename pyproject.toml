@@ -28,7 +28,8 @@ dependencies = [
     "statsmodels",
     "numpy",
     "librosa",
-    "PyWavelets"
+    "PyWavelets",
+    "PyYAML"
 ]
 
 [project.urls]

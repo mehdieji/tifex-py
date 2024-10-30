@@ -281,7 +281,7 @@ Number| Feature | Description|Added yet?|
 | -------- | ------- | ------- | -------|
 1|absolute sum of changes||✔️|
 2|ar_coefficient(x, param)| This feature calculator fits the unconditional maximum likelihood of an autoregressive AR(k) process|
-3|benford correlation|||
+3|benford correlation||✔️|
 4|c3| uses c3 statistics to measure non-linearity in the time series
 5|count_above(x, t)|Returns the percentage of values in x that are higher than t |✔️|
 6|count_below(x, t)| Returns the percentage of values in x that are lower than t|✔️|
@@ -308,8 +308,8 @@ Number| Feature | Description|Added yet?|
 27|partial_autocorrelation|Calculates the value of the partial autocorrelation function at the given lag.
 28|query_similarity_count|This feature calculator accepts an input query subsequence parameter, compares the query (under z-normalized Euclidean distance) to all subsequences within the time series, and returns a count of the number of times the query was found in the time series (within some predefined maximum distance threshold).
 29|ratio_value_number_to_time_series_length|Returns a factor which is 1 if all values in the time series occur only once, and below one if this is not the case.
-30|value_count|Count occurrences of value in time series x.
-31|variance_larger_than_standard_deviation|Is variance higher than the standard deviation?
+30|value_count|Count occurrences of value in time series x. | ✔️
+31|variance_larger_than_standard_deviation|Is variance higher than the standard deviation?|✔️
 
 
 

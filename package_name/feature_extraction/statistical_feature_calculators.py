@@ -840,8 +840,8 @@ def calculate_differential_entropy(signal, **kwargs):
     probability = probability[probability > 0]
     return entropy(probability)
 
-@name("approximate_entropy")
-def calculate_approximate_entropy(signal, **kwargs):
+@name("approximate_entropy_{}", "r")
+def calculate_approximate_entropy(signal, m, r, **kwargs):
     """
     Calculate the approximate entropy of a signal.
 
@@ -853,6 +853,10 @@ def calculate_approximate_entropy(signal, **kwargs):
     -----------
     signal : array-like
         The input time series data for which differential entropy is to be calculated.
+    m: int
+        Length of compared run of data
+    r: list of floats
+        Filtering levels
 
     Returns:
     --------
@@ -866,17 +870,22 @@ def calculate_approximate_entropy(signal, **kwargs):
         - Kumar, Y., Dewal, M. L., & Anand, R. S. (2012). Features extraction of EEG signals using approximate and sample entropy. 
         2012 IEEE Students’ Conference on Electrical, Electronics and Computer Science: Innovation for Humanity, SCEECS 2012. 
         https://doi.org/10.1109/SCEECS.2012.6184830
+        - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
+        basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
+        https://doi.org/10.1016/J.NEUCOM.2018.03.067
     """
     N = len(signal)
-    m = 2
-    r = 0.2 * np.std(signal)  # r known as the tolerance is typically set as a fraction of the standard deviation
-
-    def _phi(m):
-        X = np.array([signal[i:i + m] for i in range(N - m + 1)])
-        C = np.sum(np.max(np.abs(X[:, None] - X[None, :]), axis=2) <= r, axis=0)
-        return np.sum(np.log(C / (N - m + 1))) / (N - m + 1)
-
-    return _phi(m) - _phi(m + 1)
+    feats = []
+    def _phi(m, r):
+            X = np.array([signal[i:i + m] for i in range(N - m + 1)])
+            C = np.sum(np.max(np.abs(X[:, None] - X[None, :]), axis=2) <= r, axis=0)
+            return np.sum(np.log(C / (N - m + 1))) / (N - m + 1)
+        
+    for r in r:
+        r *= np.std(signal)  # r known as the tolerance is typically set as a fraction of the standard deviation
+        feats.append(_phi(m, r) - _phi(m + 1, r))
+        
+    return feats
 
 @name("renyi_entropy")
 def calculate_renyi_entropy(signal, window_size, renyi_alpha_parameter, **kwargs):
@@ -1112,7 +1121,36 @@ def calculate_permutation_entropy(signal, window_size, permutation_entropy_order
 
 @name("binned_entropy")
 def calculate_binned_entropy(signal, bins, **kwargs):
-    hist = calculate_histogram_bin_frequencies(signal, bins)
+    """
+    Calculate the entropy of a signal based on the distribution of its values across specified bins.
+    
+    Parameters:
+    ----------
+    signal : array-like
+        The input time series data.
+        
+    bins : int or sequence of scalars
+        If `bins` is an integer, it defines the number of equal-width bins in the histogram.
+        If `bins` is a sequence, it defines the bin edges, including the rightmost edge.
+    
+    Returns:
+    -------
+    float
+        The entropy of the binned values in `signal`. 
+        
+    Notes:
+    ------
+    Binned entropy provides a measure of the randomness of values in `signal` over the specified bins.
+    Higher entropy indicates a more uniform distribution across bins, while lower entropy indicates 
+    that values are concentrated in fewer bins.
+        
+    References:
+    -----------
+        - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
+        basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
+        https://doi.org/10.1016/J.NEUCOM.2018.03.067
+    """
+    hist, _ = np.histogram(signal, bins)
     probs = hist / len(signal)
     probs[probs == 0] = 1.0
     return -np.sum(probs * np.log(probs))
@@ -1868,10 +1906,10 @@ def calculate_count_above(signal, count_below_or_above_x, **kwargs):
         basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
         https://doi.org/10.1016/J.NEUCOM.2018.03.067
     """
-    return np.sum(signal >= count_below_or_above_x) / len(sum)
+    return np.sum(signal >= count_below_or_above_x) / len(signal)
 
-@name("value_count")
-def calculate_value_count(signal, value):
+@name("value_count_{}", "values")
+def calculate_value_count(signal, values, **kwargs):
     """
     Calculate the count of occurrences of a specified value in a signal.
 
@@ -1880,14 +1918,14 @@ def calculate_value_count(signal, value):
     signal : array-like
         The input time series data.
     
-    value : float or int or NaN
+    values :  list of float or int or NaN
         The value to count within the signal. If `value` is NaN, the function will
         count the number of NaN entries in `signal`.
 
     Returns:
     -------
-    int
-        The count of occurrences of `value` in `signal`. If `value` is NaN, it
+    lists of int
+        The counts of occurrences of `value` in `signal`. If `value` is NaN, it
         returns the count of NaN values.
         
     References:
@@ -1896,13 +1934,15 @@ def calculate_value_count(signal, value):
         basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
         https://doi.org/10.1016/J.NEUCOM.2018.03.067
     """
-    if not isinstance(signal, np.ndarray):
-        signal = np.asarray(signal)
+    signal = np.asarray(signal)
 
-    if np.isnan(value):
-        return np.isnan(signal).sum()
-    else:
-        return signal[signal == value].size
+    feats = []
+    for value in values:
+        if np.isnan(value):
+            return np.isnan(signal).sum()
+        else:
+            feats.append(signal[signal == value].size)
+    return feats
 
 # Also not suitable for calculate all
 @exclude()
@@ -3534,7 +3574,8 @@ def calculate_benford_correlation(signal, **kwargs):
         - Christ, M., Braun, N., Neuffer, J., & Kempa-Liehr, A. W. (2018). Time Series FeatuRe Extraction on 
         basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
         https://doi.org/10.1016/J.NEUCOM.2018.03.067
-    """    
+    """   
+    signal = np.asarray(signal) 
     # Handle NaN values
     signal = np.nan_to_num(signal)
     
@@ -3546,7 +3587,8 @@ def calculate_benford_correlation(signal, **kwargs):
     
     # Compute the data distribution
     data_distribution = np.array([(first_digit == n).mean() for n in range(1, 10)])
-    
-    # Compute the correlation coefficient
+
     return np.corrcoef(benford_distribution, data_distribution)[0, 1]
+
+
 

@@ -79,7 +79,7 @@ class BaseFeatureParams:
 
 class StatisticalFeatureParams(BaseFeatureParams):
     """
-    Parameters for statistical feature extraftion.
+    Parameters for statistical feature extraction.
 
     Attributes:
     ----------
@@ -138,7 +138,13 @@ class StatisticalFeatureParams(BaseFeatureParams):
     r_sigma: list, optional
         STD multiplier. The default is [0.1, 0.2, 0.3, 0.4, 0.5].
     lz_bins : int, optional
-        Bins for the Lempel-Ziv. The default is 10.                                                                                                                                                                                                                                                    
+        Bins for the Lempel-Ziv. The default is 10. 
+    values: list
+        Values for which their number of occurances will be calculated. The default is [0,1,-1]                                                                                                                                                                                                                                                  
+    m: int
+        Length of compared run of data for approximate entropy
+    r: list 
+        Filtering levels for approximate entropy
     """
     def __init__(self,
                  window_size,
@@ -169,6 +175,9 @@ class StatisticalFeatureParams(BaseFeatureParams):
                  q=[0.1, 0.2, 0.25, 0.3, 0.4, 0.6, 0.7, 0.75, 0.8, 0.9],
                  r_sigma=[1, 2],
                  lz_bins=10,
+                 values=[0,1,-1],
+                 m=2,
+                 r=[0.1, 0.2, 0.3, 0.5, 0.7, 0.9],
                  calculators=None
                 ):
         super().__init__(calculators)
@@ -196,6 +205,9 @@ class StatisticalFeatureParams(BaseFeatureParams):
         self.q = q
         self.r_sigma = r_sigma
         self.lz_bins = lz_bins
+        self.values= values
+        self.m= m
+        self.r=r
 
         if n_lags_auto_correlation is None:
             self.n_lags_auto_correlation = int(min(10 * np.log10(window_size), window_size - 1))

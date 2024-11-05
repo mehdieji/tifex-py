@@ -1,5 +1,5 @@
 from package_name.feature_extraction.data import SignalFeatures
-import package_name.feature_extraction as fe
+# import package_name.feature_extraction as fe
 
 # Description: Utility functions for the package.
 
@@ -44,11 +44,14 @@ def get_module(module_str):
     """
     module = None
     if module_str=="statistical":
-        module = fe.statistical_feature_calculators
+        from package_name.feature_extraction import statistical_feature_calculators
+        module = statistical_feature_calculators
     elif module_str=="spectral":
-        module = fe.spectral_feature_calculators
+        from package_name.feature_extraction import spectral_feature_calculators
+        module = spectral_feature_calculators
     elif module_str=="time_frequency":
-        module = fe.time_frequency_feature_calculators
+        from package_name.feature_extraction import time_frequency_feature_calculators
+        module = time_frequency_feature_calculators
     return module
 
 def extract_features(series, module, param_dict):
@@ -75,6 +78,7 @@ def extract_features(series, module, param_dict):
     for calculate in calculators:
         try:
             feature = calculate(**series, **param_dict)
+            print(getattr(calculate, "names"))
         except Exception as e:
             name = getattr(calculate, "names")
             print(f"Error calculating feature(s) {name}: {e}")

@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import multiprocessing as mp
 from functools import partial
@@ -29,7 +30,7 @@ def calculate_all_features(data, stat_params, spec_params, tf_params, columns=No
     signal_name: str
         Name to prepend to the column names.
     njobs: int
-        Number of worker processes to use. If None, the number returned by
+        Number of worker processes to use. If None or -1, the number returned by
         os.cpu_count() is used.
     
     Returns:
@@ -60,7 +61,7 @@ def calculate_statistical_features(data, params=None, window_size=None, columns=
     signal_name: str
         Name to prepend to the column names.
     njobs: int
-        Number of worker processes to use. If None, the number returned by
+        Number of worker processes to use. If None or -1, the number returned by
         os.cpu_count() is used.
 
     Returns:
@@ -93,7 +94,7 @@ def calculate_spectral_features(data, params=None, fs=None, columns=None, signal
     signal_name: str
         Name to prepend to the column names.
     njobs: int
-        Number of worker processes to use. If None, the number returned by
+        Number of worker processes to use. If None or -1, the number returned by
         os.cpu_count() is used.
 
     Returns:
@@ -124,7 +125,7 @@ def calculate_time_frequency_features(data, params=None, window_size=None, colum
     signal_name: str
         Name to prepend to the column names.
     njobs: int
-        Number of worker processes to use. If None, the number returned by
+        Number of worker processes to use. If None, the  or -1number returned by
         os.cpu_count() is used.
 
     Returns:
@@ -152,7 +153,7 @@ def calculate_ts_features(time_series, module, params, njobs=None):
     params: BaseFeatureParams
         Parameters to use in feature extraction.
     njobs: int
-        Number of worker processes to use. If None, the number returned by
+        Number of worker processes to use. If None or -1, the number returned by
         os.cpu_count() is used.
     
     Returns:
@@ -160,6 +161,9 @@ def calculate_ts_features(time_series, module, params, njobs=None):
     features_df: pandas.DataFrame
         DataFrame of calculated features.
     """
+    if njobs is None or njobs == -1:
+        njobs = os.cpu_count()
+
     features = []
     index = []
 

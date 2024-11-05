@@ -78,7 +78,6 @@ def extract_features(series, module, param_dict):
     for calculate in calculators:
         try:
             feature = calculate(**series, **param_dict)
-            print(getattr(calculate, "names"))
         except Exception as e:
             name = getattr(calculate, "names")
             print(f"Error calculating feature(s) {name}: {e}")

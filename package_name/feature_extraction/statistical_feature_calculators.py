@@ -1751,7 +1751,7 @@ def calculate_area_under_squared_curve(signal, **kwargs):
     """
     return simpson(signal**2, dx=1)
 
-@name("autoregressive_model_coefficients")
+@name("autoregressive_model_coefficients_{}", "ar_model_coefficients_order")
 def calculate_autoregressive_model_coefficients(signal, ar_model_coefficients_order, **kwargs):
     """
     Calculates the autoregressive model coefficients of the time series
@@ -1991,7 +1991,7 @@ def calculate_cumulative_sum(signal, **kwargs):
     """
     return np.cumsum(signal)[-1]
 
-@name("energy_ratio_by_chunks")
+@name("energy_ratio_by_chunks_{}", "energy_ratio_chunks")
 def calculate_energy_ratio_by_chunks(signal, energy_ratio_chunks, **kwargs):
     """
     Calculate the energy ratio of a signal by dividing it into chunks.
@@ -2219,7 +2219,7 @@ def calculate_fisher_information(signal, **kwargs):
     return information
 
 # TODO: Allow integer series for naming or choose to put all in one
-@name("histogram_bin_frequencies")
+@name("histogram_bin_frequencies_{}", "hist_bins")
 def calculate_histogram_bin_frequencies(signal, hist_bins, **kwargs):
     """
     Calculate the frequency of values in a signal within specified histogram bins.

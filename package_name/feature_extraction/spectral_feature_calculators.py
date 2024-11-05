@@ -432,9 +432,9 @@ def calculate_spectral_entropy(psd, **kwargs):
         spectral_entropy = -np.sum(psd_norm * np.log2(psd_norm))
     except:
         spectral_entropy = np.nan
-    return np.array([spectral_entropy])
+    return spectral_entropy
 
-@name("spectral_contrast")
+@name("spectral_contrast_band_{}", "f_bands")
 def calculate_spectral_contrast(freqs_psd, psd, f_bands, **kwargs):
     """
     Calculate the spectral contrast of a Power Spectral Density (PSD) array.
@@ -948,7 +948,7 @@ def calculate_inharmonicity(signal, freqs, magnitudes, **kwargs):
         f0_clean = f0[~np.isnan(f0)]
         
         if len(f0_clean) == 0:
-            return np.array([np.nan])
+            return np.nan
             
         fundamental_freq = np.median(f0_clean)
         
@@ -957,7 +957,7 @@ def calculate_inharmonicity(signal, freqs, magnitudes, **kwargs):
         harmonics = [f for f in harmonic_freqs if np.isclose(f % fundamental_freq, 0, atol=1)]
         
         if len(harmonics) == 0:
-            return np.array([np.nan])
+            return np.nan
             
 
         inharmonicity_sum = 0
@@ -972,7 +972,7 @@ def calculate_inharmonicity(signal, freqs, magnitudes, **kwargs):
         inharmonicity = np.nan
     return inharmonicity
 
-@name("tristimulus")
+@name(["tristimulus_T1", "tristimulus_T2", "tristimulus_T3"])
 def calculate_tristimulus(magnitudes, **kwargs):
     """
     Calculate the tristimulus values from the magnitudes of a frequency spectrum.
@@ -1597,7 +1597,7 @@ def calculate_spectral_peak_to_valley_ratio(magnitudes, **kwargs):
     peaks, _ = find_peaks(magnitudes)
     valleys, _ = find_peaks(-magnitudes)
     if len(peaks) == 0 or len(valleys) == 0:
-        return np.array([np.nan])
+        return np.nan
     
     peak_to_valley_ratio = np.max(magnitudes[peaks]) / np.min(magnitudes[valleys])
     return peak_to_valley_ratio
@@ -1629,7 +1629,7 @@ def calculate_spectral_valley_depth_mean(magnitudes, **kwargs):
     """
     valleys, _ = find_peaks(-magnitudes)
     if len(valleys) == 0:
-        return np.array([np.nan])
+        return np.nan
     valley_depth_mean = np.mean(magnitudes[valleys])
     return valley_depth_mean
 
@@ -1660,7 +1660,7 @@ def calculate_spectral_valley_depth_std(magnitudes, **kwargs):
     """
     valleys, _ = find_peaks(-magnitudes)
     if len(valleys) == 0:
-        return np.array([np.nan])
+        return np.nan
     valley_depth_std = np.std(magnitudes[valleys])
     return valley_depth_std
 
@@ -1691,7 +1691,7 @@ def calculate_spectral_valley_depth_variance(magnitudes, **kwargs):
     """
     valleys, _ = find_peaks(-magnitudes)
     if len(valleys) == 0:
-        return np.array([np.nan])
+        return np.nan
     valley_depth_variance = np.var(magnitudes[valleys])
     return valley_depth_variance
 
@@ -1769,7 +1769,7 @@ def calculate_spectral_valley_width_std(magnitudes, **kwargs):
     """
     valleys, _ = find_peaks(-magnitudes)
     if len(valleys) < 2:
-        return np.array([np.nan])
+        return np.nan
     valley_widths = np.diff(valleys)
     valley_width_std = np.std(valley_widths)
     return valley_width_std
@@ -1791,7 +1791,7 @@ def calculate_spectral_subdominant_valley(magnitudes, **kwargs):
     """
     valleys, _ = find_peaks(-magnitudes)
     if len(valleys) < 2:
-        return np.array([np.nan])
+        return np.nan
     sorted_valleys = np.sort(magnitudes[valleys])
     subdominant_valley = sorted_valleys[-2] if len(sorted_valleys) >= 2 else np.nan
     return subdominant_valley
@@ -1843,7 +1843,7 @@ def calculate_spectral_peak_broadness(freqs, magnitudes, **kwargs):
     """
     peaks, _ = find_peaks(magnitudes)
     if len(peaks) < 2:
-        return np.array([np.nan])
+        return np.nan
     peak_widths = np.diff(peaks)
     peak_broadness = np.mean(peak_widths)
     return peak_broadness
@@ -1873,7 +1873,7 @@ def calculate_spectral_valley_broadness(freqs, magnitudes, **kwargs):
     """
     valleys, _ = find_peaks(-magnitudes)
     if len(valleys) < 2:
-        return np.array([np.nan])
+        return np.nan
     valley_widths = np.diff(valleys)
     valley_broadness = np.mean(valley_widths)
     return valley_broadness

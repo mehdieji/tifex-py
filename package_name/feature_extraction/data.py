@@ -31,18 +31,16 @@ class TimeSeries():
         List of tuples with the series name and the corresponding time series.
     columns : list
         List of columns to parse. If None, all columns are parsed.
-    name : str
-        Name to prepend to the column names.
     index : int
         Index to keep track of the current time series.
     """
     def __init__(self, data, columns=None, name=None):
         if isinstance(data, pd.DataFrame):
-            self.data = self.parse_from_dataframe(data, columns=columns, name=name)
+            self.data = self.parse_from_dataframe(data, columns=columns)
         elif isinstance(data, pd.Series):
-            self.data = self.parse_from_series(data, name=name)
+            self.data = self.parse_from_series(data)
         elif isinstance(data, list) or isinstance(data, np.ndarray):
-            self.data = self.parse_from_array(data, columns=columns, name=name)
+            self.data = self.parse_from_array(data, columns=columns)
         else:
             raise ValueError("Data format not supported.")
 
@@ -64,7 +62,7 @@ class TimeSeries():
         else:
             raise StopIteration
 
-    def parse_from_dataframe(self, data, columns=None, name=None):
+    def parse_from_dataframe(self, data, columns=None):
         """
         Parse a pandas DataFrame into a list of univariate time series.
 
@@ -74,8 +72,6 @@ class TimeSeries():
             The dataset to parse.
         columns : list
             List of columns to parse. If None, all columns are parsed.
-        name : str
-            Name to prepend to the column names.
         
         Returns:
         --------
@@ -86,14 +82,10 @@ class TimeSeries():
         if columns is None:
             columns = data.columns
         for column in columns:
-            if name is not None:
-                label = f"{name}_{column}"
-            else:
-                label = column
-            ts_list.append(self.create_data_dict(data[column].values, label))
+            ts_list.append(self.create_data_dict(data[column].values, column))
         return ts_list
 
-    def parse_from_array(self, data, columns=None, name=None):
+    def parse_from_array(self, data, columns=None):
         """
         Parse an array into a list of univariate time series.
 
@@ -104,8 +96,6 @@ class TimeSeries():
         columns : list
             Names of data columns. If not None, should match the number of
             columns in the array.
-        name: str
-            Name to prepend to the column names.
 
         Returns:
         --------
@@ -117,25 +107,18 @@ class TimeSeries():
         if len(data.shape) == 1:
             if columns is None:
                 columns = [0]
-            if name is not None:
-                label = f"{name}_{columns[0]}"
-            else:
-                label = columns[0]
+            label = columns[0]
             ts_list.append(self.create_data_dict(data, label))
         elif len(data.shape) == 2:
             if columns is None:
                 columns = list(range(data.shape[1]))
             for i, c in enumerate(columns):
-                if name is not None:
-                    label = f"{name}_{c}"
-                else:
-                    label = c
-                ts_list.append(self.create_data_dict(data[:, i], label))
+                ts_list.append(self.create_data_dict(data[:, i], c))
         else:
             raise ValueError("Arrays with more than 2 dimensions are not supported.")
         return ts_list
 
-    def parse_from_series(self, data, name=None):
+    def parse_from_series(self, data):
         """
         Parse a pandas Series into a list of univariate time series.
 
@@ -151,10 +134,8 @@ class TimeSeries():
         ts_list : list
             List of tuples with the series name and the corresponding time series.
         """
-        if name is not None:
-            name = f"{name}_{data.name}"
-        else:
-            name = data.name
+
+        name = data.name
         return [self.create_data_dict(data.values, name)]
 
     def create_data_dict(self, signal, name):
@@ -177,7 +158,7 @@ class TimeSeries():
 
 
 class SpectralTimeSeries(TimeSeries):
-    def __init__(self, data, columns=None, name=None, fs=1.0):
+    def __init__(self, data, columns=None, fs=1.0):
         """
         Parameters:
         ----------
@@ -186,11 +167,9 @@ class SpectralTimeSeries(TimeSeries):
         columns: list
             List of columns to parse. If None, all columns are parsed.
             If data is an array, this is the list of column names.
-        name: str
-            Name to prepend to the column names.
         """
         self.fs = fs
-        super().__init__(data, columns=columns, name=name)
+        super().__init__(data, columns=columns)
 
     def create_data_dict(self, signal, name):
         """

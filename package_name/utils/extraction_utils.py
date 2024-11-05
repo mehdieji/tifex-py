@@ -1,7 +1,8 @@
-from package_name.feature_extraction.data import SignalFeatures
-# import package_name.feature_extraction as fe
-
 # Description: Utility functions for the package.
+import numpy as np
+
+from package_name.feature_extraction.data import SignalFeatures
+
 
 def get_calculators(module, calculator_list=None):
     """
@@ -81,8 +82,11 @@ def extract_features(series, module, param_dict):
         except Exception as e:
             name = getattr(calculate, "names")
             print(f"Error calculating feature(s) {name}: {e}")
-            print(f"Feature(s) {name} will be excluded.")
-            continue
+            print(f"Feature(s) {name} will be set to Nan.")
+            if isinstance(name, list):
+                feature = [np.nan] * len(name)
+            else:
+                feature = np.nan
 
         name = getattr(calculate, "names")
 

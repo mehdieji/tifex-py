@@ -1,17 +1,17 @@
 import numpy as np
-from scipy.signal import spectrogram, stft
-from StatisticalFeatures import StatisticalFeatures
+from scipy.signal import spectrogram, stft, chirp
+from StatisticalFeatures_cpu import StatisticalFeatures
 import pywt
 
 
 class TimeFrequencyFeatures:
     def __init__(self,
-                 window_size,
-                 wavelet='db4',
-                 decomposition_level=None,
-                 stft_window='hann',
-                 nperseg=None
-                 ):
+                window_size,
+                wavelet='db4',
+                decomposition_level=None,
+                stft_window='hann',
+                nperseg=None
+                ):
 
         self.window_size = window_size
         self.wavelet = wavelet
@@ -111,33 +111,36 @@ class TimeFrequencyFeatures:
             feats.extend(self.statistical_feature_extractor.calculate_interquartile_range(wavelet_coefficients[i_level]))
             feats_names.append(f"{signal_name}_iqr_of_wav_coeffs_lvl_{i_level}")
 
-        feats.extend(self.extract_wavelet_features(signal_name, wavelet_coefficients))
-        #feats.extend(self.extract_tkeo_features(signal_name, signal_tkeo))
-        feats.extend(self.extract_spectrogram_features(signal_name, signal))
-        feats.extend(self.extract_stft_features(signal_name, signal))
+        feats_extract_wavelet_features, feats_names_extract_wavelet_features = self.extract_wavelet_features(signal_name, wavelet_coefficients)
+        feats_extract_spectrogram_features, feats_names_extract_spectrogram_features = self.extract_spectrogram_features(signal_name, signal)
+        feats_extract_stft_features, feats_names_extract_stft_features = self.extract_stft_features(signal_name, signal)
+        
+        # Populate feats with wavelet, spectrogram and stft features
+        feats.extend(feats_extract_wavelet_features)
+        feats.extend(feats_extract_spectrogram_features)
+        feats.extend(feats_extract_stft_features)
+        
+        # Populate feats_names with names of wavelet, spectrogram and stft features
+        feats_names.extend(feats_names_extract_wavelet_features)
+        feats_names.extend(feats_names_extract_spectrogram_features)
+        feats_names.extend(feats_names_extract_stft_features)
 
-        return np.array(feats), feats_names
+        # return np.array(feats), feats_names
+        return feats, feats_names
 
-    def extract_wavelet_features(self, signal_name, wavelet_coefficients):
+    def extract_wavelet_features(self,signal_name, wavelet_coefficients):
         # https://doi.org/10.1016/B978-012047141-6/50006-9
         feats = []
         feats_names = []
 
         for i_level in range(len(wavelet_coefficients)):
             coeffs = wavelet_coefficients[i_level]
-            feats.extend(self.statistical_feature_extractor.calculate_statistical_features(coeffs))
-            feats_names.extend([f"{signal_name}_wavelet_lvl_{i_level}_{name}" for name in self.statistical_feature_extractor.feature_names])
+            statistical_features, statistical_features_names = self.statistical_feature_extractor.calculate_statistical_features(coeffs, signal_name)
+            feats.extend(statistical_features)
+            feats_names.extend([f"{signal_name}_wavelet_lvl_{i_level}_{name}" for name in statistical_features_names])
 
         return feats, feats_names
 
-    # def extract_tkeo_features(self, signal_name, signal_tkeo):
-    #     feats = []
-    #     feats_names = []
-
-    #     feats.extend(self.statistical_feature_extractor.calculate_statistical_features(signal_tkeo))
-    #     feats_names.extend([f"{signal_name}_tkeo_{name}" for name in self.statistical_feature_extractor.feature_names])
-
-        return feats, feats_names
 
     def extract_spectrogram_features(self, signal_name, signal):
         # https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.spectrogram.html
@@ -147,8 +150,9 @@ class TimeFrequencyFeatures:
         f, t, Sxx = spectrogram(signal, window=self.stft_window, nperseg=self.nperseg)
         Sxx_flat = Sxx.flatten()
 
-        feats.extend(self.statistical_feature_extractor.calculate_statistical_features(Sxx_flat))
-        feats_names.extend([f"{signal_name}_spectrogram_{name}" for name in self.statistical_feature_extractor.feature_names])
+        statistical_features, statistical_features_names = self.statistical_feature_extractor.calculate_statistical_features(Sxx_flat, signal_name)
+        feats.extend(statistical_features)
+        feats_names.extend([f"{signal_name}_spectrogram_{name}" for name in statistical_features_names])
 
         return feats, feats_names
 
@@ -160,18 +164,30 @@ class TimeFrequencyFeatures:
         f, t, Zxx = stft(signal, window=self.stft_window, nperseg=self.nperseg)
         Zxx_magnitude = np.abs(Zxx).flatten()
 
-        feats.extend(self.statistical_feature_extractor.calculate_statistical_features(Zxx_magnitude))
-        feats_names.extend([f"{signal_name}_stft_{name}" for name in self.statistical_feature_extractor.feature_names])
+        statistical_features, statistical_features_names = self.statistical_feature_extractor.calculate_statistical_features(Zxx_magnitude, signal_name)
+        feats.extend(statistical_features)
+        feats_names.extend([f"{signal_name}_stft_{name}" for name in statistical_features_names])
+        
+        return feats, feats_names
 
     def teager_kaiser_energy_operator(self, signal):
         # https://doi.org/10.1016/j.dsp.2018.03.010
         # Calculate the TKEO
+        # [x(n)] = x(n)^2 − x(n −k)x(n +k)        
         tkeo = np.roll(signal, -1) * np.roll(signal, 1) - signal ** 2
         # The first and last elements are not valid due to roll operation
         tkeo[0] = 0
         tkeo[-1] = 0
         return tkeo
 
+    # def extract_tkeo_features(self, signal_name, signal_tkeo):
+    #     feats = []
+    #     feats_names = []
+
+    #     feats.extend(self.statistical_feature_extractor.calculate_statistical_features(signal_tkeo))
+    #     feats_names.extend([f"{signal_name}_tkeo_{name}" for name in self.statistical_feature_extractor.feature_names])
+
+        # return feats, feats_names
 
 
 # Hilbert-Huang Transform
@@ -180,3 +196,6 @@ class TimeFrequencyFeatures:
 # Wigner-Ville Distribution  https://www.mathworks.com/help/signal/ref/wvd.html
 # Cepstrum Analysis  https://www.mathworks.com/help/signal/ug/cepstrum-analysis.html
 # Mel-Frequency Cepstral Coefficients  https://doi.org/10.1109/ACCESS.2022.3223444
+
+    def chirplet_transform(self, signal_name, signal):
+        pass

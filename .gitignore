@@ -1,0 +1,15 @@
+# Files
+/glossary.md
+*.ipynb
+hurst.py
+Untitled-1.py
+test_file.ipynb
+
+
+# Folders
+/.vscode
+/__pycache__
+Public Dataset/
+*/__pycache__
+package_name/*/__pycache__
+*.pyc

@@ -160,10 +160,10 @@ class StatisticalFeatureParams(BaseFeatureParams):
                  svd_entropy_delay=1,
                  adjusted=False,
                  ssc_threshold = 0,
-                 ar_model_coefficients_order = 4,
-                 energy_ratio_chunks = 4,
-                 mode = 'valid',
-                 weights = None,
+                 ar_model_coefficients_order=4,
+                 energy_ratio_chunks=4,
+                 mode='valid',
+                 weights=None,
                  ema_alpha=0.3, 
                  dfa_order=1,
                  dfa_minimum=20,
@@ -300,6 +300,14 @@ class TimeFrequencyFeatureParams(BaseFeatureParams):
             self.stft_sf_params = StatisticalFeatureParams(window_size)
 
     def get_settings_as_dict(self):
+        """
+        Get the settings as a dictionary.
+
+        Returns:
+        --------
+        dict
+            Dictionary with the settings.
+        """
         d = super().get_settings_as_dict()
         d["tkeo_sf_params"] = self.tkeo_sf_params.get_settings_as_dict()
         d["wavelet_sf_params"] = self.wavelet_sf_params.get_settings_as_dict()
@@ -309,6 +317,20 @@ class TimeFrequencyFeatureParams(BaseFeatureParams):
 
     @classmethod
     def from_json(cls, file_path):
+        """
+        Load the settings from a json file. Overwrites the current settings. Loads
+        the statistical feature parameters for each time frequency feature.
+
+        Parameters:
+        -----------
+        file_path : str
+            Path to the file.
+
+        Returns:
+        --------
+        TimeFrequencyFeatureParams
+            TimeFrequencyFeatureParams instance.
+        """
         with open(file_path, 'r') as file:
             settings = json.load(file)
         settings["tkeo_sf_params"] = StatisticalFeatureParams(**settings["tkeo_sf_params"])
@@ -319,6 +341,20 @@ class TimeFrequencyFeatureParams(BaseFeatureParams):
 
     @classmethod
     def from_yaml(cls, file_path):
+        """
+        Load the settings from a yaml file. Overwrites the current settings. Loads
+        the statistical feature parameters for each time frequency feature.
+
+        Parameters:
+        -----------
+        file_path : str
+            Path to the file.
+        
+        Returns:
+        --------
+        TimeFrequencyFeatureParams
+            TimeFrequencyFeatureParams instance.
+        """
         with open(file_path, 'r') as file:
             settings = yaml.safe_load(file)
         settings["tkeo_sf_params"] = StatisticalFeatureParams(**settings["tkeo_sf_params"])

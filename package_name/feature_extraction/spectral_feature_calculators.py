@@ -62,8 +62,8 @@ def calculate_spectral_variance(freqs, magnitudes, **kwargs):
 
     Returns:
     -------
-    np.array
-        An array containing the calculated spectral variance.
+    float
+        The calculated spectral variance.
     
     Reference:
     ---------
@@ -153,8 +153,8 @@ def calculate_median_frequency(freqs_psd, psd, **kwargs):
 
     Returns:
     -------
-    np.array
-        An array containing the calculated median frequency.
+    float
+        The calculated median frequency.
         
     Reference:
     ---------
@@ -183,8 +183,8 @@ def calculate_spectral_flatness(magnitudes, **kwargs):
 
     Returns:
     -------
-    np.array
-        An array containing the calculated spectral flatness.
+    float
+        The calculated spectral flatness.
 
     Reference:
     --------
@@ -212,8 +212,8 @@ def calculate_spectral_slope_logarithmic(freqs, magnitudes, **kwargs):
 
     Returns:
     -------
-    np.array
-        An array containing the calculated logarithmic spectral slope. The array is of length 1 for consistency in return type.
+    float
+        The calculated logarithmic spectral slope. The array is of length 1 for consistency in return type.
 
     Reference:
     ---------
@@ -240,8 +240,8 @@ def calculate_spectral_slope_logarithmic_psd(freqs_psd, psd, **kwargs):
 
     Returns:
     -------
-    np.array
-        A numpy array containing a single element, the slope of the linear fit.
+    float
+        The slope of the linear fit.
         
     Reference:
     ---------
@@ -269,8 +269,8 @@ def calculate_spectral_slope_linear(freqs, magnitudes, **kwargs):
 
     Returns:
     -------
-    np.array
-        A numpy array containing a single element, the slope of the linear fit.
+    float
+        The slope of the linear fit.
         
     Reference:
     ---------
@@ -354,7 +354,7 @@ def calculate_spectral_edge_frequency(freqs_psd, psd, cumulative_power_threshold
         feats.append(freqs_psd[np.argmax(cumulative_power >= threshold)])
     return np.array(feats)
 
-@name("band_power_{}", "f_bands")
+@name(["total_band_power", "absolute_band_power_{}", "relative_band_power_{}"], [0, "f_bands", "f_bands"])
 def calculate_band_power(freqs_psd, psd, f_bands, **kwargs):
     """
     Calculates the total power, band absolute powers and band relative powers in specified frequency bands.
@@ -368,7 +368,7 @@ def calculate_band_power(freqs_psd, psd, f_bands, **kwargs):
 
     Returns:
     -------
-    np.array: 
+    np.array
         An array containing the total power, followed by the absolute and relative
         power for each specified frequency band.
 
@@ -415,8 +415,8 @@ def calculate_spectral_entropy(psd, **kwargs):
         
     Returns:
     --------
-    np.array: 
-        A numpy array containing the spectral entropy value.
+    float
+        The spectral entropy value.
         
     Reference:
     ---------
@@ -505,8 +505,8 @@ def calculate_spectral_bandwidth(freqs, magnitudes, bandwidth_orders, **kwargs):
     
     Returns:
     --------
-        np.array
-            A 1D numpy array containing the calculated spectral bandwidth value.
+    np.array
+        A 1D numpy array containing the calculated spectral bandwidth value.
     
     References:
     -----------
@@ -527,6 +527,7 @@ def calculate_spectral_bandwidth(freqs, magnitudes, bandwidth_orders, **kwargs):
             spectral_bandwidth.append(((np.sum(((freqs - mean_frequency) ** order) * normalized_magnitudes)) ** (1 / order)))
         return np.array(spectral_bandwidth)
 
+#TODO: Check what is going on here
 @name("spectral_absolute_deviation_order_{}", "abs_dev_orders")
 def calculate_spectral_absolute_deviation(freqs, magnitudes, abs_dev_orders=1, **kwargs):
     """
@@ -544,7 +545,6 @@ def calculate_spectral_absolute_deviation(freqs, magnitudes, abs_dev_orders=1, *
         An array of frequencies corresponding to the magnitude spectrum bins.
     magnitudes : np.array
         An array of magnitude values of the spectrum at the corresponding frequencies.
-
     order : int, optional default=1)
         The order of the deviation calculation. When `order=2`, the result is equivalent 
         to the spectral bandwidth (standard deviation) of the spectrum.

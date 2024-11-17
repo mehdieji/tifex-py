@@ -1751,7 +1751,7 @@ def calculate_area_under_squared_curve(signal, **kwargs):
     """
     return simpson(signal**2, dx=1)
 
-@name("autoregressive_model_coefficients_{}", "ar_model_coefficients_order")
+@name("autoregressive_model_coefficients_{}", "ar_model_coefficients_order", 1)
 def calculate_autoregressive_model_coefficients(signal, ar_model_coefficients_order, **kwargs):
     """
     Calculates the autoregressive model coefficients of the time series

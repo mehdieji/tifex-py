@@ -99,9 +99,14 @@ def extract_features(series, module, param_dict):
                     for k, v in f.features.items():
                         features[f'{n}_{k}'] = v
             else:
+                if len(name) != len(feature):
+                    print(f"Feature {name} has a different number of values than the feature itself.")
+
                 for n, f in zip(name, feature):
                     features[n] = f
         else:
+            if hasattr(feature, "__iter__"):
+                print(f"Feature {name} has more than one value.")
             features[name] = feature
 
     if "label" in series:

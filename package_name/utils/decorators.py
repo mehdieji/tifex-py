@@ -1,17 +1,29 @@
 import numpy as np
 # Description: Utility functions for the package.
 
-def name(strname, argname=None):
+def name(strname, argname=None, offset=0):
     """
     Decorator to add names to a function.
     """
     def decorator(func):
         def wrapper(*args, **kwargs):
             names = []
-            if argname and argname in kwargs:
+            if isinstance(argname, list):
+                i = 0
+                for param in argname:
+                    if isinstance(param, str):
+                        label = kwargs[param]
+                        if not isinstance(label, list) and not isinstance(label, np.ndarray):
+                            label = list(range(label+offset))
+                        for p in label:
+                            names.append(strname[i].format(p))
+                    else:
+                        names.append(strname[i].format(param))
+                    i += 1
+            elif argname and argname in kwargs:
                 label = kwargs[argname]
                 if not isinstance(label, list) and not isinstance(label, np.ndarray):
-                    label = list(range(label))
+                    label = list(range(label+offset))
                 for param in label:
                     names.append(strname.format(param))
             elif type(strname) is list:

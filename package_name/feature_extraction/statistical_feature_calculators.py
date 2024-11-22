@@ -4,7 +4,7 @@ from scipy.stats import skew, kurtosis, moment, gmean, hmean, trim_mean, entropy
 from statsmodels.tsa.stattools import acf, adfuller
 from scipy.integrate import simpson
 from statsmodels.tsa.ar_model import AutoReg
-from scipy.signal import detrend, argrelextrema, find_peaks
+from scipy.signal import detrend, argrelextrema, find_peaks, find_peaks_cwt, ricker
 from itertools import groupby
 from scipy.ndimage.filters import convolve
 from scipy import stats
@@ -3590,5 +3590,35 @@ def calculate_benford_correlation(signal, **kwargs):
 
     return np.corrcoef(benford_distribution, data_distribution)[0, 1]
 
+@name("number_cwt_peaks_{}","cwt_peaks_n")
+def calculate_number_cwt_peaks(signal, cwt_peaks_n, **kwargs):
+    """
+    Calculate the number of peaks in a signal using the Continuous Wavelet Transform (CWT) method 
+    for a range of widths.
 
-
+    Parameters:
+    ----------
+    signal : array-like
+        The input signal for which peaks are to be detected.
+        
+    cwt_peaks_n : list of int
+        A list of integers specifying the maximum width for each CWT analysis.
+        For each value `n` in this list, peak detection will be performed with widths ranging from 1 to `n`.
+        
+    Returns:
+    -------
+    peak_lengths : list of int
+        A list where each element corresponds to the number of peaks detected for the respective `cwt_peaks_n` value.
+        
+    Notes:
+    -----
+    - The function uses the Ricker wavelet (Mexican hat wavelet) for the CWT.
+    """
+    peak_lengths = []
+    
+    for i in cwt_peaks_n:
+        peak_lengths.append(len(
+            find_peaks_cwt(vector=signal, widths=np.array(list(range(1, i + 1))), wavelet=ricker)
+        ))
+        
+    return peak_lengths

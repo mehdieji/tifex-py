@@ -854,9 +854,9 @@ def calculate_approximate_entropy(signal, m, r, **kwargs):
     signal : array-like
         The input time series data for which differential entropy is to be calculated.
     m: int
-        Length of compared run of data
+        Length of compared run of data.
     r: list of floats
-        Filtering levels
+        Filtering levels.
 
     Returns:
     --------
@@ -946,7 +946,14 @@ def calculate_tsallis_entropy(signal, window_size, tsallis_q_parameter, **kwargs
 
     Parameters:
     ----------
-    signal (array-like): The input time series.
+    signal : array-like
+        The input time series.
+    window_size : int
+        The size of the window used for histogram calculation. It determines the 
+        number of bins in the histogram as window_size // 2.
+    tsallis_q_parameter : float
+        The q-parameter of the Tsallis entropy. If q = 1, the function
+        returns the Boltzmann–Gibbs entropy.
 
     Returns:
     -------
@@ -1120,7 +1127,7 @@ def calculate_permutation_entropy(signal, window_size, permutation_entropy_order
     return entropy_value
 
 @name("binned_entropy")
-def calculate_binned_entropy(signal, bins, **kwargs):
+def calculate_binned_entropy(signal, entropy_bins, **kwargs):
     """
     Calculate the entropy of a signal based on the distribution of its values across specified bins.
     
@@ -1129,9 +1136,9 @@ def calculate_binned_entropy(signal, bins, **kwargs):
     signal : array-like
         The input time series data.
         
-    bins : int or sequence of scalars
-        If `bins` is an integer, it defines the number of equal-width bins in the histogram.
-        If `bins` is a sequence, it defines the bin edges, including the rightmost edge.
+    entropy_bins : int or sequence of scalars
+        If `entropy_bins` is an integer, it defines the number of equal-width bins in the histogram.
+        If `entropy_bins` is a sequence, it defines the bin edges, including the rightmost edge.
     
     Returns:
     -------
@@ -1150,7 +1157,7 @@ def calculate_binned_entropy(signal, bins, **kwargs):
         basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 307, 72–77. 
         https://doi.org/10.1016/J.NEUCOM.2018.03.067
     """
-    hist, _ = np.histogram(signal, bins)
+    hist, _ = np.histogram(signal, entropy_bins)
     probs = hist / len(signal)
     probs[probs == 0] = 1.0
     return -np.sum(probs * np.log(probs))
@@ -1868,7 +1875,7 @@ def calculate_count_below(signal, count_below_or_above_x, **kwargs):
     signal : array-like
         The input time series data.
     count_below_or_above_x : int
-        Value of interest
+        Value of interest.
         
     Returns:
     -------
@@ -2119,7 +2126,6 @@ def calculate_weighted_moving_average(signal, weights, mode, **kwargs):
     # Apply the weighted moving average
     return np.convolve(signal, weights, mode=mode)
 
-# TODO: Why does the exponential moving average only include the last value
 @name("exponential_moving_average")
 def calculate_exponential_moving_average(signal, ema_alpha, **kwargs):
     """
@@ -2233,7 +2239,7 @@ def calculate_histogram_bin_frequencies(signal, hist_bins, **kwargs):
     signal : array-like
         The input time series
     
-    hist_bins : int or sequence of scalars
+    hist_bins : int
         It defines the number of equal-width bins in the range of the signal.        
 
     Returns:
@@ -3164,7 +3170,7 @@ def calculate_zero_crossing_rate(signal, **kwargs):
 
 #TODO: NEED TO FIX THIS
 @name(["detrended_fluctuation_analysis_segments", "detrended_fluctuation_analysis_values"])
-def calculate_detrended_fluctuation_analysis(signal, order=1, minimal=20, **kwargs):
+def calculate_detrended_fluctuation_analysis(signal, dfa_order=1, dfa_minimal=20, **kwargs):
     """
     Performs detrended fluctuation analysis (DFA) on the given signal.
         
@@ -3172,10 +3178,10 @@ def calculate_detrended_fluctuation_analysis(signal, order=1, minimal=20, **kwar
     ----------
     signal : array
         The input time series.
-    order: integer
+    dfa_order: integer
         The order of the polynomial fit for local detrending default is 1 for linear detrending).
-    minimal: integer
-        The minimum segment size to consider
+    dfa_minimal: integer
+        The minimum segment size to consider.
         
     Returns:
     -------
@@ -3202,24 +3208,24 @@ def calculate_detrended_fluctuation_analysis(signal, order=1, minimal=20, **kwar
 
     def divisors(N, minimal=20, **kwargs):
         d = []
-        for i in range(minimal, N // minimal + 1):
+        for i in range(dfa_minimal, N // minimal + 1):
             if N % i == 0:
                 d.append(i)
         return d
 
-    def find_opt_n(N, minimal=20, **kwargs):
+    def find_opt_n(N, minimal, **kwargs):
         """
         Find such a natural number opt_n that possesses the largest number of
-            divisors among all natural numbers in the interval [0.99*N, N]
-            """
+        divisors among all natural numbers in the interval [0.99*N, N]
+        """
         N0 = int(0.99 * N)
         # The best length is the one which have more divisiors
         d_count = [len(divisors(i, minimal)) for i in range(N0, N + 1)]
         opt_n = N0 + d_count.index(max(d_count))
         return opt_n
 
-    opt_n = find_opt_n(len(signal), minimal=minimal)
-    segment_sizes = divisors(opt_n, minimal=minimal)
+    opt_n = find_opt_n(len(signal), minimal=dfa_minimal)
+    segment_sizes = divisors(opt_n, minimal=dfa_minimal)
     fluctuation_values = []
 
     for m in segment_sizes:

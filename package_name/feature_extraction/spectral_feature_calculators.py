@@ -298,6 +298,8 @@ def calculate_peak_frequencies(freqs_psd, psd, n_dom_freqs, **kwargs):
         An array of frequency values.
     psd: np.array
         An array of Power Spectral Density (PSD) values corresponding to the frequencies.
+    n_dom_freqs: int
+        The number of dominant frequencies to identify.
 
     Returns:
     -------
@@ -327,7 +329,7 @@ def calculate_spectral_edge_frequency(freqs_psd, psd, cumulative_power_threshold
     The spectral edge frequency is the frequency below which a certain percentage 
     of the total power of the signal is contained. This function calculates the 
     spectral edge frequencies for multiple thresholds provided in 
-    `self.cumulative_power_thresholds`.
+    `cumulative_power_thresholds`.
 
     Parameters:
     ----------
@@ -496,7 +498,7 @@ def calculate_spectral_bandwidth(freqs, magnitudes, bandwidth_orders, **kwargs):
     magnitudes : np.array
         An array of magnitude values of the spectrum at the corresponding frequencies.
 
-    order : int
+    bandwidth_orders : int
     The order of the spectral bandwidth calculation. The order defines the type of 
     deviation being measured:
     - 1 for spectral mean deviation.
@@ -1392,7 +1394,7 @@ def calculate_spectral_cumulative_frequency_above(freqs, magnitudes, thresholds_
         Array of frequencies corresponding to the spectral data.
     magnitudes : np.ndarray
         Array of magnitudes (power) at each frequency.
-    threshold : float
+    thresholds_freq_above : float
         A value between 0 and 1 indicating the cumulative power threshold (e.g., 0.5 for 50%).
 
     Returns:
@@ -1429,7 +1431,7 @@ def calculate_spectral_cumulative_frequency_below(freqs, magnitudes, thresholds_
         Array of frequencies corresponding to the spectral data.
     magnitudes : np.ndarray
         Array of magnitudes (power) at each frequency.
-    threshold : float
+    thresholds_freq_below : float
         A value between 0 and 1 indicating the cumulative power threshold (e.g., 0.8 for 80%).
 
     Returns:

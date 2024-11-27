@@ -86,65 +86,117 @@ class StatisticalFeatureParams(BaseFeatureParams):
     window_size : int
         Size of the window to compute the features.
     n_lags_auto_correlation : int, optional
+        Used in calculation of mean_of_auto_corr_lags.
         Number of lags to compute the auto-correlation. The default is None.
     moment_orders : array-like, optional
-        Orders of the moments to compute. The default is None.
+        Used in calculation of moment_order_*.
+        A list or array of integers specifying the orders of the moments to be calculated.
+        The default is None.
     trimmed_mean_thresholds : list, optional
-        Thresholds for the trimmed mean. The default is None.
+        Used in calculation of trimmed_mean_*.
+        List of proportions to cut from each end of the signal. The default is None.
     higuchi_k_values : list, optional
+        Used in calculation of higuchi_fractal_dimensions_k=*.
         Values of k for the Higuchi Fractal Dimension. The default is None.
     tsallis_q_parameter : int, optional
-        Parameter for the Tsallis entropy. The default is 1.
+        Used in calculation of tsallis_entropy.
+        The q-parameter of the Tsallis entropy.. The default is 1.
     renyi_alpha_parameter : float, optional
-        Parameter for the Renyi entropy. The default is 2.
+        Used in calculation of renyi_entropy.
+        The order alpha of the Rényi entropy. If alpha = 1, the function 
+        returns the Shannon entropy. The default is 2.
     permutation_entropy_order : int, optional
-        Order for the permutation entropy. The default is 3.
-    permutation_entropy_delay : int, optional
-        Delay for the permutation entropy. The default is 1.
+        Used in calculation of permutation_entropy.
+        The embedding dimension (order), which determines the length of the ordinal
+        patterns (permutations) considered. The default is 3.
+    permutation_entropy_delay : int or list/array of int, optional
+        Used in calculation of permutation_entropy.
+        The time delay between consecutive values used to form the ordinal patterns.
+        If multiple delays are passed as a list or array, the function will return
+        the average permutation entropy across all delays. The default is 1.
     svd_entropy_order : int, optional
-        Order for the SVD entropy. The default is 3.
+        Used in calculation of svd_entropy.
+        The embedding dimension or order used to construct the embedding matrix.
+        This determines the number of rows in the embedding matrix. The default is 3.
     svd_entropy_delay : int, optional
-        Delay for the SVD entropy. The default is 1.
+        Used in calculation of svd_entropy.
+        The time delay used in the embedding process. This determines the step size
+        between consecutive points in the embedding matrix. The default is 1.
     adjusted : bool, optional
-        Adjusted entropy. The default is False.
+        Used in calculation of mean_abs_deviation.
+        If True, returns the adjusted MAD, making it consistent with the standard deviation
+        for normally distributed data by multiplying by 1.4826. The default is False.
     ssc_threshold : int, optional
-        Threshold for the SSC. The default is 0.
+        Used in calculation of no._of_slope_sign_changes.
+        The threshold value to determine significant slope changes. The default is 0.
     ar_model_coefficients_order : int, optional
-        Order for the AR model coefficients. The default is 4.
+        Used in calculation of autoregressive_model_coefficients_*.
+        The number of lags to include in the model. The default is 4.
     energy_ratio_chunks : int, optional
-        Number of chunks for the energy ratio. The default is 4.
+        Used in calculation of energy_ratio_by_chunks_*.
+        The number of chunks to divide the signal into. The default is 4.
     mode : str, optional
-        Mode for the energy ratio. The default is 'valid'.
+        Used in calculation of moving_average and weighted_moving_average.
+        Options include:
+            - 'valid': Returns output of length max(M, N) - min(M, N) + 1. This means no padding is applied and 
+            the result is only calculated where the window fully overlaps with the signal.
+            - 'same': Returns output of the same length as the input signal. Padding may be applied to ensure the output 
+            has the same length as the input.
+            - 'full': Returns the convolution at each point of overlap, with padding. The output length is M + N - 1.
+        Default is 'valid'.
     weights : list, optional
+        The weights to apply to the signal. If not provided, a linearly decreasing set of weights is used.
+        The length of weights must be equal to or less than the length of the signal.
         Weights for the energy ratio. The default is None.
     ema_alpha : float, optional
+        Used in calculation of exponential_moving_average.
         Alpha for the EMA. The default is 0.3.
     dfa_order : int, optional
-        Order for the DFA. The default is 1.
-    dfa_minimum : int, optional
-        Minimum for the DFA. The default is 20.
+        Used in the calculation of the detrended_fluctuation_analysis_segments and detrended_fluctuation_analysis_values.
+        The order of the polynomial fit for local detrending default is 1 for linear detrending).
+        The default is 1.
+    dfa_minimal : int, optional
+        Used in the calculation of the detrended_fluctuation_analysis_segments and detrended_fluctuation_analysis_values.
+        The minimum segment size to consider. The default is 20.
     wm_limits : list, optional
-        Limits for the WM. The default is [0.05, 0.05].
-    bins : list, optional
-        Bins for the histogram. The default is [2,3,4,10,100].
+        Used in the calculation of winsorized_mean.
+        The proportions of data to Winsorize from the lower and upper ends of the 
+        distribution. The default is [0.05, 0.05], which means 5% of the data is 
+        Winsorized from both ends. The values should be between 0 and 0.5.
+    entropy_bins : list, optional
+        Used in the calculation of binned_entropy.
+        If `entropy_bins` is an integer, it defines the number of equal-width bins in the histogram.
+        If `entropy_bins` is a sequence, it defines the bin edges, including the rightmost edge.
+        The default is 10.
     count_below_or_above_x : int, optional
-        Count below or above x. The default is 0.
+        Used in the calculation of count_below and count_above.
+        Value of interest. The default is 0.
     cid_ce_normalize : list, optional
-        Normalize for the CID CE. The default is [True, False].
+        Used in the calculation of cid_ce.
+        If True, the signal is normalized before computing the complexity estimate. Normalization ensures that 
+        the signal has zero mean and unit variance. If the standard deviation is zero (i.e., the signal is constant), 
+        the function returns 0.0. The default is True.
     hist_bins : int, optional
+        Used in the calculation of histogram_bin_frequencies_*.
         Bins for the histogram. The default is 10.
     q : list, optional
+        Used in the calculation of quantile_*.
         Quantiles. The default is [0.1, 0.2, 0.25, 0.3, 0.4, 0.6, 0.7, 0.75, 0.8, 0.9].
     r_sigma: list, optional
-        STD multiplier. The default is [0.1, 0.2, 0.3, 0.4, 0.5].
+        Used in the calculation of ratio_beyond_r_sigma_*.
+        The multiplier for the standard deviation to define the threshold. The default is [0.1, 0.2, 0.3, 0.4, 0.5].
     lz_bins : int, optional
+        Used in the calculation of lempel_ziv_complexity.
         Bins for the Lempel-Ziv. The default is 10. 
     values: list
+        Used in the calculation of value_count_*.
         Values for which their number of occurances will be calculated. The default is [0,1,-1]                                                                                                                                                                                                                                                  
     m: int
-        Length of compared run of data for approximate entropy
-    r: list 
-        Filtering levels for approximate entropy
+        Used in the calculation of approximate_entropy_*.
+        Length of compared run of data for approximate entropy.
+    r: list
+        Used in the calculation of approximate_entropy_*.
+        Filtering levels for approximate entropy.
     """
     def __init__(self,
                  window_size,
@@ -166,14 +218,14 @@ class StatisticalFeatureParams(BaseFeatureParams):
                  weights=None,
                  ema_alpha=0.3, 
                  dfa_order=1,
-                 dfa_minimum=20,
+                 dfa_minimal=20,
                  wm_limits=[0.05, 0.05],
-                 bins=[2,3,4,10,100],
+                 entropy_bins=10,
                  count_below_or_above_x=0,
-                 cid_ce_normalize=[True, False],
+                 cid_ce_normalize=True,
                  hist_bins=10,
                  q=[0.1, 0.2, 0.25, 0.3, 0.4, 0.6, 0.7, 0.75, 0.8, 0.9],
-                 r_sigma=[1, 2],
+                 r_sigma=[0.5, 1, 1.5, 2, 2.5, 3, 5, 6, 7, 10],
                  lz_bins=10,
                  values=[0,1,-1],
                  m=2,
@@ -196,9 +248,9 @@ class StatisticalFeatureParams(BaseFeatureParams):
         self.weights = weights
         self.ema_alpha = ema_alpha
         self.dfa_order = dfa_order
-        self.dfa_minimum = dfa_minimum
+        self.dfa_minimal = dfa_minimal
         self.wm_limits = wm_limits
-        self.bins = bins
+        self.entropy_bins = entropy_bins
         self.count_below_or_above_x = count_below_or_above_x
         self.cid_ce_normalize = cid_ce_normalize
         self.hist_bins = hist_bins
@@ -231,6 +283,48 @@ class StatisticalFeatureParams(BaseFeatureParams):
 
 
 class SpectralFeatureParams(BaseFeatureParams):
+    """
+    Parameters for spectral feature extraction.
+    
+    Attributes:
+    -----------
+    fs : int
+        Sampling frequency of the signal.
+    f_bands : list
+        Used in calculation of spectral_contrast_band_* , total_band_power, absolute_band_power_*,
+        and relative_band_power_*.
+        A list of tuples specifying the frequency bands for which to calculate features.
+        The default is [[0.5,4], [4,8], [8,12], [12,30], [30,100]].
+    n_dom_freqs : int
+        Used in calculation of peak_freq_*.
+        The number of dominant frequencies to calculate. The default is 5.
+    cumulative_power_thresholds : list, optional
+        Used in calculation of edge_freq_thresh_*.
+        The thresholds for the cumulative power. The default is [.5, .75, .85, .9, 0.95].
+    centroid_orders : list, optional
+        Used in calculation of spectral_centroid_order_*.
+        The order of the centroid calculation. Default is 1, which calculates the standard spectral centroid
+        (mean frequency). Higher orders can be used for other types of spectral centroid calculations.
+        The default is [1, 2, 3, 4, 5].
+    bandwidth_orders : list, optional
+        Used in calculation of spectral_bandwidth_order_*.
+        The orders of the bandwidth. The default is [1, 2, 3, 4].
+    abs_dev_orders : list, optional
+        Used in calculation of spectral_absolute_deviation_order_*.
+        The orders of the deviation calculation.  The default is [1, 3].
+    flux_orders : list, optional
+        Used in calculation of spectral_flux_order_*.
+        The orders of the flux calculation. The default is [2].
+    thresholds_freq_below : list, optional
+        Used in calculation of spectral_cumulative_frequency_below_threshold_*.
+        List of values between 0 and 1 indicating the cumulative power threshold (e.g., 0.8 for 80%).
+        The default is [0.5, 0.75].
+    thresholds_freq_above : list, optional
+        Used in calculation of spectral_cumulative_frequency_above_threshold_*.
+        List of values between 0 and 1 indicating the cumulative power threshold (e.g., 0.8 for 80%).
+        The default is [0.5, 0.75].
+    
+    """
     def __init__(self,
                  fs,
                  f_bands=[[0.5,4], [4,8], [8,12], [12,30], [30,100]],
@@ -260,6 +354,30 @@ class SpectralFeatureParams(BaseFeatureParams):
 
 
 class TimeFrequencyFeatureParams(BaseFeatureParams):
+    """
+    Parameters for time-frequency feature extraction.
+
+    Attributes:
+    ----------
+    window_size : int
+        Size of the window to compute the features.
+    wavelet : str
+        Used in calculation of wavelet features.
+    decomposition_level : int, optional
+        Used in calculation of wavelet features.
+    stft_window : str
+        Used in calculation of spectoram and STFT features.
+    nperseg : int, optional
+        Used in calculation of spectoram and STFT features.
+    tkeo_sf_params : StatisticalFeatureParams, optional
+        Parameters for the TKEO feature calculation. The default is None.
+    wavelet_sf_params : StatisticalFeatureParams, optional
+        Parameters for the wavelet feature calculation. The default is None.
+    spectogram_sf_params : StatisticalFeatureParams, optional
+        Parameters for the spectogram feature calculation. The default is None.
+    stft_sf_params : StatisticalFeatureParams, optional
+        Parameters for the STFT feature calculation. The default is None.
+    """
     def __init__(self,
                  window_size,
                  wavelet="db4",

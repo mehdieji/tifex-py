@@ -1,0 +1,187 @@
+calculators: null
+decomposition_level: 1
+nperseg: 6
+spectogram_sf_params:
+  adjusted: false
+  ar_model_coefficients_order: 4
+  bins: &id001
+  - 2
+  - 3
+  - 4
+  - 10
+  - 100
+  calculators: null
+  cid_ce_normalize: &id002
+  - true
+  - false
+  count_below_or_above_x: 0
+  dfa_minimum: 20
+  dfa_order: 1
+  ema_alpha: 0.3
+  energy_ratio_chunks: 4
+  higuchi_k_values:
+  - 10
+  - 20
+  - 5
+  hist_bins: 10
+  lz_bins: 10
+  mode: valid
+  moment_orders:
+  - 3
+  - 4
+  n_lags_auto_correlation: 13
+  permutation_entropy_delay: 1
+  permutation_entropy_order: 3
+  q: &id003
+  - 0.1
+  - 0.2
+  - 0.25
+  - 0.3
+  - 0.4
+  - 0.6
+  - 0.7
+  - 0.75
+  - 0.8
+  - 0.9
+  r_sigma: &id004
+  - 1
+  - 2
+  renyi_alpha_parameter: 2
+  ssc_threshold: 0
+  svd_entropy_delay: 1
+  svd_entropy_order: 3
+  trimmed_mean_thresholds:
+  - 0.1
+  - 0.15
+  - 0.2
+  - 0.25
+  - 0.3
+  tsallis_q_parameter: 1
+  weights: null
+  window_size: 25
+  wm_limits: &id005
+  - 0.05
+  - 0.05
+stft_sf_params:
+  adjusted: false
+  ar_model_coefficients_order: 4
+  bins: *id001
+  calculators: null
+  cid_ce_normalize: *id002
+  count_below_or_above_x: 0
+  dfa_minimum: 20
+  dfa_order: 1
+  ema_alpha: 0.3
+  energy_ratio_chunks: 4
+  higuchi_k_values:
+  - 10
+  - 20
+  - 5
+  hist_bins: 10
+  lz_bins: 10
+  mode: valid
+  moment_orders:
+  - 3
+  - 4
+  n_lags_auto_correlation: 13
+  permutation_entropy_delay: 1
+  permutation_entropy_order: 3
+  q: *id003
+  r_sigma: *id004
+  renyi_alpha_parameter: 2
+  ssc_threshold: 0
+  svd_entropy_delay: 1
+  svd_entropy_order: 3
+  trimmed_mean_thresholds:
+  - 0.1
+  - 0.15
+  - 0.2
+  - 0.25
+  - 0.3
+  tsallis_q_parameter: 1
+  weights: null
+  window_size: 25
+  wm_limits: *id005
+stft_window: hann
+tkeo_sf_params:
+  adjusted: false
+  ar_model_coefficients_order: 4
+  bins: *id001
+  calculators: null
+  cid_ce_normalize: *id002
+  count_below_or_above_x: 0
+  dfa_minimum: 20
+  dfa_order: 1
+  ema_alpha: 0.3
+  energy_ratio_chunks: 4
+  higuchi_k_values:
+  - 10
+  - 20
+  - 5
+  hist_bins: 10
+  lz_bins: 10
+  mode: valid
+  moment_orders:
+  - 3
+  - 4
+  n_lags_auto_correlation: 13
+  permutation_entropy_delay: 1
+  permutation_entropy_order: 3
+  q: *id003
+  r_sigma: *id004
+  renyi_alpha_parameter: 2
+  ssc_threshold: 0
+  svd_entropy_delay: 1
+  svd_entropy_order: 3
+  trimmed_mean_thresholds:
+  - 0.1
+  - 0.15
+  - 0.2
+  - 0.25
+  - 0.3
+  tsallis_q_parameter: 1
+  weights: null
+  window_size: 25
+  wm_limits: *id005
+wavelet: db4
+wavelet_sf_params:
+  adjusted: false
+  ar_model_coefficients_order: 4
+  bins: *id001
+  calculators: null
+  cid_ce_normalize: *id002
+  count_below_or_above_x: 0
+  dfa_minimum: 20
+  dfa_order: 1
+  ema_alpha: 0.3
+  energy_ratio_chunks: 4
+  higuchi_k_values:
+  - 10
+  - 20
+  - 5
+  hist_bins: 10
+  lz_bins: 10
+  mode: valid
+  moment_orders:
+  - 3
+  - 4
+  n_lags_auto_correlation: 13
+  permutation_entropy_delay: 1
+  permutation_entropy_order: 3
+  q: *id003
+  r_sigma: *id004
+  renyi_alpha_parameter: 2
+  ssc_threshold: 0
+  svd_entropy_delay: 1
+  svd_entropy_order: 3
+  trimmed_mean_thresholds:
+  - 0.1
+  - 0.15
+  - 0.2
+  - 0.25
+  - 0.3
+  tsallis_q_parameter: 1
+  weights: null
+  window_size: 25
+  wm_limits: *id005
+window_size: 25

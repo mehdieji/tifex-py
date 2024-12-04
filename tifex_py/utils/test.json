@@ -1,0 +1,288 @@
+{
+    "calculators": null,
+    "window_size": 25,
+    "wavelet": "db4",
+    "stft_window": "hann",
+    "nperseg": 6,
+    "decomposition_level": 1,
+    "tkeo_sf_params": {
+        "calculators": null,
+        "window_size": 25,
+        "tsallis_q_parameter": 1,
+        "renyi_alpha_parameter": 2,
+        "permutation_entropy_order": 3,
+        "permutation_entropy_delay": 1,
+        "svd_entropy_order": 3,
+        "svd_entropy_delay": 1,
+        "adjusted": false,
+        "ssc_threshold": 0,
+        "ar_model_coefficients_order": 4,
+        "energy_ratio_chunks": 4,
+        "mode": "valid",
+        "weights": null,
+        "ema_alpha": 0.3,
+        "dfa_order": 1,
+        "dfa_minimum": 20,
+        "wm_limits": [
+            0.05,
+            0.05
+        ],
+        "bins": [
+            2,
+            3,
+            4,
+            10,
+            100
+        ],
+        "count_below_or_above_x": 0,
+        "cid_ce_normalize": [
+            true,
+            false
+        ],
+        "hist_bins": 10,
+        "q": [
+            0.1,
+            0.2,
+            0.25,
+            0.3,
+            0.4,
+            0.6,
+            0.7,
+            0.75,
+            0.8,
+            0.9
+        ],
+        "r_sigma": [
+            1,
+            2
+        ],
+        "lz_bins": 10,
+        "n_lags_auto_correlation": 13,
+        "moment_orders": [
+            3,
+            4
+        ],
+        "trimmed_mean_thresholds": [
+            0.1,
+            0.15,
+            0.2,
+            0.25,
+            0.3
+        ],
+        "higuchi_k_values": [
+            10,
+            20,
+            5
+        ]
+    },
+    "wavelet_sf_params": {
+        "calculators": null,
+        "window_size": 25,
+        "tsallis_q_parameter": 1,
+        "renyi_alpha_parameter": 2,
+        "permutation_entropy_order": 3,
+        "permutation_entropy_delay": 1,
+        "svd_entropy_order": 3,
+        "svd_entropy_delay": 1,
+        "adjusted": false,
+        "ssc_threshold": 0,
+        "ar_model_coefficients_order": 4,
+        "energy_ratio_chunks": 4,
+        "mode": "valid",
+        "weights": null,
+        "ema_alpha": 0.3,
+        "dfa_order": 1,
+        "dfa_minimum": 20,
+        "wm_limits": [
+            0.05,
+            0.05
+        ],
+        "bins": [
+            2,
+            3,
+            4,
+            10,
+            100
+        ],
+        "count_below_or_above_x": 0,
+        "cid_ce_normalize": [
+            true,
+            false
+        ],
+        "hist_bins": 10,
+        "q": [
+            0.1,
+            0.2,
+            0.25,
+            0.3,
+            0.4,
+            0.6,
+            0.7,
+            0.75,
+            0.8,
+            0.9
+        ],
+        "r_sigma": [
+            1,
+            2
+        ],
+        "lz_bins": 10,
+        "n_lags_auto_correlation": 13,
+        "moment_orders": [
+            3,
+            4
+        ],
+        "trimmed_mean_thresholds": [
+            0.1,
+            0.15,
+            0.2,
+            0.25,
+            0.3
+        ],
+        "higuchi_k_values": [
+            10,
+            20,
+            5
+        ]
+    },
+    "spectogram_sf_params": {
+        "calculators": null,
+        "window_size": 25,
+        "tsallis_q_parameter": 1,
+        "renyi_alpha_parameter": 2,
+        "permutation_entropy_order": 3,
+        "permutation_entropy_delay": 1,
+        "svd_entropy_order": 3,
+        "svd_entropy_delay": 1,
+        "adjusted": false,
+        "ssc_threshold": 0,
+        "ar_model_coefficients_order": 4,
+        "energy_ratio_chunks": 4,
+        "mode": "valid",
+        "weights": null,
+        "ema_alpha": 0.3,
+        "dfa_order": 1,
+        "dfa_minimum": 20,
+        "wm_limits": [
+            0.05,
+            0.05
+        ],
+        "bins": [
+            2,
+            3,
+            4,
+            10,
+            100
+        ],
+        "count_below_or_above_x": 0,
+        "cid_ce_normalize": [
+            true,
+            false
+        ],
+        "hist_bins": 10,
+        "q": [
+            0.1,
+            0.2,
+            0.25,
+            0.3,
+            0.4,
+            0.6,
+            0.7,
+            0.75,
+            0.8,
+            0.9
+        ],
+        "r_sigma": [
+            1,
+            2
+        ],
+        "lz_bins": 10,
+        "n_lags_auto_correlation": 13,
+        "moment_orders": [
+            3,
+            4
+        ],
+        "trimmed_mean_thresholds": [
+            0.1,
+            0.15,
+            0.2,
+            0.25,
+            0.3
+        ],
+        "higuchi_k_values": [
+            10,
+            20,
+            5
+        ]
+    },
+    "stft_sf_params": {
+        "calculators": null,
+        "window_size": 25,
+        "tsallis_q_parameter": 1,
+        "renyi_alpha_parameter": 2,
+        "permutation_entropy_order": 3,
+        "permutation_entropy_delay": 1,
+        "svd_entropy_order": 3,
+        "svd_entropy_delay": 1,
+        "adjusted": false,
+        "ssc_threshold": 0,
+        "ar_model_coefficients_order": 4,
+        "energy_ratio_chunks": 4,
+        "mode": "valid",
+        "weights": null,
+        "ema_alpha": 0.3,
+        "dfa_order": 1,
+        "dfa_minimum": 20,
+        "wm_limits": [
+            0.05,
+            0.05
+        ],
+        "bins": [
+            2,
+            3,
+            4,
+            10,
+            100
+        ],
+        "count_below_or_above_x": 0,
+        "cid_ce_normalize": [
+            true,
+            false
+        ],
+        "hist_bins": 10,
+        "q": [
+            0.1,
+            0.2,
+            0.25,
+            0.3,
+            0.4,
+            0.6,
+            0.7,
+            0.75,
+            0.8,
+            0.9
+        ],
+        "r_sigma": [
+            1,
+            2
+        ],
+        "lz_bins": 10,
+        "n_lags_auto_correlation": 13,
+        "moment_orders": [
+            3,
+            4
+        ],
+        "trimmed_mean_thresholds": [
+            0.1,
+            0.15,
+            0.2,
+            0.25,
+            0.3
+        ],
+        "higuchi_k_values": [
+            10,
+            20,
+            5
+        ]
+    }
+}

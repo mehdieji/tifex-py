@@ -197,6 +197,9 @@ class StatisticalFeatureParams(BaseFeatureParams):
     r: list
         Used in the calculation of approximate_entropy_*.
         Filtering levels for approximate entropy.
+        Length of compared run of data for approximate entropy
+    cwt_peaks_n: list
+        Upper limits of widths for determining the peaks
     """
     def __init__(self,
                  window_size,
@@ -230,6 +233,7 @@ class StatisticalFeatureParams(BaseFeatureParams):
                  values=[0,1,-1],
                  m=2,
                  r=[0.1, 0.2, 0.3, 0.5, 0.7, 0.9],
+                 cwt_peaks_n=[1,5],
                  calculators=None
                 ):
         super().__init__(calculators)
@@ -260,6 +264,7 @@ class StatisticalFeatureParams(BaseFeatureParams):
         self.values= values
         self.m= m
         self.r=r
+        self.cwt_peaks_n=cwt_peaks_n
 
         if n_lags_auto_correlation is None:
             self.n_lags_auto_correlation = int(min(10 * np.log10(window_size), window_size - 1))

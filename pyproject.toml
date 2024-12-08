@@ -5,13 +5,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "tifex-py"
-version = "0.1.0"
+version = "0.1.1"
 description = "TODO"
 readme = "README.md"
 authors = [
     {name = "Mehdi Ejtehadi", email = "TODO@gmail.com"},
     {name = "Gloria Edumaba Graham", email = "edumabagrahamp@gmail.com"},
-    {name = "Kang Wang", email = "TODO@gmail.com"},
     {name = "Cailin Ringstrom", email = "cringstrom@ethz.ch"}]
 maintainers = [
     {name = "TODO", email = "TODO@gmail.com"}
@@ -37,6 +36,6 @@ Repository = "https://github.com/SCAI-Lab/proj-adl-classification/tree/main"
 
 [tool.setuptools.packages.find]
 where = ["."]  # list of folders that contain the packages (["."] by default)
-include = ["tifex_py"]  # package names should match these glob patterns (["*"] by default)
+include = ["tifex_py", "tifex_py.feature_extraction", "tifex_py.utils"]  # package names should match these glob patterns (["*"] by default)
 exclude = []  # exclude packages matching these glob patterns (empty by default)
 namespaces = false  # to disable scanning PEP 420 namespaces (true by default)

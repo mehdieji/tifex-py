@@ -1,5 +1,8 @@
 # TIFEX-Py – Time-series Feature Extraction forPython
 
+## Introduction - TODO
+- Motivation for package
+- Types of feature available (introduce statistical, spectral, time frequency types)
 
 ## Installation
 __Tifex-Py__ can be installed with pip:
@@ -14,10 +17,83 @@ pip install -e .
 ```
 
 ## Getting Started with Feature Extraction
-example of howtoextract all features
+First, you need to load the time series data:
+```
+filename = "/home/scai9/feature_dataset/USCHAD_data.csv"
+dataset = pd.read_csv(filename)
+
+print(data.head)
+
+       accx      accy      accz
+0 -0.653698  0.711878 -0.423886
+1 -0.643397  0.711878 -0.431206
+2 -0.643397  0.715498 -0.431206
+3 -0.643397  0.711878 -0.427546
+4 -0.653698  0.708259 -0.427546
+
+```
+
+Then, initialize the default feature extraction parameters for all feature categories.
+
+```
+statistical_params = settings.StatisticalFeatureParams(25)
+spectral_params = settings.SpectralFeatureParams(25)
+time_freq_params = settings.TimeFrequencyFeatureParams(25)
+```
+
+Then, we can extract all available features for the `accx`, `accy`, and `accz` time series as shown below.
+
+```
+features = extraction.calculate_all_features(dataset, statistical_params, spectral_params, time_freq_params, columns=["accx", "accy", "accz"])
+```
 
 
 For more detailed information on how to use the package, please see the provided [Jupyter notebook](notebooks/basics.ipynb). Here, 
+
+## Data Formats
+
+
+### Input Formats
+#### numpy Arrays
+1 or 2 dimensional `np.ndarray` can be used as an input for feature extraction. In 2D arrays, the columns are treated as the different dimensions of the time series. The `columns` parameter can be used to provide the ordered names of the dimensions of the time series to be used as the index in the output DataFrame. Otherwise, they will be labelled by the integer index of the dimension.
+
+#### pandas Series
+Similarly, the `pandas.Series` is an acceptable data format for a univariate time series.
+
+#### pandas DataFrame
+The `pandas.DataFrame` is an acceptable input format for both univariate and multivariate time series. In this case, the `columns` parameter can be used to specify which columns of the DataFrame features will be extracted from.
+
+### Output Format
+The output from feature extraction is a `pandas.DataFrame` where the columns correspond to the different extracted features and the rows correspond to the dimension(s) of the time series the features were extracted from.
+
+|          | mean    | mode    | ...     | number_cwt_peaks_5 |
+| -------- | ------- | ------- | ------- | ------------------ |
+| accx     | 0.505   | 0.409   |...      | 182                |
+| accy     | 0.482   | 0.332   | ...     | 33                 |
+| accz     | 0.234   | 0.123   | ...     | 928                |
+
+## Feature Extraction Settings
+The parameters used calculating the features as well as the selection of which of the available features to extract are configured using the `*FeatureParams` classes. There is a different class for each category of features.
+
+The parameters can be modified fromtheir default values when the class is initialized or by loading a YAML or JSON configuration file. A base file for the custom configuration can be created by saving the default parameters to a YAML or JSON file as shown below.
+
+```
+# Initialization of the feature extraction parameters
+statistical_params = settings.StatisticalFeatureParams(25)
+spectral_params = settings.SpectralFeatureParams(25)
+time_freq_params = settings.TimeFrequencyFeatureParams(25)
+
+# Save and load the parameters to JSON file
+statistical_params.to_json("statistical_params.json")
+statistical_params_2 = settings.StatisticalFeatureParams.from_json("statistical_params.json")
+
+# Save and load the parameters to YAML file
+statistical_params.to_yaml("statistical_params.yaml")
+statistical_params_2 = settings.StatisticalFeatureParams.from_yaml("statistical_params.yaml")
+```
+
+## Parallelization
+Parallelization is configured via the `n_jobs` parameter of the `calculate_*_features` functions. By default, `os.cpu_count()` is used.
 
 ## Adding New Features
 TODO reorder sectios

@@ -1,7 +1,7 @@
 # TIFEX-Py – Time-series Feature Extraction for Python
 
 ## Introduction - TODO
-- Motivation for package
+- TIFEX-Py is a Python 3 toolbox developed for time-series feature extraction. TIFEX-Py is a versatile tool designed for analyzing time series data and extracting features across statistical and amplitude, spectral, and time-frequency domains. TIFEX-Py is built upon widely used Python data analysis libraries such as \texttt{NumPy} and \texttt{Pandas}, ensuring compatibility with standard data processing workflows. The toolbox is open-source and publicly available\footnote{Repository available at \url{https://github.com/mehdieji/tifex-py}.}.
 - The available features are detailed in the README_Features.md
 
 ## Installation

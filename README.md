@@ -5,7 +5,7 @@
 - The available features are detailed in the README_Features.md
 
 ## Installation
-__Tifex-Py__ can be installed with pip:
+`TIFEX-Py` can be installed with pip:
 ```
 pip install tifex-py
 ```

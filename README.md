@@ -2,7 +2,7 @@
 
 ## Introduction - TODO
 - Motivation for package
-- Types of feature available (introduce statistical, spectral, time frequency types)
+- The available features are detailed in the README_Features.md
 
 ## Installation
 __Tifex-Py__ can be installed with pip:

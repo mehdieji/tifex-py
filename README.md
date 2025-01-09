@@ -1,4 +1,4 @@
-# TIFEX-Py – Time-series Feature Extraction forPython
+# TIFEX-Py – Time-series Feature Extraction for Python
 
 ## Introduction - TODO
 - Motivation for package

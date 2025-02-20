@@ -197,6 +197,25 @@ In the implementation of your spectral feature calculator, please use these prec
 
 For example, `calculate_spectral_cumulative_frequency_below(freqs, magnitudes, thresholds_freq_below, **kwargs)` uses the precomputed `freqs` and `magnitudes` arrays in addition to a calculator-specific threshold parameter.
 
+# Credits
+
+This project was developed as part of Mehdi Ejtehadi's PhD research at SCAI Lab, with significant contributions from all authors and guidance from our esteemed supervisors.
+
+## Authors
+- **Mehdi Ejtehadi**
+- **Gloria Edumaba Graham**
+- **Cailin Ringstrom**
+- **Elisa Du**
+
+## Supervisors
+- **Dr. Diego Paez-Granados**
+- **Prof. Robert Riener**
+
+## Lab
+This research was conducted at **[SCAI Lab](https://scai.ethz.ch/)**. led by Dr. Diego Paez-Granados.  
+
+## Funding
+This study was partially funded by the Schweizer Paraplegiker Stiftung (SPS) and the ETH Zürich Foundation under the 2021-HS-348 ETH-SPS Digital Transformation in Personalized Healthcare for SCI individuals.
 
 
 

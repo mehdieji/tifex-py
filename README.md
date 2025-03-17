@@ -205,6 +205,7 @@ This project was developed as part of Mehdi Ejtehadi's PhD research at SCAI Lab,
 - **Mehdi Ejtehadi**
 - **Gloria Edumaba Graham**
 - **Cailin Ringstrom**
+- **Kang Wang**
 
 ## Supervisors
 - **Dr. Diego Paez-Granados**

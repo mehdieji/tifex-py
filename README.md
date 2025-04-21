@@ -215,7 +215,7 @@ This project was developed as part of Mehdi Ejtehadi's PhD research at SCAI Lab,
 This research was conducted at **[SCAI Lab](https://scai.ethz.ch/)** led by Dr. Diego Paez-Granados.  
 
 ## Funding
-This study was partially funded by the Schweizer Paraplegiker Stiftung (SPS) and the ETH Zürich Foundation under the 2021-HS-348 ETH-SPS Digital Transformation in Personalized Healthcare for SCI individuals.
+This study was partially funded by the Schweizer Paraplegiker Stiftung (SPS) and the ETH Zürich Foundation under the 2021-HS-348 ETH-SPS Digital Transformation in Personalized Healthcare for SCI individuals, and JST Moonshot R&D Program, Grant Number JPMJMS2034-18.
 
 
 

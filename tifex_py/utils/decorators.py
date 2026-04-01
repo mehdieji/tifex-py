@@ -6,6 +6,7 @@ def name(strname, argname=None, offset=0):
     Decorator to add names to a function.
     """
     def decorator(func):
+        @wraps(func)
         def wrapper(*args, **kwargs):
             names = []
             if isinstance(argname, list):
@@ -32,8 +33,12 @@ def name(strname, argname=None, offset=0):
             else:
                 names = strname
 
-            wrapper.names = names
-            return func(*args, **kwargs)
+            try:
+                results = func(*args, **kwargs)
+                return results, names
+            except Exception as e:
+                print(f"Error calculating feature(s) {names}: {e}")
+                return None, names
         return wrapper
     return decorator
 

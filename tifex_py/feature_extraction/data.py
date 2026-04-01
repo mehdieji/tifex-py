@@ -64,8 +64,16 @@ class TimeSeries():
         ts_list = []
         if columns is None:
             columns = data.columns
-        for column in columns:
-            ts_list.append(self.create_data_dict(data[column].values, column))
+        # Check number of rows in the dataframe
+        if len(data) == 1:
+            # If there is only one row, we assume that the columns are the time series and the row contains the values
+            for column in columns:
+                ts_list.append(self.create_data_dict(data[column].values, column))
+        else:
+            # Iterate over the rows
+            for idx, row in data.iterrows():
+                for column in columns:
+                    ts_list.append(self.create_data_dict(row[column], column, idx=idx))
         return ts_list
 
     def parse_from_array(self, data, columns=None):

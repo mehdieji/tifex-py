@@ -74,44 +74,54 @@ def extract_features(series, module, param_dict):
     features: dict
         Dictionary of calculated features.
     """
-    features = {}
-    calculators = get_calculators(get_module(module), param_dict["calculators"])
-    for calculate in calculators:
-        try:
-            feature = calculate(**series, **param_dict)
-        except Exception as e:
-            name = getattr(calculate, "names")
-            print(f"Error calculating feature(s) {name}: {e}")
+    features = []
+
+    for i in range(len(series.data)):
+        # for data in series:
+        data = series.data[i]
+
+        feature, name = calculator(**data, **param_dict)
+
+        if feature is None:
             print(f"Feature(s) {name} will be set to Nan.")
             if isinstance(name, list):
                 feature = [np.nan] * len(name)
             else:
                 feature = np.nan
+        feature = structure_features(feature, name)
 
-        name = getattr(calculate, "names")
+        features.append(
+            {
+                "label": data["label"],
+                "feature": feature,
+                "idx": data["idx"],
+            }
+        )
+        
+    return features
 
-        if isinstance(feature, SignalFeatures):
-            for k, v in feature.features.items():
-                features[f'{name}_{k}'] = v
-        elif isinstance(name, list):
-            if isinstance(feature[0], SignalFeatures):
-                for n, f in zip(name, feature):
-                    for k, v in f.features.items():
-                        features[f'{n}_{k}'] = v
-            else:
-                if len(name) != len(feature):
-                    print(f"Feature {name} has a different number of values than the feature itself.")
+def structure_features(feature, name):
+    features = {}
+    if isinstance(feature, SignalFeatures):
+        for k, v in feature.features.items():
+            features[f"{name}_{k}"] = v
 
-                for n, f in zip(name, feature):
-                    features[n] = f
+    elif isinstance(name, list):
+        if isinstance(feature[0], SignalFeatures):
+            for n, f in zip(name, feature):
+                for k, v in f.features.items():
+                    features[f"{n}_{k}"] = v
+
         else:
-#            if hasattr(feature, "__iter__"):
-#                print(f"Feature {name} has more than one value.")
-            features[name] = feature
+            if len(name) != len(feature):
+                print(
+                    f"Feature {name} has a different number of values than the feature itself."
+                )
 
-    if "label" in series:
-        label = series["label"]
+            for n, f in zip(name, feature):
+                features[n] = f
+
     else:
-        label = ""
+        features[name] = feature
 
-    return SignalFeatures(label, features)
+    return features

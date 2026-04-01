@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+import numpy as np
 import multiprocessing as mp
 from functools import partial
 
@@ -162,12 +163,43 @@ def calculate_ts_features(time_series, module, params, njobs=None):
     pool = mp.Pool(njobs)
 
     param_dict = params.get_settings_as_dict()
+    calculators = get_calculators(get_module(module), param_dict["calculators"])
 
     results = pool.imap(partial(extract_features, module=module, param_dict=param_dict), time_series)
 
-    for r in results:
-        index.append(r.label)
-        features.append(r.features)
+    results = []
+    for calc in calculators:
+        result = extract_features(
+            calculator=calc,
+            series=time_series,
+            param_dict=param_dict,
+        )
+        results.append(result)
 
-    features_df = pd.DataFrame(features, index=index)
-    return features_df
+
+    all_features = {}
+    for element in results:
+        for item in element:
+            label = item["label"]
+            features = item["feature"]
+            idx = item.get("idx", np.nan)
+            if all_features.get(idx) is None:
+                all_features[idx] = {}
+            for name, val in features.items():
+                if all_features[idx].get(label) is None:
+                    all_features[idx][label] = {}
+                all_features[idx][label][name] = val
+    all_outputs = []
+    for idx, data in all_features.items():  # Per each sample
+        sample_output = []
+        for label, features in data.items():  # Per each label
+            row = {"label": label}
+            for name, value in features.items():  # Per each feature
+                row[name] = value
+            sample_output.append(row)
+        df = pd.DataFrame(sample_output)
+
+    
+        df.set_index("label", inplace=True)
+        all_outputs.append(df)
+    return all_outputs

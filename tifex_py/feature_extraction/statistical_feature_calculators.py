@@ -1643,7 +1643,7 @@ def calculate_petrosian_fractal_dimension(signal, **kwargs):
         2020, Vol. 34,  Issue 3, Pages: 180-190, 34(3), 180–190. https://doi.org/10.7555/JBR.33.20190009
     """
     N = len(signal)
-    nzc = calculate_zero_crossings(np.diff(signal))
+    nzc, _ = calculate_zero_crossings(np.diff(signal))
     return np.log10(N) / (np.log10(N) + np.log10(N / (N + 0.4 * nzc)))
 
 @name(["hjorth_mobility", "hjorth_complexity"])
@@ -3271,7 +3271,7 @@ def calculate_hurst_exponent(signal, **kwargs):
         Sequence. https://arxiv.org/abs/2310.19051v1
         - https://github.com/GrAbsRD/HurstExponent
     """
-    segment_size, fluctuation_values = calculate_detrended_fluctuation_analysis(signal)
+    segment_size, fluctuation_values, _ = calculate_detrended_fluctuation_analysis(signal)
 
     poly = np.polyfit(np.log(segment_size), np.log(fluctuation_values), 1)
     hurst = poly[0]
@@ -3426,7 +3426,7 @@ def calculate_large_std(signal, **kwargs):
         Extraction on basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 
         307, 72–77. https://doi.org/10.1016/J.NEUCOM.2018.03.067
     """
-    range = calculate_range(signal)
+    range, _ = calculate_range(signal)
     N = len(signal)
     r = 4 if 15 < N <=70 else 6
 

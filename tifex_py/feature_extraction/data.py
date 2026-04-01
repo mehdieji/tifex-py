@@ -44,23 +44,6 @@ class TimeSeries():
         else:
             raise ValueError("Data format not supported.")
 
-    def __iter__(self):
-        """
-        Make the class iterable.
-        """
-        self.index = 0
-        return self
-
-    def __next__(self):
-        """
-        Get the next time series.
-        """
-        if self.index < len(self.data):
-            result = self.data[self.index]
-            self.index += 1
-            return result
-        else:
-            raise StopIteration
 
     def parse_from_dataframe(self, data, columns=None):
         """
@@ -114,6 +97,14 @@ class TimeSeries():
                 columns = list(range(data.shape[1]))
             for i, c in enumerate(columns):
                 ts_list.append(self.create_data_dict(data[:, i], c))
+        elif len(data.shape) == 3:  # [batch, time, channels]
+            if columns is None:
+                columns = list(range(data.shape[2]))
+            for j, r in enumerate(
+                list(range(data.shape[0]))
+            ):  # For each sample in the batch
+                for i, c in enumerate(columns):
+                    ts_list.append(self.create_data_dict(data[r, :, i], c, idx=j))
         else:
             raise ValueError("Arrays with more than 2 dimensions are not supported.")
         return ts_list
@@ -138,7 +129,7 @@ class TimeSeries():
         name = data.name
         return [self.create_data_dict(data.values, name)]
 
-    def create_data_dict(self, signal, name):
+    def create_data_dict(self, signal, name, idx=None):
         """
         Create a dictionary with the signal and the label.
 
@@ -148,12 +139,16 @@ class TimeSeries():
             The time series data.
         name : str
             The name of the time series.
+        idx : int
+            The index of the time series in the batch (if applicable).
 
         Returns:
         --------
         dict
-            Dictionary with the signal and the label.
-        """    
+            Dictionary with the signal and the label. If idx is not None, the dictionary also contains the index of the time series in the batch.
+        """   
+        if idx is not None:
+            return {"signal": signal, "label": name, "idx": idx}
         return {"signal": signal, "label": name}
 
 

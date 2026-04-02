@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from scipy.signal import welch
-
+import librosa
 
 class SignalFeatures():
     """
@@ -174,7 +174,7 @@ class SpectralTimeSeries(TimeSeries):
         self.fs = fs
         super().__init__(data, columns=columns)
 
-    def create_data_dict(self, signal, name):
+    def create_data_dict(self, signal, name, idx=None):
         """
         Creates a dictionary with the signal and its label as well as the
         frequency spectrum and the power spectral density of the signal.
@@ -185,7 +185,9 @@ class SpectralTimeSeries(TimeSeries):
             The time series data.
         name : str
             The name of the time series.
-        
+        idx : int
+            The index of the time series in the batch (if applicable).
+
         Returns:
         --------
         dict
@@ -203,6 +205,32 @@ class SpectralTimeSeries(TimeSeries):
         freqs_psd, psd = welch(signal, fs=self.fs)
         psd_normalized = psd / np.sum(psd)
 
-        return {"signal": signal, "spectrum": spectrum, "magnitudes": spectrum_magnitudes,
-                "magnitudes_normalized": spectrum_magnitudes_normalized, "freqs": freqs_spectrum,
-                "psd": psd, "psd_normalized": psd_normalized, "freqs_psd": freqs_psd, "label": name}
+         # Calculate harmonic component using librosa
+        harmonic_component = librosa.effects.harmonic(signal)
+
+        # Calculate spectral centroid with order 1 = mean frequency
+        spectral_centroid = np.sum(
+            spectrum_magnitudes * (freqs_spectrum**1)
+        ) / np.sum(spectrum_magnitudes)
+
+        #  Calculate fundamental frequency using librosa's YIN algorithm
+        f0 = librosa.yin(
+            signal, fmin=librosa.note_to_hz("C1"), fmax=librosa.note_to_hz("C8")
+        )
+        final_obj = {
+            "signal": signal,
+            "spectrum": spectrum,
+            "magnitudes": spectrum_magnitudes,
+            "magnitudes_normalized": spectrum_magnitudes_normalized,
+            "freqs": freqs_spectrum,
+            "psd": psd,
+            "psd_normalized": psd_normalized,
+            "freqs_psd": freqs_psd,
+            "label": name,
+            "harmonic": harmonic_component,
+            "mean_frequency": spectral_centroid,
+            "fundamental_frequency": f0,
+        }
+        if idx is not None:
+            final_obj["idx"] = idx
+        return final_obj

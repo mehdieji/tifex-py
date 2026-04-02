@@ -165,17 +165,14 @@ def calculate_ts_features(time_series, module, params, njobs=None):
     param_dict = params.get_settings_as_dict()
     calculators = get_calculators(get_module(module), param_dict["calculators"])
 
-    results = pool.imap(partial(extract_features, module=module, param_dict=param_dict), time_series)
-
-    results = []
-    for calc in calculators:
-        result = extract_features(
-            calculator=calc,
+    results = pool.imap(
+        partial(
+            extract_features,
             series=time_series,
             param_dict=param_dict,
-        )
-        results.append(result)
-
+        ),
+        calculators,
+    )
 
     all_features = {}
     for element in results:
@@ -189,6 +186,7 @@ def calculate_ts_features(time_series, module, params, njobs=None):
                 if all_features[idx].get(label) is None:
                     all_features[idx][label] = {}
                 all_features[idx][label][name] = val
+
     all_outputs = []
     for idx, data in all_features.items():  # Per each sample
         sample_output = []

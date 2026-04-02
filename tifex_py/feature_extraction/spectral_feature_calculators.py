@@ -46,7 +46,7 @@ def calculate_spectral_centroid(freqs, magnitudes, centroid_orders=1, **kwargs):
         return np.array(centroids)
 
 @name("spectral_variance")
-def calculate_spectral_variance(freqs, magnitudes, **kwargs):
+def calculate_spectral_variance(freqs, magnitudes, mean_frequency, **kwargs):
     """
     Calculates the spectral variance (one form of spectral spread) of the given spectrum.
 
@@ -70,13 +70,13 @@ def calculate_spectral_variance(freqs, magnitudes, **kwargs):
         - Barandas, M., Folgado, D., Fernandes, L., Santos, S., Abreu, M., Bota, P., Liu, H., Schultz, T., & Gamboa, H. (2020). 
         TSFEL: Time Series Feature Extraction Library. SoftwareX, 11. https://doi.org/10.1016/j.softx.2020.100456
     """
-    mean_frequency = calculate_spectral_centroid(freqs, magnitudes)
+    
     spectral_variance = np.sum(((freqs - mean_frequency) ** 2) * magnitudes) / np.sum(magnitudes)
     return spectral_variance
 
 
 @name("spectral_skewness")
-def calculate_spectral_skewness(freqs, magnitudes, **kwargs):
+def calculate_spectral_skewness(freqs, magnitudes,mean_frequency,magnitudes_normalized, **kwargs):
     """
     Calculates the spectral skewness of the given spectrum.
 
@@ -101,13 +101,19 @@ def calculate_spectral_skewness(freqs, magnitudes, **kwargs):
         - Barandas, M., Folgado, D., Fernandes, L., Santos, S., Abreu, M., Bota, P., Liu, H., Schultz, T., & Gamboa, H. (2020). 
         TSFEL: Time Series Feature Extraction Library. SoftwareX, 11. https://doi.org/10.1016/j.softx.2020.100456
     """
-    mu1 = calculate_spectral_centroid(freqs, magnitudes, centroid_orders=1)
-    mu2 = calculate_spectral_bandwidth(freqs, magnitudes, bandwidth_orders=2)
+    mu1 = mean_frequency
+    mu2, _ = calculate_spectral_bandwidth(
+        freqs,
+        magnitudes,
+        bandwidth_orders=2,
+        mean_frequency=mean_frequency,
+        magnitudes_normalized=magnitudes_normalized,
+    )
     spectral_skewness = np.sum(magnitudes * (freqs - mu1) ** 3) / (np.sum(magnitudes) * mu2 ** 3)
     return spectral_skewness
 
 @name("spectral_kurtosis")
-def calculate_spectral_kurtosis(freqs, magnitudes, **kwargs):
+def calculate_spectral_kurtosis(freqs, magnitudes, mean_frequency, magnitudes_normalized, **kwargs):
     """
     Calculate the spectral kurtosis of the given spectrum.
 
@@ -134,8 +140,14 @@ def calculate_spectral_kurtosis(freqs, magnitudes, **kwargs):
         - Barandas, M., Folgado, D., Fernandes, L., Santos, S., Abreu, M., Bota, P., Liu, H., Schultz, T., & Gamboa, H. (2020). 
         TSFEL: Time Series Feature Extraction Library. SoftwareX, 11. https://doi.org/10.1016/j.softx.2020.100456
     """
-    mu1 = calculate_spectral_centroid(freqs, magnitudes, centroid_orders=1)
-    mu2 = calculate_spectral_bandwidth(freqs, magnitudes, bandwidth_orders=2)
+    mu1 = mean_frequency
+    mu2, _ = calculate_spectral_bandwidth(
+        freqs,
+        magnitudes,
+        bandwidth_orders=2,
+        mean_frequency=mean_frequency,
+        magnitudes_normalized=magnitudes_normalized,
+    )
     spectral_kurtosis = np.sum(magnitudes * (freqs - mu1) ** 4) / (np.sum(magnitudes) * mu2 ** 4)
     return spectral_kurtosis
 
@@ -248,7 +260,8 @@ def calculate_spectral_slope_logarithmic_psd(freqs_psd, psd, **kwargs):
         - Barandas, M., Folgado, D., Fernandes, L., Santos, S., Abreu, M., Bota, P., Liu, H., Schultz, T., & Gamboa, H. (2020). 
         TSFEL: Time Series Feature Extraction Library. SoftwareX, 11. https://doi.org/10.1016/j.softx.2020.100456
     """
-    return calculate_spectral_slope_logarithmic(freqs_psd, psd)
+    spectral_slope, _ = calculate_spectral_slope_logarithmic(freqs_psd, psd)
+    return spectral_slope
 
 # TODO: Figure out how to handle difference parameter inputs
 @name("spectral_slope_linear")
@@ -285,7 +298,8 @@ def calculate_spectral_slope_linear_psd(freqs_psd, psd, **kwargs):
     """
     TODO: Update
     """
-    return calculate_spectral_slope_linear(freqs_psd, psd)
+    slope, _ = calculate_spectral_slope_linear(freqs_psd, psd)
+    return slope
 
 @name("peak_freq_{}", "n_dom_freqs")
 def calculate_peak_frequencies(freqs_psd, psd, n_dom_freqs, **kwargs):
@@ -322,7 +336,7 @@ def calculate_peak_frequencies(freqs_psd, psd, n_dom_freqs, **kwargs):
     return np.array(peak_frequencies)
 
 @name("edge_freq_thresh_{}", "cumulative_power_thresholds")
-def calculate_spectral_edge_frequency(freqs_psd, psd, cumulative_power_thresholds, **kwargs):
+def calculate_spectral_edge_frequency(freqs_psd, psd_normalized, cumulative_power_thresholds, **kwargs):
     """
     Calculate the spectral edge frequencies for given cumulative power thresholds.
 
@@ -351,7 +365,7 @@ def calculate_spectral_edge_frequency(freqs_psd, psd, cumulative_power_threshold
     """
     # A special case would be roll-off frequency (threshold = .85)
     feats = []
-    cumulative_power = np.cumsum(psd) / np.sum(psd)
+    cumulative_power = np.cumsum(psd_normalized)
     for threshold in cumulative_power_thresholds:
         feats.append(freqs_psd[np.argmax(cumulative_power >= threshold)])
     return np.array(feats)
@@ -481,7 +495,7 @@ def calculate_spectral_contrast(freqs_psd, psd, f_bands, **kwargs):
     return np.array(feats)
 
 @name("spectral_bandwidth_order_{}", "bandwidth_orders")
-def calculate_spectral_bandwidth(freqs, magnitudes, bandwidth_orders, **kwargs):
+def calculate_spectral_bandwidth(freqs, magnitudes, bandwidth_orders, mean_frequency, magnitudes_normalized, **kwargs):
     """
     Calculate the spectral bandwidth of a given frequency spectrum.
     
@@ -519,19 +533,18 @@ def calculate_spectral_bandwidth(freqs, magnitudes, bandwidth_orders, **kwargs):
         - Giannakopoulos, T., & Pikrakis, A. (2014). Audio Features. Introduction to Audio Analysis, 
         59–103. https://doi.org/10.1016/B978-0-08-099388-1.00004-2
     """
-    normalized_magnitudes = magnitudes / np.sum(magnitudes)
-    mean_frequency = calculate_spectral_centroid(freqs, magnitudes)
+   
     if isinstance(bandwidth_orders, int):
-        return ((np.sum(((freqs - mean_frequency) ** bandwidth_orders) * normalized_magnitudes)) ** (1 / bandwidth_orders))
+        return ((np.sum(((freqs - mean_frequency) ** bandwidth_orders) * magnitudes_normalized)) ** (1 / bandwidth_orders))
     else:
         spectral_bandwidth = []
         for order in bandwidth_orders:
-            spectral_bandwidth.append(((np.sum(((freqs - mean_frequency) ** order) * normalized_magnitudes)) ** (1 / order)))
+            spectral_bandwidth.append(((np.sum(((freqs - mean_frequency) ** order) * magnitudes_normalized)) ** (1 / order)))
         return np.array(spectral_bandwidth)
 
 #TODO: Check what is going on here
 @name("spectral_absolute_deviation_order_{}", "abs_dev_orders")
-def calculate_spectral_absolute_deviation(freqs, magnitudes, abs_dev_orders=1, **kwargs):
+def calculate_spectral_absolute_deviation(freqs, magnitudes, mean_frequency, magnitudes_normalized, abs_dev_orders=1, **kwargs):
     """
     Calculate the spectral absolute deviation of a given frequency spectrum.
 
@@ -564,18 +577,17 @@ def calculate_spectral_absolute_deviation(freqs, magnitudes, abs_dev_orders=1, *
         Zenodo. https://doi.org/10.5281/zenodo.11192913
     """
     # The even order spectral absolute deviation is the same as spectral bandwidth of the same order
-    normalized_magnitudes = magnitudes / np.sum(magnitudes)
-    mean_frequency = calculate_spectral_centroid(freqs, magnitudes)
+   
     if isinstance(abs_dev_orders, int):
-        return ((np.sum((np.abs(freqs - mean_frequency) ** abs_dev_orders) * normalized_magnitudes)) ** (1 / abs_dev_order))
+        return ((np.sum((np.abs(freqs - mean_frequency) ** abs_dev_orders) * magnitudes_normalized)) ** (1 / abs_dev_orders))
     else:
         spectral_absolute_deviation = []
         for order in abs_dev_orders:
-            spectral_absolute_deviation.append(((np.sum((np.abs(freqs - mean_frequency) ** order) * normalized_magnitudes)) ** (1 / order)))
+            spectral_absolute_deviation.append(((np.sum((np.abs(freqs - mean_frequency) ** order) * magnitudes_normalized)) ** (1 / order)))
         return np.array(spectral_absolute_deviation)
 
 @name("spectral_covariance")
-def calculate_spectral_cov(freqs, magnitudes, **kwargs):
+def calculate_spectral_cov(freqs, magnitudes, mean_frequency, magnitudes_normalized, **kwargs):
     """
     Calculate the spectral coefficient of variation (CoV) for a given frequency spectrum.
 
@@ -605,8 +617,12 @@ def calculate_spectral_cov(freqs, magnitudes, **kwargs):
         neural digital signal processing. Journal of Open Source Software, 4(36), 1272. 
         https://doi.org/10.21105/JOSS.01272
     """
-    mean_frequency = calculate_spectral_centroid(freqs, magnitudes)
-    frequency_std = calculate_spectral_bandwidth(freqs, magnitudes, 2)
+    frequency_std, _ = calculate_spectral_bandwidth(
+        freqs, 
+        magnitudes, 
+        2, 
+        mean_frequency=mean_frequency,
+        magnitudes_normalized=magnitudes_normalized)
     coefficient_of_variation = (frequency_std / mean_frequency) * 100
     return coefficient_of_variation
 
@@ -674,7 +690,7 @@ def calculate_spectral_rolloff(freqs, magnitudes, roll_percent=0.85, **kwargs):
     return rolloff_frequency
 
 @name("harmonic_ratio")
-def calculate_harmonic_ratio(signal, **kwargs):
+def calculate_harmonic_ratio(signal,harmonic, **kwargs):
     """
     Calculate the harmonic ratio of a given signal.
 
@@ -697,10 +713,10 @@ def calculate_harmonic_ratio(signal, **kwargs):
         This function is based on the harmonic ratio calculation methodology as described in:
             https://www.mathworks.com/help/audio/ref/harmonicratio.html
     """
-    harmonic_component = librosa.effects.harmonic(signal)
+    
     
     # Calculate mean absolute amplitudes
-    mean_abs_harmonic = np.mean(np.abs(harmonic_component))
+    mean_abs_harmonic = np.mean(np.abs(harmonic))
     mean_abs_signal = np.mean(np.abs(signal))
     
     # Avoid division by zero
@@ -710,7 +726,7 @@ def calculate_harmonic_ratio(signal, **kwargs):
     return harmonic_ratio
 
 @name("fundamental_frequency")
-def calculate_fundamental_frequency(signal, **kwargs):
+def calculate_fundamental_frequency(fundamental_frequency, **kwargs):
     """
     Calculate the fundamental frequency (F0) of a given audio signal.
 
@@ -736,8 +752,8 @@ def calculate_fundamental_frequency(signal, **kwargs):
         - Barandas, M., Folgado, D., Fernandes, L., Santos, S., Abreu, M., Bota, P., Liu, H., Schultz, T., & Gamboa, 
         H. (2020). TSFEL: Time Series Feature Extraction Library. SoftwareX, 11. https://doi.org/10.1016/j.softx.2020.100456
     """
-    f0 = librosa.yin(signal, fmin=librosa.note_to_hz('C1'), fmax=librosa.note_to_hz('C8'))
-    return np.mean(f0)
+    
+    return np.mean(fundamental_frequency)
 
 @name("spectral_crest_factor")
 def calculate_spectral_crest_factor(magnitudes, **kwargs):
@@ -863,7 +879,7 @@ def calculate_spectral_winsorized_mean(freqs, magnitudes, limits=(0.05, 0.95), *
     return winsorized_mean
 
 @name("total_harmonic_distortion")
-def calculate_total_harmonic_distortion(signal, fs, harmonics=5, **kwargs):
+def calculate_total_harmonic_distortion(signal, spectrum, fs, fundamental_frequency, harmonics=5, **kwargs):
     """
     Calculate the Total Harmonic Distortion (THD) of a signal.
     
@@ -898,23 +914,23 @@ def calculate_total_harmonic_distortion(signal, fs, harmonics=5, **kwargs):
         Dan Ellis, Jack Mason, Kyungyun Lee, Bea Steers, … Waldir Pimenta. (2024). librosa/librosa: 0.10.2.post1 (0.10.2.post1). 
         Zenodo. https://doi.org/10.5281/zenodo.11192913
     """
-    f0 = librosa.yin(signal, fmin=librosa.note_to_hz('C1'), fmax=librosa.note_to_hz('C8'))
-    fundamental_freq = np.mean(f0)
-    fft_spectrum = np.fft.rfft(signal)
-    freqs = np.fft.rfftfreq(len(signal), 1/fs)
-    fundamental_idx = np.argmin(np.abs(freqs - fundamental_freq))
-    fundamental_power = np.abs(fft_spectrum[fundamental_idx])**2 # power of the fundamental frequency
-    
+    fundamental_frequency = np.mean(fundamental_frequency)
+    freqs = np.fft.rfftfreq(len(signal), 1 / fs)
+    fundamental_idx = np.argmin(np.abs(freqs - fundamental_frequency))
+    fundamental_power = (
+        np.abs(spectrum[fundamental_idx]) ** 2
+    )  # power of the fundamental frequency
+
     # Harmonic power (sum of harmonics' power starting from the 2nd harmonic)
     harmonic_power = 0
-    for i in range(2, harmonics+1):  # Start from the second harmonic 
-        harmonic_idx = np.argmin(np.abs(freqs - i * fundamental_freq))
-        harmonic_power += np.abs(fft_spectrum[harmonic_idx])**2
+    for i in range(2, harmonics + 1):  # Start from the second harmonic
+        harmonic_idx = np.argmin(np.abs(freqs - i * fundamental_frequency))
+        harmonic_power += np.abs(spectrum[harmonic_idx]) ** 2
     thd = np.sqrt(harmonic_power / fundamental_power)
     return thd
 
 @name("inharmonicity")
-def calculate_inharmonicity(signal, freqs, magnitudes, **kwargs):
+def calculate_inharmonicity(signal, freqs, magnitudes,fundamental_frequency, **kwargs):
     """
     Calculate inharmonicity coefficient from audio signal. Inharmonicity is the measure of 
     how partial tones deviate from harmonics.
@@ -945,7 +961,7 @@ def calculate_inharmonicity(signal, freqs, magnitudes, **kwargs):
         
         # If pYIN fails, fallback to YIN
         if np.all(np.isnan(f0)):
-            f0 = librosa.yin(signal, fmin=librosa.note_to_hz('C1'),fmax=librosa.note_to_hz('C8'))
+            f0 = fundamental_frequency
         
         f0_clean = f0[~np.isnan(f0)]
         
@@ -975,7 +991,7 @@ def calculate_inharmonicity(signal, freqs, magnitudes, **kwargs):
     return inharmonicity
 
 @name(["tristimulus_T1", "tristimulus_T2", "tristimulus_T3"])
-def calculate_tristimulus(magnitudes, **kwargs):
+def calculate_tristimulus(magnitudes_normalized, **kwargs):
     """
     Calculate the tristimulus values from the magnitudes of a frequency spectrum.
 
@@ -1002,11 +1018,11 @@ def calculate_tristimulus(magnitudes, **kwargs):
         recognition of call types of laying hens. Computers and Electronics in Agriculture, 187, 106221. 
         https://doi.org/10.1016/J.COMPAG.2021.106221
     """
-    if len(magnitudes) < 3:
+    if len(magnitudes_normalized) < 3:
         return np.array([np.nan, np.nan, np.nan])
-    t1 = magnitudes[0] / np.sum(magnitudes)
-    t2 = magnitudes[1] / np.sum(magnitudes)
-    t3 = np.sum(magnitudes[2:]) / np.sum(magnitudes)
+    t1 = magnitudes_normalized[0]
+    t2 = magnitudes_normalized[1]
+    t3 = np.sum(magnitudes_normalized[2:])
     return np.array([t1, t2, t3])
 
 @name("spectral_rollon")
@@ -1060,7 +1076,13 @@ def calculate_spectral_variability(magnitudes, **kwargs):
     return variability
 
 @name("spectral_spread_ratio")
-def calculate_spectral_spread_ratio(freqs, magnitudes, reference_value=1.0, **kwargs):
+def calculate_spectral_spread_ratio(  
+    freqs,
+    magnitudes,
+    magnitudes_normalized,
+    mean_frequency,
+    reference_value=1.0,
+    **kwargs):
     """
     Calculate the spectral spread ratio by normalizing the spectral bandwidth (spread) by a reference value.
 
@@ -1081,12 +1103,25 @@ def calculate_spectral_spread_ratio(freqs, magnitudes, reference_value=1.0, **kw
         Normalized spectral spread ratio.
     """
     # https://doi.org/10.1016/j.softx.2020.100456
-    spread = calculate_spectral_bandwidth(freqs, magnitudes, bandwidth_orders = 2)
+    spread, _ = calculate_spectral_bandwidth(
+        freqs,
+        magnitudes,
+        bandwidth_orders=2,
+        mean_frequency=mean_frequency,
+        magnitudes_normalized=magnitudes_normalized,
+    )
     spread_ratio = spread / reference_value
     return spread_ratio
 
 @name("spectral_skewness_ratio")
-def calculate_spectral_skewness_ratio(freqs, magnitudes, reference_value=1.0, **kwargs):
+def calculate_spectral_skewness_ratio(
+    freqs,
+    magnitudes,
+    magnitudes_normalized,
+    mean_frequency,
+    reference_value=1.0,
+    **kwargs,
+    ):
     """
     Calculate the spectral skewness ratio by normalizing the spectral bandwidth (spread) by a reference value.
 
@@ -1107,12 +1142,20 @@ def calculate_spectral_skewness_ratio(freqs, magnitudes, reference_value=1.0, **
         Normalized spectral skewness ratio.
     """ 
     # https://doi.org/10.1016/j.softx.2020.100456
-    skewness = calculate_spectral_skewness(freqs, magnitudes)
+    skewness, _ = calculate_spectral_skewness(
+        freqs, magnitudes, mean_frequency, magnitudes_normalized
+    )
     skewness_ratio = skewness / reference_value
     return skewness_ratio
 
 @name("spectral_kurtosis_ratio")
-def calculate_spectral_kurtosis_ratio(freqs, magnitudes, reference_value=1.0, **kwargs):
+def calculate_spectral_kurtosis_ratio( 
+    freqs,
+    magnitudes,
+    mean_frequency,
+    magnitudes_normalized,
+    reference_value=1.0,
+    **kwargs):
     """
     Calculate the spectral kurtosis ratio by normalizing the spectral bandwidth (spread) by a reference value.
 
@@ -1133,12 +1176,14 @@ def calculate_spectral_kurtosis_ratio(freqs, magnitudes, reference_value=1.0, **
         Normalized spectral kurtosis ratio.
     """
     # https://doi.org/10.1016/j.softx.2020.100456
-    kurtosis = calculate_spectral_kurtosis(freqs, magnitudes)
+    kurtosis, _ = calculate_spectral_kurtosis(
+        freqs, magnitudes, mean_frequency, magnitudes_normalized
+    )
     kurtosis_ratio = kurtosis / reference_value
     return kurtosis_ratio
 
 @name("spectral_tonal_power_ratio")
-def calculate_spectral_tonal_power_ratio(signal, **kwargs):
+def calculate_spectral_tonal_power_ratio(signal, harmonic, **kwargs):
     """
     Calculate the Spectral Tonal Power Ratio (STPR) of a signal.
 
@@ -1168,13 +1213,13 @@ def calculate_spectral_tonal_power_ratio(signal, **kwargs):
     total_power = np.sum(signal**2)
     if total_power == 0:
         return np.array([0.0])
-        
-    harmonic_power = np.sum(librosa.effects.harmonic(signal)**2) 
+
+    harmonic_power = np.sum(harmonic**2)
     tonal_power_ratio = harmonic_power / total_power
     return tonal_power_ratio
 
 @name("spectral_harmonics_to_noise_ratio")
-def calculate_spectral_harmonics_to_noise_ratio(signal, **kwargs):
+def calculate_spectral_harmonics_to_noise_ratio(signal,harmonic,  **kwargs):
     """
     Calculate the ratio of harmonic energy to noise energy in an audio signal.
     
@@ -1202,21 +1247,20 @@ def calculate_spectral_harmonics_to_noise_ratio(signal, **kwargs):
         - Boersma, P. (n.d.). Accurate Short-Term Analysis Of The Fundamental Frequency And The 
         Harmonics-To-Noise Ratio Of A Sampled Sound. https://www.researchgate.net/publication/2326829
     """    
-    harmonic_part = librosa.effects.harmonic(signal)
-    noise_part = signal - harmonic_part
-        
-    harmonic_energy = np.sum(harmonic_part**2)
+    noise_part = signal - harmonic
+
+    harmonic_energy = np.sum(harmonic**2)
     noise_energy = np.sum(noise_part**2)
-        
+
     if noise_energy == 0:
         return np.array([100.0])
 
     hnr_db = 10 * np.log10(harmonic_energy / noise_energy)
-        
+
     return hnr_db
 
 @name("spectral_noise_to_harmonics_ratio")
-def calculate_spectral_noise_to_harmonics_ratio(signal, **kwargs):
+def calculate_spectral_noise_to_harmonics_ratio(signal, harmonic, **kwargs):
     """
     Calculate the ratio of noise energy to harmonic energy in an audio signal.
     
@@ -1236,20 +1280,19 @@ def calculate_spectral_noise_to_harmonics_ratio(signal, **kwargs):
         Noise-to-harmonics ratio as an acoustic measure of voice disorders in boys. Journal of Voice : Official 
         Journal of the Voice Foundation, 16(1), 28–31. https://doi.org/10.1016/S0892-1997(02)00068-1
     """        
-    harmonic_part = librosa.effects.harmonic(signal)
-    noise_part = signal - harmonic_part
-    
-    harmonic_energy = np.sum(harmonic_part**2)
+    noise_part = signal - harmonic
+
+    harmonic_energy = np.sum(harmonic**2)
     if harmonic_energy == 0:
-        return np.array([float('inf')])  
-        
+        return np.array([float("inf")])
+
     noise_energy = np.sum(noise_part**2)
     nhr_db = 10 * np.log10(noise_energy / harmonic_energy)
 
     return nhr_db
 
 @name("spectral_even_to_odd_harmonic_energy_ratio")
-def calculate_spectral_even_to_odd_harmonic_energy_ratio(signal, fs, **kwargs):
+def calculate_spectral_even_to_odd_harmonic_energy_ratio(signal,fundamental_frequency, fs, **kwargs):
     """
     Calculate the ratio of spectral energy between even and odd harmonics in the signal.
 
@@ -1277,7 +1320,7 @@ def calculate_spectral_even_to_odd_harmonic_energy_ratio(signal, fs, **kwargs):
     Zenodo citation: https://zenodo.org/badge/latestdoi/6309729
     """
     # Estimate the fundamental frequency (f0)
-    f0 = librosa.yin(signal, fmin=librosa.note_to_hz('C1'), fmax=librosa.note_to_hz('C8'))
+    f0 = fundamental_frequency
     fundamental_freq = np.median(f0)
 
     # Generate lists of even and odd harmonics
@@ -1380,7 +1423,7 @@ def calculate_spectral_frequency_above_peak(freqs, magnitudes, **kwargs):
     return frequency_above_peak
 
 @name("spectral_cumulative_frequency_above_threshold_{}", "thresholds_freq_above")
-def calculate_spectral_cumulative_frequency_above(freqs, magnitudes, thresholds_freq_above, **kwargs):
+def calculate_spectral_cumulative_frequency_above(freqs, magnitudes_normalized, thresholds_freq_above, **kwargs):
     """
     Calculate the frequency at which the cumulative power reaches or exceeds a given threshold.
 
@@ -1407,7 +1450,7 @@ def calculate_spectral_cumulative_frequency_above(freqs, magnitudes, thresholds_
         - Lee, S.-C., & Peters, R. D. (2009). A New Look at an Old Tool-the Cumulative Spectral Power 
         of Fast-Fourier Transform Analysis. https://arxiv.org/abs/0901.3708v1
     """
-    cumulative_power = np.cumsum(magnitudes) / np.sum(magnitudes)
+    cumulative_power = np.cumsum(magnitudes_normalized)
     if isinstance(thresholds_freq_above, float):
         return freqs[np.where(cumulative_power >= thresholds_freq_above)[0][0]]
     else:  
@@ -1417,7 +1460,7 @@ def calculate_spectral_cumulative_frequency_above(freqs, magnitudes, thresholds_
         return np.array(frequency)
 
 @name("spectral_cumulative_frequency_below_threshold_{}", "thresholds_freq_below")
-def calculate_spectral_cumulative_frequency_below(freqs, magnitudes, thresholds_freq_below, **kwargs):
+def calculate_spectral_cumulative_frequency_below(freqs, magnitudes_normalized, thresholds_freq_below, **kwargs):
     """
     Calculate the frequency below which the cumulative power stays within a given threshold.
 
@@ -1444,7 +1487,7 @@ def calculate_spectral_cumulative_frequency_below(freqs, magnitudes, thresholds_
         - Lee, S.-C., & Peters, R. D. (2009). A New Look at an Old Tool-the Cumulative Spectral Power 
         of Fast-Fourier Transform Analysis. https://arxiv.org/abs/0901.3708v1
     """
-    cumulative_power = np.cumsum(magnitudes) / np.sum(magnitudes)
+    cumulative_power = np.cumsum(magnitudes_normalized)
     if isinstance(thresholds_freq_below, float):
         return freqs[np.where(cumulative_power <= thresholds_freq_below)[-1][-1]]
     else:

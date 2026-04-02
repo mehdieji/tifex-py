@@ -55,7 +55,7 @@ def get_module(module_str):
         module = time_frequency_feature_calculators
     return module
 
-def extract_features(series, module, param_dict):
+def extract_features(calculator,series, param_dict):
     """
     Calculate features for the given univariate time series data.
 
@@ -64,8 +64,8 @@ def extract_features(series, module, param_dict):
     series: tuple of a string and pandas.DataFrame or array-like
         The name of the dataset to calculate features for and the data
         itself.
-    calculators: list
-        List of feature calculators to use.
+    calculator: calculator function
+        The calculator function to use for feature extraction.
     param_dict: dict
         Dictionary of parameters to pass to the feature calculators.
 

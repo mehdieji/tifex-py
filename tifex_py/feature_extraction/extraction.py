@@ -7,8 +7,18 @@ from functools import partial
 import tifex_py.feature_extraction.statistical_feature_calculators as statistical_feature_calculators
 import tifex_py.feature_extraction.spectral_feature_calculators as spectral_feature_calculators
 import tifex_py.feature_extraction.time_frequency_feature_calculators as time_frequency_feature_calculators
-from tifex_py.feature_extraction.settings import StatisticalFeatureParams, SpectralFeatureParams, TimeFrequencyFeatureParams
-from tifex_py.utils.extraction_utils import get_calculators, extract_features, get_module
+from tifex_py.feature_extraction.settings import (
+    StatisticalFeatureParams,
+    SpectralFeatureParams,
+    TimeFrequencyFeatureParams,
+)
+from tifex_py.utils.extraction_utils import (
+    get_calculators,
+    extract_features,
+    get_module,
+    extract_signals,
+    structure_results,
+)
 from tifex_py.feature_extraction.data import TimeSeries, SpectralTimeSeries
 
 def calculate_all_features(data, stat_params, spec_params, tf_params, columns=None, njobs=None):
@@ -130,7 +140,9 @@ def calculate_time_frequency_features(data, params=None, window_size=None, colum
         params = TimeFrequencyFeatureParams(window_size)
 
     time_series = TimeSeries(data, columns=columns)
-    features = calculate_ts_features(time_series, "time_frequency", params, njobs=njobs)
+    features = calculate_time_frequency_ts_features(
+        time_series, "time_frequency", params, njobs=njobs
+    )
     return features
 
 def calculate_ts_features(time_series, module, params, njobs=None):
@@ -174,30 +186,80 @@ def calculate_ts_features(time_series, module, params, njobs=None):
         calculators,
     )
 
-    all_features = {}
-    for element in results:
-        for item in element:
-            label = item["label"]
-            features = item["feature"]
-            idx = item.get("idx", np.nan)
-            if all_features.get(idx) is None:
-                all_features[idx] = {}
-            for name, val in features.items():
-                if all_features[idx].get(label) is None:
-                    all_features[idx][label] = {}
-                all_features[idx][label][name] = val
+    all_features = structure_results(results)
+    return all_features
 
-    all_outputs = []
-    for idx, data in all_features.items():  # Per each sample
-        sample_output = []
-        for label, features in data.items():  # Per each label
-            row = {"label": label}
-            for name, value in features.items():  # Per each feature
-                row[name] = value
-            sample_output.append(row)
-        df = pd.DataFrame(sample_output)
 
-    
-        df.set_index("label", inplace=True)
-        all_outputs.append(df)
-    return all_outputs
+def calculate_time_frequency_ts_features(time_series, module, params, njobs=None):
+    """
+    Calculate features from the given module for the given time series data.
+
+    Parameters:
+    ----------
+    time_series: TimeSeries
+        The time series data to calculate features for.
+    module: str
+        The module with the feature calculators to use.
+    params: BaseFeatureParams
+        Parameters to use in feature extraction.
+    njobs: int
+        Number of worker processes to use. If None or -1, the number returned by
+        os.cpu_count() is used.
+
+    Returns:
+    -------
+    features_df: pandas.DataFrame
+        DataFrame of calculated features.
+    """
+    if njobs is None or njobs == -1:
+        njobs = os.cpu_count()
+
+    index = []
+
+    pool = mp.Pool(njobs)
+
+    param_dict = params.get_settings_as_dict()
+    calculators = get_calculators(get_module(module), param_dict["calculators"])
+
+    results = pool.imap(
+        partial(
+            extract_signals,
+            series=time_series,
+            param_dict=param_dict,
+        ),
+        calculators,
+    )
+    features = []
+    for result in results:  # Per each time series calculator
+
+        for name in result[2]:  # Per each signal name
+            time_series.data = result[0][
+                name
+            ]  # Update the time series data with the calculated signal
+
+            params = result[1]
+
+            calculators = get_calculators(
+                get_module("statistical"), params["calculators"]
+            )  # Get the calculator function for the calculated signal
+            # For each result -> get features from the signal
+            feature_results = pool.imap(
+                partial(
+                    extract_features,
+                    series=time_series,
+                    param_dict=params,
+                ),
+                calculators,
+            )
+
+            structured_results = structure_results(feature_results, group_name=name)
+
+            if len(features) == 0:
+                features = structured_results
+            else:
+                for idx in range(len(structured_results)):
+                    features[idx] = pd.concat(
+                        [features[idx], structured_results[idx]], axis=1
+                    )  # Concatenate features from different calculators
+
+    return features

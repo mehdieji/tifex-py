@@ -1,7 +1,8 @@
 # Description: Utility functions for the package.
 import numpy as np
-
+import pandas as pd
 from tifex_py.feature_extraction.data import SignalFeatures
+import copy as cp
 
 
 def get_calculators(module, calculator_list=None):
@@ -55,7 +56,8 @@ def get_module(module_str):
         module = time_frequency_feature_calculators
     return module
 
-def extract_features(calculator,series, param_dict):
+
+def extract_features(calculator, series, param_dict):
     """
     Calculate features for the given univariate time series data.
 
@@ -100,6 +102,54 @@ def extract_features(calculator,series, param_dict):
         
     return features
 
+
+def extract_signals(calculator, series, param_dict):
+    """
+    Calculate signals for the given univariate time series data.
+
+    Parameters:
+    ----------
+    series : Array-like
+        The data to calculate signals for.
+    calculator: calculator function
+        The calculator function to use for feature extraction.
+    param_dict: dict
+        Dictionary of parameters to pass to the feature calculators.
+
+    Returns:
+    -------
+    signals: array-like
+        Array of calculated signals.
+    """
+    name = None
+    # make a copy of the data to avoid modifying the original data
+    series_data = series.data
+    output_series_data = {}
+    params = None
+    for idx in range(len(series_data)):
+
+        data = series_data[idx]
+        result, name = calculator(**data, **param_dict)
+
+        if result["signal"] is None:
+            print(f"Error calculating signal {name}.")
+        params = result["params"]
+
+        if type(name) is str:
+            if name not in output_series_data:
+                output_series_data[name] = cp.deepcopy(series.data)
+            output_series_data[name][idx]["signal"] = result["signal"]
+        elif type(name) is list:
+            for name_idx, n in enumerate(name):
+                if n not in output_series_data:
+                    output_series_data[n] = cp.deepcopy(series.data)
+
+                output_series_data[n][idx]["signal"] = result["signal"][name_idx]
+    if type(name) is str:
+        name = [name]
+    return output_series_data, params, name
+
+
 def structure_features(feature, name):
     features = {}
     if isinstance(feature, SignalFeatures):
@@ -125,3 +175,37 @@ def structure_features(feature, name):
         features[name] = feature
 
     return features
+
+
+def structure_results(results, group_name=None):
+    all_features = {}
+    for element in results:
+        for item in element:
+            label = item["label"]
+            features = item["feature"]
+            idx = item.get("idx", np.nan)
+            if all_features.get(idx) is None:
+                all_features[idx] = {}
+            for name, val in features.items():
+                if all_features[idx].get(label) is None:
+                    all_features[idx][label] = {}
+                if group_name is not None:
+                    all_features[idx][label][f"{group_name}_{name}"] = val
+                else:
+                    all_features[idx][label][name] = val
+
+    all_outputs = []
+    for idx, data in all_features.items():  # Per each sample
+        sample_output = []
+        for label, features in data.items():  # Per each label
+            row = {"label": label}
+            for name, value in features.items():  # Per each feature
+                row[name] = value
+            sample_output.append(row)
+        df = pd.DataFrame(sample_output)
+        # if idx==0:
+        #     print(data)
+
+        df.set_index("label", inplace=True)
+        all_outputs.append(df)
+    return all_outputs

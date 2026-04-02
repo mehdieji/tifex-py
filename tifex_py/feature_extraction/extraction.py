@@ -50,7 +50,14 @@ def calculate_all_features(data, stat_params, spec_params, tf_params, columns=No
     stat_features = calculate_statistical_features(data, stat_params, columns=columns, njobs=njobs)
     spec_features = calculate_spectral_features(data, spec_params, columns=columns, njobs=njobs)
     tf_features = calculate_time_frequency_features(data, tf_params, columns=columns, njobs=njobs)
-    return pd.concat([stat_features, spec_features, tf_features], axis=1)
+    output_features = []
+    for idx in range(len(stat_features)):
+        output_features.append(
+            pd.concat(
+                [stat_features[idx], spec_features[idx], tf_features[idx]], axis=1
+            )
+        )  # Concatenate features from different calculators
+    return output_features
 
 
 def calculate_statistical_features(data, params=None, window_size=None, columns=None, njobs=None):

@@ -293,6 +293,8 @@ class SpectralFeatureParams(BaseFeatureParams):
     
     Attributes:
     -----------
+    window_size : int
+        Size of the window to compute the features.
     fs : int
         Sampling frequency of the signal.
     f_bands : list
@@ -331,9 +333,12 @@ class SpectralFeatureParams(BaseFeatureParams):
     nperseg : int, optional
         Used in calculation of spectoram and STFT features.
         The deafult is 50.
+    n_fft: int, optional
+        Number of samples used to compute each FFT in the STFT, which controls the frequency resolution
     
     """
     def __init__(self,
+                 window_size,
                  fs,
                  f_bands=[[0.5,4], [4,8], [8,12], [12,30], [30,100]],
                  n_dom_freqs=5,
@@ -345,8 +350,10 @@ class SpectralFeatureParams(BaseFeatureParams):
                  thresholds_freq_below=[0.5, 0.75],
                  thresholds_freq_above=[0.5, 0.75],
                  nperseg=50,
+                 n_fft=None,
                  calculators=None):
         super().__init__(calculators)
+        self.window_size = window_size
         self.fs = fs
         self.f_bands = f_bands
         self.n_dom_freqs = n_dom_freqs
@@ -361,6 +368,8 @@ class SpectralFeatureParams(BaseFeatureParams):
         self.thresholds_freq_below = thresholds_freq_below
         self.thresholds_freq_above = thresholds_freq_above
         self.nperseg = nperseg
+        if n_fft is None:
+            self.n_fft = window_size 
 
 
 class TimeFrequencyFeatureParams(BaseFeatureParams):

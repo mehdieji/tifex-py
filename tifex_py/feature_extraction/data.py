@@ -161,7 +161,7 @@ class TimeSeries():
 
 
 class SpectralTimeSeries(TimeSeries):
-    def __init__(self, data, columns=None, fs=1.0, nperseg=50):
+    def __init__(self, data, columns=None, fs=1.0, nperseg=50, n_fft=None):
         """
         Parameters:
         ----------
@@ -173,6 +173,7 @@ class SpectralTimeSeries(TimeSeries):
         """
         self.fs = fs
         self.nperseg = nperseg
+        self.n_fft= n_fft
         super().__init__(data, columns=columns)
 
     def create_data_dict(self, signal, name, idx=None):
@@ -207,7 +208,7 @@ class SpectralTimeSeries(TimeSeries):
         psd_normalized = psd / np.sum(psd)
 
          # Calculate harmonic component using librosa
-        harmonic_component = librosa.effects.harmonic(signal)
+        harmonic_component = librosa.effects.harmonic(signal,n_fft=self.n_fft)
 
         # Calculate spectral centroid with order 1 = mean frequency
         spectral_centroid = np.sum(

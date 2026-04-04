@@ -116,7 +116,7 @@ def calculate_spectral_features(data, params=None, fs=None, columns=None, njobs=
     """
     if params is None:
         params = SpectralFeatureParams(fs)
-    time_series = SpectralTimeSeries(data, columns=columns, fs=params.fs)
+    time_series = SpectralTimeSeries(data, columns=columns, fs=params.fs, nperseg=params.nperseg)
     features = calculate_ts_features(time_series, "spectral", params,  njobs=njobs)
     return features
 

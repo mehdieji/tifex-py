@@ -328,6 +328,9 @@ class SpectralFeatureParams(BaseFeatureParams):
         Used in calculation of spectral_cumulative_frequency_above_threshold_*.
         List of values between 0 and 1 indicating the cumulative power threshold (e.g., 0.8 for 80%).
         The default is [0.5, 0.75].
+    nperseg : int, optional
+        Used in calculation of spectoram and STFT features.
+        The deafult is 50.
     
     """
     def __init__(self,
@@ -341,6 +344,7 @@ class SpectralFeatureParams(BaseFeatureParams):
                  flux_orders=[2],
                  thresholds_freq_below=[0.5, 0.75],
                  thresholds_freq_above=[0.5, 0.75],
+                 nperseg=50,
                  calculators=None):
         super().__init__(calculators)
         self.fs = fs
@@ -356,6 +360,7 @@ class SpectralFeatureParams(BaseFeatureParams):
         self.flux_orders = flux_orders
         self.thresholds_freq_below = thresholds_freq_below
         self.thresholds_freq_above = thresholds_freq_above
+        self.nperseg = nperseg
 
 
 class TimeFrequencyFeatureParams(BaseFeatureParams):

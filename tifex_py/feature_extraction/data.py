@@ -161,7 +161,7 @@ class TimeSeries():
 
 
 class SpectralTimeSeries(TimeSeries):
-    def __init__(self, data, columns=None, fs=1.0):
+    def __init__(self, data, columns=None, fs=1.0, nperseg=50):
         """
         Parameters:
         ----------
@@ -172,6 +172,7 @@ class SpectralTimeSeries(TimeSeries):
             If data is an array, this is the list of column names.
         """
         self.fs = fs
+        self.nperseg = nperseg
         super().__init__(data, columns=columns)
 
     def create_data_dict(self, signal, name, idx=None):
@@ -202,7 +203,7 @@ class SpectralTimeSeries(TimeSeries):
         freqs_spectrum = np.abs(np.fft.fftfreq(length, 1.0 / self.fs)[:length // 2 + 1])
 
         # Calculating the power spectral density using Welch's method.
-        freqs_psd, psd = welch(signal, fs=self.fs)
+        freqs_psd, psd = welch(signal, fs=self.fs, nperseg=self.nperseg)
         psd_normalized = psd / np.sum(psd)
 
          # Calculate harmonic component using librosa

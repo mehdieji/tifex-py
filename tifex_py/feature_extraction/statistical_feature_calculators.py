@@ -808,6 +808,8 @@ def calculate_sample_entropy(signal, **kwargs):
 
     A = _phi(m + 1)
     B = _phi(m)
+    if A == 0 or B == 0:
+        return np.nan
 
     return -np.log(A / B)
 

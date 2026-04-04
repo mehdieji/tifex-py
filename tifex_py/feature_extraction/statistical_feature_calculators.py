@@ -1685,13 +1685,14 @@ def calculate_hjorth_mobility_and_complexity(signal, **kwargs):
     return np.array([mobility, complexity])
 
 @name("cardinality")
-def calculate_cardinality(signal, window_size, **kwargs):
+def calculate_cardinality(signal, **kwargs):
     # Parameter
     thresh = 0.05 * np.std(signal)  # threshold
     # Sort data
+    signal_size = len(signal)
     sorted_values = np.sort(signal)
-    cardinality_array = np.zeros(window_size - 1)
-    for i in range(window_size - 1):
+    cardinality_array = np.zeros(signal_size - 1)
+    for i in range(signal_size - 1):
         cardinality_array[i] = np.abs(sorted_values[i] - sorted_values[i + 1]) > thresh
     cardinality = np.sum(cardinality_array)
     return cardinality

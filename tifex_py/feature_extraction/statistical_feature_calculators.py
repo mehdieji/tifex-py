@@ -3274,8 +3274,10 @@ def calculate_hurst_exponent(signal, **kwargs):
         Sequence. https://arxiv.org/abs/2310.19051v1
         - https://github.com/GrAbsRD/HurstExponent
     """
-    segment_size, fluctuation_values, _ = calculate_detrended_fluctuation_analysis(signal)
-
+    result, _ = calculate_detrended_fluctuation_analysis(signal)
+    segment_size, fluctuation_values = result
+    if len(segment_size) < 2 or len(fluctuation_values) < 2:
+        return np.nan
     poly = np.polyfit(np.log(segment_size), np.log(fluctuation_values), 1)
     hurst = poly[0]
     return hurst

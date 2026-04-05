@@ -1423,7 +1423,7 @@ def calculate_coefficient_of_variation(signal, **kwargs):
     coefficient_of_variation = np.std(signal) / np.mean(signal)
     return coefficient_of_variation
 
-@name("mean_abs_deviation")
+@name("median_abs_deviation")
 def calculate_median_absolute_deviation(signal, adjusted, **kwargs):
     """
     Calculate the Median Absolute Deviation (MAD) of a time series signal.

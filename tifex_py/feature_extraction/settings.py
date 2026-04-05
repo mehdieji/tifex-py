@@ -349,7 +349,7 @@ class SpectralFeatureParams(BaseFeatureParams):
                  flux_orders=[2],
                  thresholds_freq_below=[0.5, 0.75],
                  thresholds_freq_above=[0.5, 0.75],
-                 nperseg=50,
+                 nperseg=None,
                  n_fft=None,
                  calculators=None):
         super().__init__(calculators)
@@ -367,7 +367,7 @@ class SpectralFeatureParams(BaseFeatureParams):
         self.flux_orders = flux_orders
         self.thresholds_freq_below = thresholds_freq_below
         self.thresholds_freq_above = thresholds_freq_above
-        self.nperseg = nperseg
+        self.nperseg = self.window_size // 4 if nperseg is None else nperseg
         if n_fft is None:
             self.n_fft = window_size 
 

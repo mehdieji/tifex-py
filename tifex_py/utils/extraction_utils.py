@@ -96,7 +96,7 @@ def extract_features(calculator, series, param_dict):
             {
                 "label": data["label"],
                 "feature": feature,
-                "idx": data["idx"],
+                "idx": data.get("idx",None),
             }
         )
         
@@ -183,7 +183,7 @@ def structure_results(results, group_name=None):
         for item in element:
             label = item["label"]
             features = item["feature"]
-            idx = item.get("idx", np.nan)
+            idx = item.get("idx", None)
             if all_features.get(idx) is None:
                 all_features[idx] = {}
             for name, val in features.items():

@@ -1452,11 +1452,18 @@ def calculate_spectral_cumulative_frequency_above(freqs, magnitudes_normalized, 
     """
     cumulative_power = np.cumsum(magnitudes_normalized)
     if isinstance(thresholds_freq_above, float):
-        return freqs[np.where(cumulative_power >= thresholds_freq_above)[0][0]]
+        freqs_above_threshold = np.where(cumulative_power >= thresholds_freq_above)
+        if len(freqs_above_threshold[0]) == 0:
+            return np.nan
+        return freqs[freqs_above_threshold[0][0]]
     else:  
         frequency = []
         for threshold in thresholds_freq_above:
-            frequency.append(freqs[np.where(cumulative_power >= threshold)[0][0]])
+            freqs_above_threshold = np.where(cumulative_power >= threshold)
+            if len(freqs_above_threshold[0]) == 0:
+                frequency.append(np.nan)
+            else:
+                frequency.append(freqs[freqs_above_threshold[0][0]])
         return np.array(frequency)
 
 @name("spectral_cumulative_frequency_below_threshold_{}", "thresholds_freq_below")
@@ -1489,11 +1496,18 @@ def calculate_spectral_cumulative_frequency_below(freqs, magnitudes_normalized, 
     """
     cumulative_power = np.cumsum(magnitudes_normalized)
     if isinstance(thresholds_freq_below, float):
-        return freqs[np.where(cumulative_power <= thresholds_freq_below)[-1][-1]]
+        freqs_under_threshold = np.where(cumulative_power <= thresholds_freq_below)
+        if len(freqs_under_threshold[0]) == 0:
+            return np.nan
+        return freqs[freqs_under_threshold[-1][-1]]
     else:
         frequency = []
         for threshold in thresholds_freq_below:
-            frequency.append(freqs[np.where(cumulative_power <= threshold)[-1][-1]])
+            freqs_under_threshold = np.where(cumulative_power <= threshold)
+            if len(freqs_under_threshold[0]) == 0:
+                frequency.append(np.nan)
+            else:
+                frequency.append(freqs[freqs_under_threshold[-1][-1]])
         return np.array(frequency)
 
 @name("spectral_change_vector_magnitude")

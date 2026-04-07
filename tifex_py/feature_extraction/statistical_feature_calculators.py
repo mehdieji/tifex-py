@@ -1557,8 +1557,10 @@ def calculate_higuchi_fractal_dimensions(signal, higuchi_k_values, **kwargs):
     def compute_length_for_interval(data, interval, start_time):
         data_size = data.size
         num_intervals = (data_size - start_time) // interval
+        if num_intervals <=0:
+            return np.nan
         normalization_factor = (data_size - 1) / (num_intervals * interval)
-        sum_difference = np.sum(np.abs(np.diff(data[start_time::interval], n=1)))
+        sum_difference = np.sum(np.abs(np.diff(data[start_time:num_intervals:interval], n=1)))
         length_for_time = (sum_difference * normalization_factor) / interval
         return length_for_time
 
@@ -1577,7 +1579,11 @@ def calculate_higuchi_fractal_dimensions(signal, higuchi_k_values, **kwargs):
                 for interval in range(1, max_interval + 1)
             ])
             interval_range = np.arange(1, max_interval + 1)
-            fractal_dimension, _ = -np.polyfit(np.log(interval_range), np.log(average_lengths), 1)
+            valid = (~np.isnan(average_lengths)) & (average_lengths > 0)
+            if np.sum(valid) < 2:
+                fractal_dimension = np.nan
+            else:
+                fractal_dimension, _ = -np.polyfit(np.log(interval_range[valid]), np.log(average_lengths[valid]), 1)
         except Exception as e:
             print(f"Error computing HFD for k={max_interval}: {e}")
             fractal_dimension = np.nan

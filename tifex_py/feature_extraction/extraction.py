@@ -18,10 +18,92 @@ from tifex_py.utils.extraction_utils import (
     get_module,
     extract_signals,
     structure_results,
+    split_input_into_batches,
+    save_features,
 )
 from tifex_py.feature_extraction.data import TimeSeries, SpectralTimeSeries
 
-def calculate_all_features(data, stat_params, spec_params, tf_params, columns=None, njobs=None):
+
+def calculate_features(
+    data,
+    feature_type="statistical",
+    params=None,
+    window_size=None,
+    columns=None,
+    njobs=None,
+    store_features=True,
+):
+    """
+    Calculates the specified type of features for the given dataset.
+
+    Parameters:
+    ----------
+    data: pandas.DataFrame or array-like
+        The dataset to calculate features for.
+    feature_type: str {"statistical", "spectral", "time_frequency"}
+        The type of features to calculate.
+    params: StatisticalFeatureParams or SpectralFeatureParams or TimeFrequencyFeatureParams
+        Parameters to use in feature extraction.
+    window_size: int
+        Window size to use for feature extraction.
+    columns: list
+        Columns to calculate features for or names of the np.array columns.
+    njobs: int
+        Number of worker processes to use. If None or -1, the number returned by
+        os.cpu_count() is used.
+    store_features: bool
+        Whether to store the calculated features in a file. If True, the features are stored in the specified directory. If False, the features are returned as a list of DataFrames. Default is True.
+    Returns:
+    -------
+    features: list of pandas.DataFrame
+        List of DataFrames containing the calculated features.
+    """
+    if feature_type == "statistical":
+        feature_function = calculate_statistical_features
+        if params is not None and type(params).__name__ != "StatisticalFeatureParams":
+            raise ValueError(
+                "For statistical feature extraction, params should be an instance of StatisticalFeatureParams."
+            )
+    elif feature_type == "spectral":
+        feature_function = calculate_spectral_features
+        if params is not None and type(params).__name__ != "SpectralFeatureParams":
+            raise ValueError(
+                "For spectral feature extraction, params should be an instance of SpectralFeatureParams."
+            )
+    elif feature_type == "time_frequency":
+        feature_function = calculate_time_frequency_features
+        if params is not None and type(params).__name__ != "TimeFrequencyFeatureParams":
+            raise ValueError(
+                "For time frequency feature extraction, params should be an instance of TimeFrequencyFeatureParams."
+            )
+    else:
+        raise ValueError(
+            "Invalid feature type. Please choose from 'statistical', 'spectral', or 'time_frequency'."
+        )
+
+    batch_groups = split_input_into_batches(data, 4000)
+    batch_data = []
+    for batch in batch_groups:
+        print(f"Processing batch {batch} for {feature_type} feature extraction.")
+        input_data = data[batch[0] : batch[1]]
+        features = feature_function(
+            input_data, params=params, columns=columns, njobs=njobs
+        )
+        if store_features:
+            save_features(
+                features,
+                batch,
+                f"datasets_module/tifex_features/REALWORLD_all_param/{feature_type}_features",
+            )
+        else:
+            batch_data.append(features)
+    if not store_features:
+        return batch_data
+
+
+def calculate_all_features(
+    data, stat_params, spec_params, tf_params, columns=None, njobs=None
+):
     """
     Calculates statistical, spectral, and time frequency features for the
     given dataset.
@@ -41,26 +123,53 @@ def calculate_all_features(data, stat_params, spec_params, tf_params, columns=No
     njobs: int
         Number of worker processes to use. If None or -1, the number returned by
         os.cpu_count() is used.
-    
+    store_features: bool
+        Whether to store the calculated features in a file. If True, the features are stored in the specified directory. If False, the features are returned as a list of DataFrames.
+
     Returns:
     -------
-    features: pandas.DataFrame
-        DataFrame of calculated features.
+    features: list of pandas.DataFrame
+        List of DataFrames containing the calculated features.
     """
-    stat_features = calculate_statistical_features(data, stat_params, columns=columns, njobs=njobs)
-    spec_features = calculate_spectral_features(data, spec_params, columns=columns, njobs=njobs)
-    tf_features = calculate_time_frequency_features(data, tf_params, columns=columns, njobs=njobs)
-    output_features = []
-    for idx in range(len(stat_features)):
-        output_features.append(
-            pd.concat(
-                [stat_features[idx], spec_features[idx], tf_features[idx]], axis=1
+    batch_groups = split_input_into_batches(data, 4000)
+    batch_data = []
+    for batch in batch_groups:
+        print(f"Processing batch {batch} for all feature extraction.")
+        input_data = data[batch[0] : batch[1]]
+        stat_features = calculate_statistical_features(
+            input_data, stat_params, columns=columns, njobs=njobs
+        )
+        spec_features = calculate_spectral_features(
+            input_data, spec_params, columns=columns, njobs=njobs
+        )
+        tf_features = calculate_time_frequency_features(
+            input_data, tf_params, columns=columns, njobs=njobs
+        )
+
+        output_features = []
+        for idx in range(len(stat_features)):
+            output_features.append(
+                pd.concat(
+                    [stat_features[idx], spec_features[idx], tf_features[idx]], axis=1
+                )
             )
-        )  # Concatenate features from different calculators
-    return output_features
+
+        if store_features:
+            save_features(
+                output_features,
+                batch,
+                f"datasets_module/tifex_features/REALWORLD_all_param/all_features",
+            )
+        else:
+            batch_data.append(output_features)
+
+    if not store_features:
+        return batch_data
 
 
-def calculate_statistical_features(data, params=None, window_size=None, columns=None, njobs=None):
+def calculate_statistical_features(
+    data, params=None, window_size=None, columns=None, njobs=None
+):
     """
     Calculates statistical features for the given dataset.
 
@@ -91,7 +200,8 @@ def calculate_statistical_features(data, params=None, window_size=None, columns=
     features = calculate_ts_features(time_series, "statistical", params, njobs=njobs)
     return features
 
-def calculate_spectral_features(data, params=None, fs=None, columns=None, njobs=None):
+
+def calculate_spectral_features(data, params=None, window_size=None, fs=None, columns=None, njobs=None):
     """
     Calculates spectral features for the given dataset.
 
@@ -101,6 +211,8 @@ def calculate_spectral_features(data, params=None, fs=None, columns=None, njobs=
         The dataset to calculate features for.
     params: SpectralFeatureParams
         Parameters to use in feature extraction.
+    window_size: int
+        Window size to use for feature extraction.
     fs: float
         Sampling frequency of the data.
     columns: list
@@ -115,12 +227,17 @@ def calculate_spectral_features(data, params=None, fs=None, columns=None, njobs=
         DataFrame of calculated features.
     """
     if params is None:
-        params = SpectralFeatureParams(fs)
-    time_series = SpectralTimeSeries(data, columns=columns, fs=params.fs, nperseg=params.nperseg, n_fft=params.n_fft)
-    features = calculate_ts_features(time_series, "spectral", params,  njobs=njobs)
+        params = SpectralFeatureParams(fs,window_size=window_size)
+    time_series = SpectralTimeSeries(
+        data, columns=columns, fs=params.fs, nperseg=params.nperseg, n_fft=params.n_fft
+    )
+    features = calculate_ts_features(time_series, "spectral", params, njobs=njobs)
     return features
 
-def calculate_time_frequency_features(data, params=None, window_size=None, columns=None, njobs=None):
+
+def calculate_time_frequency_features(
+    data, params=None, window_size=None, columns=None, njobs=None
+):
     """
     Calculates time frequency features for the given dataset.
 
@@ -152,6 +269,7 @@ def calculate_time_frequency_features(data, params=None, window_size=None, colum
     )
     return features
 
+
 def calculate_ts_features(time_series, module, params, njobs=None):
     """
     Calculate features from the given module for the given time series data.
@@ -167,7 +285,7 @@ def calculate_ts_features(time_series, module, params, njobs=None):
     njobs: int
         Number of worker processes to use. If None or -1, the number returned by
         os.cpu_count() is used.
-    
+
     Returns:
     -------
     features_df: pandas.DataFrame

@@ -3,7 +3,8 @@ import numpy as np
 import pandas as pd
 from tifex_py.feature_extraction.data import SignalFeatures
 import copy as cp
-
+import os
+import pickle
 
 def get_calculators(module, calculator_list=None):
     """
@@ -203,9 +204,22 @@ def structure_results(results, group_name=None):
                 row[name] = value
             sample_output.append(row)
         df = pd.DataFrame(sample_output)
-        # if idx==0:
-        #     print(data)
 
         df.set_index("label", inplace=True)
         all_outputs.append(df)
     return all_outputs
+
+def split_input_into_batches(data, batch_size=3000):
+    batch_start_end_indices=[]
+    for i in range(0, len(data), batch_size):
+        batch_start_end_indices.append((i, min(i + batch_size, len(data))))
+    return batch_start_end_indices
+
+def save_features(features, batch_start_end_index, output_path):
+    start, end = batch_start_end_index
+    os.makedirs(f"{output_path}", exist_ok=True)
+    with open(
+        f"{output_path}/features_samples_{start}_{end}.pkl",
+        "wb",
+    ) as f:
+        pickle.dump(features, f)

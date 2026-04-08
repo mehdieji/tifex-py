@@ -102,7 +102,7 @@ def calculate_features(
 
 
 def calculate_all_features(
-    data, stat_params, spec_params, tf_params, columns=None, njobs=None
+    data, stat_params, spec_params, tf_params, columns=None, njobs=None, store_features=True
 ):
     """
     Calculates statistical, spectral, and time frequency features for the

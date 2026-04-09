@@ -877,16 +877,23 @@ def calculate_approximate_entropy(signal, m, r, **kwargs):
         https://doi.org/10.1016/J.NEUCOM.2018.03.067
     """
     N = len(signal)
+    std = np.std(signal)
     feats = []
-    def _phi(m, r):
-            X = np.array([signal[i:i + m] for i in range(N - m + 1)])
-            C = np.sum(np.max(np.abs(X[:, None] - X[None, :]), axis=2) <= r, axis=0)
-            return np.sum(np.log(C / (N - m + 1))) / (N - m + 1)
-        
+
+    def _phi(max_val, m, r):
+        C = np.sum(max_val <= r, axis=0)
+        return np.sum(np.log(C / (N - m + 1))) / (N - m + 1)
+
+    X_m = np.array([signal[i : i + m] for i in range(N - m + 1)])
+    max_m = np.max(np.abs(X_m[:, None] - X_m[None, :]), axis=2)
+    X_m1 = np.array([signal[i : i + m + 1] for i in range(N - m)])
+
+    max_m1 = np.max(np.abs(X_m1[:, None] - X_m1[None, :]), axis=2)
+
     for r in r:
-        r *= np.std(signal)  # r known as the tolerance is typically set as a fraction of the standard deviation
-        feats.append(_phi(m, r) - _phi(m + 1, r))
-        
+        r *= std  # r known as the tolerance is typically set as a fraction of the standard deviation
+        feats.append(_phi(max_m, m, r) - _phi(max_m1, m + 1, r))
+
     return feats
 
 @name("renyi_entropy")

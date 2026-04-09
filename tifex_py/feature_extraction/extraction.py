@@ -26,6 +26,7 @@ from tifex_py.feature_extraction.data import TimeSeries, SpectralTimeSeries
 
 def calculate_features(
     data,
+    store_path,
     feature_type="statistical",
     params=None,
     window_size=None,
@@ -40,6 +41,8 @@ def calculate_features(
     ----------
     data: pandas.DataFrame or array-like
         The dataset to calculate features for.
+    store_path: str
+        The path to store the calculated features if store_features is True.
     feature_type: str {"statistical", "spectral", "time_frequency"}
         The type of features to calculate.
     params: StatisticalFeatureParams or SpectralFeatureParams or TimeFrequencyFeatureParams
@@ -93,7 +96,7 @@ def calculate_features(
             save_features(
                 features,
                 batch,
-                f"datasets_module/tifex_features/REALWORLD_all_param/{feature_type}_features",
+                store_path,
             )
         else:
             batch_data.append(features)
@@ -102,7 +105,7 @@ def calculate_features(
 
 
 def calculate_all_features(
-    data, stat_params, spec_params, tf_params, columns=None, njobs=None, store_features=True
+    data, stat_params, spec_params, tf_params, store_path, columns=None, njobs=None, store_features=True
 ):
     """
     Calculates statistical, spectral, and time frequency features for the
@@ -112,6 +115,8 @@ def calculate_all_features(
     ----------
     data: pandas.DataFrame or array-like
         The dataset to calculate features for.
+    store_path: str
+        The path to store the calculated features if store_features is True.
     stat_params: StatisticalFeatureParams
         Parameters to use in statistical feature extraction.
     spec_params: SpectralFeatureParams
@@ -158,7 +163,7 @@ def calculate_all_features(
             save_features(
                 output_features,
                 batch,
-                f"datasets_module/tifex_features/REALWORLD_all_param/all_features",
+                store_path
             )
         else:
             batch_data.append(output_features)

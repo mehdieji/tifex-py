@@ -219,6 +219,9 @@ class SpectralTimeSeries(TimeSeries):
         f0 = librosa.yin(
             signal, fmin=librosa.note_to_hz("C1"), fmax=librosa.note_to_hz("C8")
         )
+
+        spectral_bandwidth_order_2 = ((np.sum((np.abs(freqs_spectrum - spectral_centroid) ** 2) * spectrum_magnitudes_normalized)) ** (1 / 2))
+
         final_obj = {
             "signal": signal,
             "spectrum": spectrum,
@@ -232,6 +235,7 @@ class SpectralTimeSeries(TimeSeries):
             "harmonic": harmonic_component,
             "mean_frequency": spectral_centroid,
             "fundamental_frequency": f0,
+            "spectral_bandwidth_order_2": spectral_bandwidth_order_2
         }
         if idx is not None:
             final_obj["idx"] = idx

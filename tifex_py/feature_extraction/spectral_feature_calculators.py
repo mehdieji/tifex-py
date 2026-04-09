@@ -76,7 +76,7 @@ def calculate_spectral_variance(freqs, magnitudes, mean_frequency, **kwargs):
 
 
 @name("spectral_skewness")
-def calculate_spectral_skewness(freqs, magnitudes,mean_frequency,magnitudes_normalized, **kwargs):
+def calculate_spectral_skewness(freqs, magnitudes,mean_frequency,magnitudes_normalized,spectral_bandwidth_order_2, **kwargs):
     """
     Calculates the spectral skewness of the given spectrum.
 
@@ -102,18 +102,12 @@ def calculate_spectral_skewness(freqs, magnitudes,mean_frequency,magnitudes_norm
         TSFEL: Time Series Feature Extraction Library. SoftwareX, 11. https://doi.org/10.1016/j.softx.2020.100456
     """
     mu1 = mean_frequency
-    mu2, _ = calculate_spectral_bandwidth(
-        freqs,
-        magnitudes,
-        bandwidth_orders=2,
-        mean_frequency=mean_frequency,
-        magnitudes_normalized=magnitudes_normalized,
-    )
+    mu2= spectral_bandwidth_order_2
     spectral_skewness = np.sum(magnitudes * (freqs - mu1) ** 3) / (np.sum(magnitudes) * mu2 ** 3)
     return spectral_skewness
 
 @name("spectral_kurtosis")
-def calculate_spectral_kurtosis(freqs, magnitudes, mean_frequency, magnitudes_normalized, **kwargs):
+def calculate_spectral_kurtosis(freqs, magnitudes, mean_frequency, magnitudes_normalized, spectral_bandwidth_order_2, **kwargs):
     """
     Calculate the spectral kurtosis of the given spectrum.
 
@@ -141,13 +135,7 @@ def calculate_spectral_kurtosis(freqs, magnitudes, mean_frequency, magnitudes_no
         TSFEL: Time Series Feature Extraction Library. SoftwareX, 11. https://doi.org/10.1016/j.softx.2020.100456
     """
     mu1 = mean_frequency
-    mu2, _ = calculate_spectral_bandwidth(
-        freqs,
-        magnitudes,
-        bandwidth_orders=2,
-        mean_frequency=mean_frequency,
-        magnitudes_normalized=magnitudes_normalized,
-    )
+    mu2 = spectral_bandwidth_order_2
     spectral_kurtosis = np.sum(magnitudes * (freqs - mu1) ** 4) / (np.sum(magnitudes) * mu2 ** 4)
     return spectral_kurtosis
 
@@ -495,7 +483,7 @@ def calculate_spectral_contrast(freqs_psd, psd, f_bands, **kwargs):
     return np.array(feats)
 
 @name("spectral_bandwidth_order_{}", "bandwidth_orders")
-def calculate_spectral_bandwidth(freqs, magnitudes, bandwidth_orders, mean_frequency, magnitudes_normalized, **kwargs):
+def calculate_spectral_bandwidth(freqs, magnitudes, bandwidth_orders, mean_frequency, magnitudes_normalized,spectral_bandwidth_order_2, **kwargs):
     """
     Calculate the spectral bandwidth of a given frequency spectrum.
     
@@ -535,11 +523,17 @@ def calculate_spectral_bandwidth(freqs, magnitudes, bandwidth_orders, mean_frequ
     """
    
     if isinstance(bandwidth_orders, int):
-        return ((np.sum((np.abs(freqs - mean_frequency) ** bandwidth_orders) * magnitudes_normalized)) ** (1 / bandwidth_orders))
+        if bandwidth_orders == 2:
+            # For 2nd order, we can directly use the already calculated spectral bandwidth of order 2 (standard deviation)
+            return spectral_bandwidth_order_2
+        return ((np.sum(((freqs - mean_frequency) ** bandwidth_orders) * magnitudes_normalized)) ** (1 / bandwidth_orders))
     else:
         spectral_bandwidth = []
         for order in bandwidth_orders:
-            spectral_bandwidth.append(((np.sum((np.abs(freqs - mean_frequency) ** order) * magnitudes_normalized)) ** (1 / order)))
+            if order == 2:
+                spectral_bandwidth.append(spectral_bandwidth_order_2)
+            else:
+                spectral_bandwidth.append(((np.sum(((freqs - mean_frequency) ** order) * magnitudes_normalized)) ** (1 / order)))
         return np.array(spectral_bandwidth)
 
 #TODO: Check what is going on here
@@ -587,7 +581,7 @@ def calculate_spectral_absolute_deviation(freqs, magnitudes, mean_frequency, mag
         return np.array(spectral_absolute_deviation)
 
 @name("spectral_covariance")
-def calculate_spectral_cov(freqs, magnitudes, mean_frequency, magnitudes_normalized, **kwargs):
+def calculate_spectral_cov(freqs, magnitudes, mean_frequency, magnitudes_normalized,spectral_bandwidth_order_2, **kwargs):
     """
     Calculate the spectral coefficient of variation (CoV) for a given frequency spectrum.
 
@@ -617,12 +611,7 @@ def calculate_spectral_cov(freqs, magnitudes, mean_frequency, magnitudes_normali
         neural digital signal processing. Journal of Open Source Software, 4(36), 1272. 
         https://doi.org/10.21105/JOSS.01272
     """
-    frequency_std, _ = calculate_spectral_bandwidth(
-        freqs, 
-        magnitudes, 
-        2, 
-        mean_frequency=mean_frequency,
-        magnitudes_normalized=magnitudes_normalized)
+    frequency_std = spectral_bandwidth_order_2
     coefficient_of_variation = (frequency_std / mean_frequency) * 100
     return coefficient_of_variation
 
@@ -1081,6 +1070,7 @@ def calculate_spectral_spread_ratio(
     magnitudes,
     magnitudes_normalized,
     mean_frequency,
+    spectral_bandwidth_order_2,
     reference_value=1.0,
     **kwargs):
     """
@@ -1103,13 +1093,7 @@ def calculate_spectral_spread_ratio(
         Normalized spectral spread ratio.
     """
     # https://doi.org/10.1016/j.softx.2020.100456
-    spread, _ = calculate_spectral_bandwidth(
-        freqs,
-        magnitudes,
-        bandwidth_orders=2,
-        mean_frequency=mean_frequency,
-        magnitudes_normalized=magnitudes_normalized,
-    )
+    spread = spectral_bandwidth_order_2
     spread_ratio = spread / reference_value
     return spread_ratio
 
@@ -1119,6 +1103,7 @@ def calculate_spectral_skewness_ratio(
     magnitudes,
     magnitudes_normalized,
     mean_frequency,
+    spectral_bandwidth_order_2,
     reference_value=1.0,
     **kwargs,
     ):
@@ -1143,7 +1128,7 @@ def calculate_spectral_skewness_ratio(
     """ 
     # https://doi.org/10.1016/j.softx.2020.100456
     skewness, _ = calculate_spectral_skewness(
-        freqs, magnitudes, mean_frequency, magnitudes_normalized
+        freqs, magnitudes, mean_frequency, magnitudes_normalized, spectral_bandwidth_order_2
     )
     skewness_ratio = skewness / reference_value
     return skewness_ratio
@@ -1154,6 +1139,7 @@ def calculate_spectral_kurtosis_ratio(
     magnitudes,
     mean_frequency,
     magnitudes_normalized,
+    spectral_bandwidth_order_2,
     reference_value=1.0,
     **kwargs):
     """
@@ -1177,7 +1163,7 @@ def calculate_spectral_kurtosis_ratio(
     """
     # https://doi.org/10.1016/j.softx.2020.100456
     kurtosis, _ = calculate_spectral_kurtosis(
-        freqs, magnitudes, mean_frequency, magnitudes_normalized
+        freqs, magnitudes, mean_frequency, magnitudes_normalized,spectral_bandwidth_order_2
     )
     kurtosis_ratio = kurtosis / reference_value
     return kurtosis_ratio

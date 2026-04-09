@@ -535,11 +535,11 @@ def calculate_spectral_bandwidth(freqs, magnitudes, bandwidth_orders, mean_frequ
     """
    
     if isinstance(bandwidth_orders, int):
-        return ((np.sum(((freqs - mean_frequency) ** bandwidth_orders) * magnitudes_normalized)) ** (1 / bandwidth_orders))
+        return ((np.sum((np.abs(freqs - mean_frequency) ** bandwidth_orders) * magnitudes_normalized)) ** (1 / bandwidth_orders))
     else:
         spectral_bandwidth = []
         for order in bandwidth_orders:
-            spectral_bandwidth.append(((np.sum(((freqs - mean_frequency) ** order) * magnitudes_normalized)) ** (1 / order)))
+            spectral_bandwidth.append(((np.sum((np.abs(freqs - mean_frequency) ** order) * magnitudes_normalized)) ** (1 / order)))
         return np.array(spectral_bandwidth)
 
 #TODO: Check what is going on here

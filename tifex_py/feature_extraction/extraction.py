@@ -315,8 +315,8 @@ def calculate_ts_features(time_series, module, params, njobs=None):
         ),
         calculators,
     )
-
-    all_features = structure_results(results)
+    
+    all_features = structure_results(results, nan_mask=param_dict["nan_mask"], pos_inf_mask=param_dict["pos_inf_mask"], neg_inf_mask=param_dict["neg_inf_mask"])
     return all_features
 
 
@@ -382,7 +382,7 @@ def calculate_time_frequency_ts_features(time_series, module, params, njobs=None
                 calculators,
             )
 
-            structured_results = structure_results(feature_results, group_name=name)
+            structured_results = structure_results(feature_results, nan_mask=params["nan_mask"], pos_inf_mask=params["pos_inf_mask"], neg_inf_mask=params["neg_inf_mask"], group_name=name)
 
             if len(features) == 0:
                 features = structured_results

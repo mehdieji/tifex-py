@@ -178,7 +178,7 @@ def structure_features(feature, name):
     return features
 
 
-def structure_results(results, group_name=None):
+def structure_results(results, nan_mask=None, pos_inf_mask=None, neg_inf_mask=None, group_name=None):
     all_features = {}
     for element in results:
         for item in element:
@@ -196,6 +196,7 @@ def structure_results(results, group_name=None):
                     all_features[idx][label][name] = val
 
     all_outputs = []
+   
     for idx, data in all_features.items():  # Per each sample
         sample_output = []
         for label, features in data.items():  # Per each label
@@ -204,7 +205,15 @@ def structure_results(results, group_name=None):
                 row[name] = value
             sample_output.append(row)
         df = pd.DataFrame(sample_output)
-
+        
+        # Fill Nan, pos inf, neg inf values if specified
+        if nan_mask is not None:
+            df.fillna(nan_mask, inplace=True)
+        if pos_inf_mask is not None:
+            df.replace([np.inf], pos_inf_mask, inplace=True)
+        if neg_inf_mask is not None:
+            df.replace([-np.inf], neg_inf_mask, inplace=True)
+            
         df.set_index("label", inplace=True)
         all_outputs.append(df)
     return all_outputs

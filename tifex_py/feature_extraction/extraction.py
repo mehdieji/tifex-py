@@ -29,6 +29,7 @@ def calculate_features(
     store_path,
     feature_type="statistical",
     params=None,
+    samples_per_file=4000,
     window_size=None,
     columns=None,
     njobs=None,
@@ -47,6 +48,8 @@ def calculate_features(
         The type of features to calculate.
     params: StatisticalFeatureParams or SpectralFeatureParams or TimeFrequencyFeatureParams
         Parameters to use in feature extraction.
+    samples_per_file: int
+        Number of data samples to include in each output file when splitting the dataset. Once this limit is reached, a new file is created. Default is 4000.
     window_size: int
         Window size to use for feature extraction.
     columns: list
@@ -84,7 +87,7 @@ def calculate_features(
             "Invalid feature type. Please choose from 'statistical', 'spectral', or 'time_frequency'."
         )
 
-    batch_groups = split_input_into_batches(data, 4000)
+    batch_groups = split_input_into_batches(data, samples_per_file)
     batch_data = []
     for batch in batch_groups:
         print(f"Processing batch {batch} for {feature_type} feature extraction.")
@@ -105,7 +108,7 @@ def calculate_features(
 
 
 def calculate_all_features(
-    data, stat_params, spec_params, tf_params, store_path, columns=None, njobs=None, store_features=True
+    data, stat_params, spec_params, tf_params, store_path, columns=None, njobs=None, store_features=True, samples_per_file=4000
 ):
     """
     Calculates statistical, spectral, and time frequency features for the
@@ -130,13 +133,14 @@ def calculate_all_features(
         os.cpu_count() is used.
     store_features: bool
         Whether to store the calculated features in a file. If True, the features are stored in the specified directory. If False, the features are returned as a list of DataFrames.
-
+    samples_per_file: int
+        Number of data samples to include in each output file when splitting the dataset. Once this limit is reached, a new file is created. Default is 4000.
     Returns:
     -------
     features: list of pandas.DataFrame
         List of DataFrames containing the calculated features.
     """
-    batch_groups = split_input_into_batches(data, 4000)
+    batch_groups = split_input_into_batches(data, samples_per_file)
     batch_data = []
     for batch in batch_groups:
         print(f"Processing batch {batch} for all feature extraction.")

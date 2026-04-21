@@ -152,6 +152,19 @@ def extract_signals(calculator, series, param_dict):
 
 
 def structure_features(feature, name):
+    """
+    Structure the calculated features into a dictionary with appropriate keys.
+    Parameters:
+    ----------
+    feature: SignalFeatures or list of SignalFeatures or array-like
+        The calculated feature(s) to structure.
+    name: str or list of str
+        The name(s) of the feature(s) to use as keys in the structured output.
+    Returns:
+    -------
+        features: dict
+            Dictionary of structured features with appropriate keys.
+    """
     features = {}
     if isinstance(feature, SignalFeatures):
         for k, v in feature.features.items():
@@ -179,6 +192,25 @@ def structure_features(feature, name):
 
 
 def structure_results(results, nan_mask=None, pos_inf_mask=None, neg_inf_mask=None, group_name=None):
+    """
+    Structure the calculated features into a list of DataFrames, one per sample, with labels as index and features as columns.
+    Parameters:
+    ----------
+    results: list of dict
+        List of dictionaries containing the calculated features for each sample.
+    nan_mask: float, optional
+        Value to replace NaN values with. If None, NaN values are not replaced.
+    pos_inf_mask: float, optional
+        Value to replace positive infinity values with. If None, positive infinity values are not replaced.
+    neg_inf_mask: float, optional
+        Value to replace negative infinity values with. If None, negative infinity values are not replaced.
+    group_name: str, optional
+        Optional prefix to add to feature names for grouping purposes. If None, no prefix is added.
+    Returns:
+    -------
+    all_outputs: list of pandas.DataFrame
+        List of DataFrames containing the structured features for each sample.
+    """
     all_features = {}
     for element in results:
         for item in element:
@@ -218,13 +250,38 @@ def structure_results(results, nan_mask=None, pos_inf_mask=None, neg_inf_mask=No
         all_outputs.append(df)
     return all_outputs
 
-def split_input_into_batches(data, batch_size=3000):
-    batch_start_end_indices=[]
-    for i in range(0, len(data), batch_size):
-        batch_start_end_indices.append((i, min(i + batch_size, len(data))))
+def split_input_into_batches(data, samples_per_file=4000):
+    """
+    Split the input data into batches based on the specified number of samples per file.
+    Parameters:
+    ----------
+    data: list
+        The input data to be split into batches.
+    samples_per_file: int
+        The number of samples to include in each batch/file. Default is 4000.
+    Returns:
+    -------
+    batch_start_end_indices: list of tuple
+        List of tuples containing the start and end indices for each batch.
+    """
+    batch_start_end_indices = []
+    for i in range(0, len(data), samples_per_file):
+        batch_start_end_indices.append((i, min(i + samples_per_file, len(data))))
     return batch_start_end_indices
 
 def save_features(features, batch_start_end_index, output_path):
+    """
+    Save the calculated features to a file in the specified output path. The file is named based on the batch start and end indices.
+    Parameters:
+    features: list of pandas.DataFrame
+        List of DataFrames containing the calculated features to be saved.
+    batch_start_end_index: tuple
+        Tuple containing the start and end indices of the batch for which the features were calculated.
+    output_path: str
+        The directory path where the features should be saved.
+    Returns:
+    None
+    """
     start, end = batch_start_end_index
     os.makedirs(f"{output_path}", exist_ok=True)
     with open(

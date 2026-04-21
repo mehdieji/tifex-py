@@ -230,14 +230,13 @@ def structure_results(results, nan_mask=None, pos_inf_mask=None, neg_inf_mask=No
     all_outputs = []
    
     for idx, data in all_features.items():  # Per each sample
-        sample_output = []
+        row = {}
         for label, features in data.items():  # Per each label
-            row = {"label": label}
             for name, value in features.items():  # Per each feature
-                row[name] = value
-            sample_output.append(row)
-        df = pd.DataFrame(sample_output)
-        
+                full_name = f"{name}|{label}"
+                row[full_name] = value
+        df = pd.DataFrame([row])
+       
         # Fill Nan, pos inf, neg inf values if specified
         if nan_mask is not None:
             df.fillna(nan_mask, inplace=True)
@@ -246,7 +245,6 @@ def structure_results(results, nan_mask=None, pos_inf_mask=None, neg_inf_mask=No
         if neg_inf_mask is not None:
             df.replace([-np.inf], neg_inf_mask, inplace=True)
             
-        df.set_index("label", inplace=True)
         all_outputs.append(df)
     return all_outputs
 

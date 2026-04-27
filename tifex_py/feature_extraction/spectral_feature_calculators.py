@@ -192,7 +192,12 @@ def calculate_spectral_flatness(magnitudes, **kwargs):
         Azemi, G., & Khan, N. A. (2016). Detection, Classification, and Estimation in the (t,f) Domain. Time-Frequency 
         Signal Analysis and Processing: A Comprehensive Reference, 693–743. https://doi.org/10.1016/B978-0-12-398499-9.00012-1
     """
-    spectral_flatness = np.exp(np.mean(np.log(magnitudes))) / np.mean(magnitudes)
+    if np.all(magnitudes <= 0):
+        spectral_flatness = np.nan  # undefined — silent signal
+    elif np.any(magnitudes <= 0):
+        spectral_flatness = 0.0     # some zero bins → tonal 
+    else:
+        spectral_flatness = np.exp(np.mean(np.log(magnitudes))) / np.mean(magnitudes)
     return spectral_flatness
 
 @name("spectral_slope_logarithmic")
@@ -220,7 +225,10 @@ def calculate_spectral_slope_logarithmic(freqs, magnitudes, **kwargs):
         - Barandas, M., Folgado, D., Fernandes, L., Santos, S., Abreu, M., Bota, P., Liu, H., Schultz, T., & Gamboa, H. (2020). 
         TSFEL: Time Series Feature Extraction Library. SoftwareX, 11. https://doi.org/10.1016/j.softx.2020.100456
     """
-    slope = np.polyfit(freqs, np.log(magnitudes), 1)[0]
+    if np.all(magnitudes == 0):
+        slope = np.nan
+    else:
+        slope = np.polyfit(freqs, np.log(magnitudes), 1)[0]
     return slope
 
 @name("spectral_slope_logarithmic_psd")
@@ -526,14 +534,14 @@ def calculate_spectral_bandwidth(freqs, magnitudes, bandwidth_orders, mean_frequ
         if bandwidth_orders == 2:
             # For 2nd order, we can directly use the already calculated spectral bandwidth of order 2 (standard deviation)
             return spectral_bandwidth_order_2
-        return ((np.sum(((freqs - mean_frequency) ** bandwidth_orders) * magnitudes_normalized)) ** (1 / bandwidth_orders))
+        return ((np.sum((np.abs(freqs - mean_frequency) ** bandwidth_orders) * magnitudes_normalized)) ** (1 / bandwidth_orders))
     else:
         spectral_bandwidth = []
         for order in bandwidth_orders:
             if order == 2:
                 spectral_bandwidth.append(spectral_bandwidth_order_2)
             else:
-                spectral_bandwidth.append(((np.sum(((freqs - mean_frequency) ** order) * magnitudes_normalized)) ** (1 / order)))
+                spectral_bandwidth.append(((np.sum((np.abs(freqs - mean_frequency) ** order) * magnitudes_normalized)) ** (1 / order)))
         return np.array(spectral_bandwidth)
 
 #TODO: Check what is going on here
@@ -915,6 +923,8 @@ def calculate_total_harmonic_distortion(signal, spectrum, fs, fundamental_freque
     for i in range(2, harmonics + 1):  # Start from the second harmonic
         harmonic_idx = np.argmin(np.abs(freqs - i * fundamental_frequency))
         harmonic_power += np.abs(spectrum[harmonic_idx]) ** 2
+    if fundamental_power == 0:
+        return np.nan  
     thd = np.sqrt(harmonic_power / fundamental_power)
     return thd
 

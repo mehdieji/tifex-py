@@ -108,7 +108,15 @@ def calculate_features(
 
 
 def calculate_all_features(
-    data, stat_params, spec_params, tf_params, store_path, columns=None, njobs=None, store_features=True, samples_per_file=4000
+    data,
+    stat_params,
+    spec_params,
+    tf_params,
+    store_path,
+    columns=None,
+    njobs=None,
+    store_features=True,
+    samples_per_file=4000,
 ):
     """
     Calculates statistical, spectral, and time frequency features for the
@@ -164,11 +172,7 @@ def calculate_all_features(
             )
 
         if store_features:
-            save_features(
-                output_features,
-                batch,
-                store_path
-            )
+            save_features(output_features, batch, store_path)
         else:
             batch_data.append(output_features)
 
@@ -210,7 +214,9 @@ def calculate_statistical_features(
     return features
 
 
-def calculate_spectral_features(data, params=None, window_size=None, fs=None, columns=None, njobs=None):
+def calculate_spectral_features(
+    data, params=None, window_size=None, fs=None, columns=None, njobs=None
+):
     """
     Calculates spectral features for the given dataset.
 
@@ -236,7 +242,7 @@ def calculate_spectral_features(data, params=None, window_size=None, fs=None, co
         DataFrame of calculated features.
     """
     if params is None:
-        params = SpectralFeatureParams(fs,window_size=window_size)
+        params = SpectralFeatureParams(fs, window_size=window_size)
     time_series = SpectralTimeSeries(
         data, columns=columns, fs=params.fs, nperseg=params.nperseg, n_fft=params.n_fft
     )
@@ -319,8 +325,13 @@ def calculate_ts_features(time_series, module, params, njobs=None):
         ),
         calculators,
     )
-    
-    all_features = structure_results(results, nan_mask=param_dict["nan_mask"], pos_inf_mask=param_dict["pos_inf_mask"], neg_inf_mask=param_dict["neg_inf_mask"])
+
+    all_features = structure_results(
+        results,
+        nan_mask=param_dict["nan_mask"],
+        pos_inf_mask=param_dict["pos_inf_mask"],
+        neg_inf_mask=param_dict["neg_inf_mask"],
+    )
     return all_features
 
 
@@ -355,13 +366,15 @@ def calculate_time_frequency_ts_features(time_series, module, params, njobs=None
     param_dict = params.get_settings_as_dict()
     calculators = get_calculators(get_module(module), param_dict["calculators"])
 
-    results = pool.imap(
-        partial(
-            extract_signals,
-            series=time_series,
-            param_dict=param_dict,
-        ),
-        calculators,
+    results = list(
+        pool.imap(
+            partial(
+                extract_signals,
+                series=time_series,
+                param_dict=param_dict,
+            ),
+            calculators,
+        )
     )
     features = []
     for result in results:  # Per each time series calculator
@@ -377,16 +390,24 @@ def calculate_time_frequency_ts_features(time_series, module, params, njobs=None
                 get_module("statistical"), params["calculators"]
             )  # Get the calculator function for the calculated signal
             # For each result -> get features from the signal
-            feature_results = pool.imap(
-                partial(
-                    extract_features,
-                    series=time_series,
-                    param_dict=params,
-                ),
-                calculators,
+            feature_results = list(
+                pool.imap(
+                    partial(
+                        extract_features,
+                        series=time_series,
+                        param_dict=params,
+                    ),
+                    calculators,
+                )
             )
 
-            structured_results = structure_results(feature_results, nan_mask=params["nan_mask"], pos_inf_mask=params["pos_inf_mask"], neg_inf_mask=params["neg_inf_mask"], group_name=name)
+            structured_results = structure_results(
+                feature_results,
+                nan_mask=params["nan_mask"],
+                pos_inf_mask=params["pos_inf_mask"],
+                neg_inf_mask=params["neg_inf_mask"],
+                group_name=name,
+            )
 
             if len(features) == 0:
                 features = structured_results

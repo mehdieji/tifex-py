@@ -312,26 +312,29 @@ def calculate_ts_features(time_series, module, params, njobs=None):
     features = []
     index = []
 
-    pool = mp.Pool(njobs)
-
     param_dict = params.get_settings_as_dict()
     calculators = get_calculators(get_module(module), param_dict["calculators"])
-
-    results = pool.imap(
-        partial(
-            extract_features,
-            series=time_series,
-            param_dict=param_dict,
-        ),
-        calculators,
-    )
-
+    print("     Calculating features for " + module + "...")
+    with mp.Pool(njobs) as pool:
+        results = list(
+            pool.imap(
+                partial(
+                    extract_features,
+                    series=time_series,
+                    param_dict=param_dict,
+                ),
+                calculators,
+            )
+        )
+    print("     Finished calculating features for " + module + ".")
+    print("     Structuring results for " + module + "...")
     all_features = structure_results(
         results,
         nan_mask=param_dict["nan_mask"],
         pos_inf_mask=param_dict["pos_inf_mask"],
         neg_inf_mask=param_dict["neg_inf_mask"],
     )
+    print("     Finished structuring results for " + module + ".")
     return all_features
 
 
@@ -361,60 +364,67 @@ def calculate_time_frequency_ts_features(time_series, module, params, njobs=None
 
     index = []
 
-    pool = mp.Pool(njobs)
-
     param_dict = params.get_settings_as_dict()
     calculators = get_calculators(get_module(module), param_dict["calculators"])
-
-    results = list(
-        pool.imap(
-            partial(
-                extract_signals,
-                series=time_series,
-                param_dict=param_dict,
-            ),
-            calculators,
+    print("     Calculating signals for time-frequency features...")
+    with mp.Pool(njobs) as pool:
+        results = list(
+            pool.map(
+                partial(
+                    extract_signals,
+                    series=time_series,
+                    param_dict=param_dict,
+                ),
+                calculators,
+            )
         )
-    )
-    features = []
-    for result in results:  # Per each time series calculator
+    with mp.Pool(njobs) as inner_pool:
+        print("     Finished calculating signals for time-frequency features.")
+        all_structured_results = []
+        for result in results:  # Per each time series calculator
 
-        for name in result[2]:  # Per each signal name
-            time_series.data = result[0][
-                name
-            ]  # Update the time series data with the calculated signal
+            for name in result[2]:  # Per each signal name
+                time_series.data = result[0][
+                    name
+                ]  # Update the time series data with the calculated signal
 
-            params = result[1]
+                params = result[1]
 
-            calculators = get_calculators(
-                get_module("statistical"), params["calculators"]
-            )  # Get the calculator function for the calculated signal
-            # For each result -> get features from the signal
-            feature_results = list(
-                pool.imap(
-                    partial(
-                        extract_features,
-                        series=time_series,
-                        param_dict=params,
-                    ),
-                    calculators,
+                calculators = get_calculators(
+                    get_module("statistical"), params["calculators"]
+                )  # Get the calculator function for the calculated signal
+                # For each result -> get features from the signal
+                feature_results = list(
+                    inner_pool.map(
+                        partial(
+                            extract_features,
+                            series=time_series,
+                            param_dict=params,
+                        ),
+                        calculators,
+                    )
                 )
-            )
 
-            structured_results = structure_results(
-                feature_results,
-                nan_mask=params["nan_mask"],
-                pos_inf_mask=params["pos_inf_mask"],
-                neg_inf_mask=params["neg_inf_mask"],
-                group_name=name,
-            )
+                structured_results = structure_results(
+                    feature_results,
+                    nan_mask=params["nan_mask"],
+                    pos_inf_mask=params["pos_inf_mask"],
+                    neg_inf_mask=params["neg_inf_mask"],
+                    group_name=name,
+                )
+                all_structured_results.append(structured_results)
 
-            if len(features) == 0:
-                features = structured_results
-            else:
-                for idx in range(len(structured_results)):
-                    features[idx] = pd.concat(
-                        [features[idx], structured_results[idx]], axis=1
-                    )  # Concatenate features from different calculators
+    print("     Finished calculating features for time-frequency signals.")
+    # Single concat per idx slot at the end
+    if not all_structured_results:
+        return []
+
+    n_slots = len(all_structured_results[0])
+    features = [
+        pd.concat(
+            [iteration[idx] for iteration in all_structured_results], axis=1
+        ).copy()
+        for idx in range(n_slots)
+    ]
 
     return features

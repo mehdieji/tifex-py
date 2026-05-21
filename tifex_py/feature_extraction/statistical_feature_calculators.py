@@ -744,7 +744,8 @@ def calculate_entropy(signal, window_size, **kwargs):
     ----------
     signal : np.array
         The input time series.
-
+    window_size : int
+        The size of the window used for histogram calculation.
     Returns:
     -------
     float
@@ -1547,6 +1548,8 @@ def calculate_higuchi_fractal_dimensions(signal, higuchi_k_values, **kwargs):
     -----------
     signal : array-like
         The input time series data.
+    higuchi_k_values : array-like
+        A list or array of integers specifying the maximum interval (k) values for which to calculate the Higuchi Fractal Dimension. 
         
     Returns:
     --------

@@ -61,7 +61,8 @@ def calculate_spectral_variance(freqs, magnitudes, mean_frequency, **kwargs):
         An array of frequencies corresponding to the spectrum bins.
     magnitudes : np.array
         An array of magnitude values of the spectrum at the corresponding frequencies.
-
+    mean_frequency : float
+        The spectral centroid (mean frequency) of the spectrum, which serves as the reference point for calculating the variance.
     Returns:
     -------
     float
@@ -101,7 +102,12 @@ def calculate_spectral_skewness(
         An array of frequencies corresponding to the spectrum bins.
     magnitudes : np.array
         An array of magnitude values of the spectrum at the corresponding frequencies.
-
+    mean_frequency : float
+        The spectral centroid (mean frequency) of the spectrum, which serves as the reference point for calculating the skewness.
+    magnitudes_normalized : np.array
+        An array of magnitude values normalized by the total magnitude, used for weighting in the skewness calculation.
+    spectral_bandwidth_order_2 : float
+        The spectral bandwidth of order 2 (standard deviation) of the spectrum, used for normalizing the skewness calculation.
     Returns:
     -------
     float
@@ -142,7 +148,12 @@ def calculate_spectral_kurtosis(
         An array of frequencies corresponding to the spectrum bins.
     magnitudes : np.array
         An array of magnitude values of the spectrum at the corresponding frequencies.
-
+    mean_frequency : float
+        The spectral centroid (mean frequency) of the spectrum, which serves as the reference point for calculating the kurtosis.
+    magnitudes_normalized : np.array
+        An array of magnitude values normalized by the total magnitude, used for weighting in the kurtosis calculation.
+    spectral_bandwidth_order_2 : float
+        The spectral bandwidth of order 2 (standard deviation) of the spectrum, used for normalizing the kurtosis calculation.
     Returns:
     -------
     float
@@ -380,8 +391,10 @@ def calculate_spectral_edge_frequency(
     ----------
     freqs_psd: np.array
         An array of frequency values.
-    psd: np.array
-        An array of Power Spectral Density (PSD) values corresponding to the frequencies.
+    psd_normalized: np.array
+        An array of Power Spectral Density (PSD) values normalized by the total power, corresponding to the frequencies.
+    cumulative_power_thresholds: list
+        A list of cumulative power thresholds (between 0 and 1) for which to calculate the spectral edge frequencies.
 
     Returns:
     -------
@@ -416,7 +429,8 @@ def calculate_band_power(freqs_psd, psd, f_bands, **kwargs):
         An array of frequency values.
     psd: np.array
         An array of Power Spectral Density (PSD) values corresponding to the frequencies.
-
+    f_bands: list
+        A list of tuples specifying the frequency bands for which to calculate the band powers. 
     Returns:
     -------
     np.array
@@ -559,12 +573,18 @@ def calculate_spectral_bandwidth(
         An array of magnitude values of the spectrum at the corresponding frequencies.
 
     bandwidth_orders : int
-    The order of the spectral bandwidth calculation. The order defines the type of
-    deviation being measured:
-    - 1 for spectral mean deviation.
-    - 2 for spectral standard deviation.
-    This calculates up to the 4th order
-
+        The order of the spectral bandwidth calculation. The order defines the type of
+        deviation being measured:
+        - 1 for spectral mean deviation.
+        - 2 for spectral standard deviation.
+        This calculates up to the 4th order
+    mean_frequency : float
+        The spectral centroid (mean frequency) of the spectrum, which serves as the reference point for calculating the bandwidth.
+    magnitudes_normalized : np.array
+        An array of magnitude values normalized by the total magnitude, used for weighting in the bandwidth calculation.
+    spectral_bandwidth_order_2 : float
+        The spectral bandwidth of order 2 (standard deviation) of the spectrum, used for optimizing the calculation when bandwidth_orders includes 2.
+    
     Returns:
     --------
     np.array
@@ -630,8 +650,12 @@ def calculate_spectral_absolute_deviation(
         An array of frequencies corresponding to the magnitude spectrum bins.
     magnitudes : np.array
         An array of magnitude values of the spectrum at the corresponding frequencies.
-    order : int, optional default=1)
-        The order of the deviation calculation. When `order=2`, the result is equivalent
+    mean_frequency : float
+        The spectral centroid (mean frequency) of the spectrum, which serves as the reference point for calculating the deviation.
+    magnitudes_normalized : np.array
+        An array of magnitude values normalized by the total magnitude, used for weighting in the deviation calculation.
+    abs_dev_orders : int or list of ints, optional, default=1
+        The order(s) of the absolute deviation calculation. When `order=2`, the result is equivalent
         to the spectral bandwidth (standard deviation) of the spectrum.
 
     Returns:
@@ -698,7 +722,12 @@ def calculate_spectral_cov(
     magnitudes : array-like
         The magnitude values of the spectrum corresponding to each frequency bin.
         This is a 1D array representing the magnitude of the signal at each frequency.
-
+    mean_frequency : float
+        The spectral centroid (mean frequency) of the spectrum, which serves as the reference point for calculating the coefficient of variation.
+    magnitudes_normalized : array-like
+        An array of magnitude values normalized by the total magnitude, used for weighting in the calculation of the spectral coefficient of variation.
+    spectral_bandwidth_order_2 : float
+        The spectral bandwidth of order 2 (standard deviation) of the spectrum, used for calculating the spectral coefficient of variation.
     Returns:
     --------
     float
@@ -727,7 +756,8 @@ def calculate_spectral_flux(magnitudes, flux_orders=2, **kwargs):
     magnitudes : array-like
         The magnitude values of the spectrum corresponding to each frequency bin.
         This is a 1D array representing the magnitude of the signal at each frequency.
-
+    flux_orders : int or list of ints, optional, default=2
+        The order(s) of the spectral flux calculation. The spectral flux is calculated as the Lp norm of the difference between consecutive magnitude spectra, where p is the specified order.
     Returns:
     --------
     float
@@ -801,7 +831,8 @@ def calculate_harmonic_ratio(signal, harmonic, **kwargs):
     -----------
     signal : np.array
         The input audio signal as a 1D numpy array.
-
+    harmonic : np.array
+        The harmonic component of the signal as a 1D numpy array.
     Returns:
     --------
     np.array
@@ -835,8 +866,8 @@ def calculate_fundamental_frequency(fundamental_frequency, **kwargs):
 
     Parameters:
     -----------
-    signal : np.array
-        The input audio signal as a 1D numpy array.
+    fundamental_frequency : np.array
+        An array of estimated fundamental frequency values (F0) for the audio signal, typically obtained using the YIN algorithm.
 
     Returns:
     --------
@@ -1001,10 +1032,12 @@ def calculate_total_harmonic_distortion(
     -----------
     signal : array-like
         The input signal for which the THD is being calculated.
-
+    spectrum : array-like
+        The magnitude spectrum of the input signal, typically obtained from a Fourier transform.
     fs : int or float
         The sampling frequency of the input signal, in Hz.
-
+    fundamental_frequency : array-like
+        An array of estimated fundamental frequency values (F0) for the audio signal, typically obtained using the YIN algorithm.
     harmonics : int, optional
         The number of harmonic frequencies to consider for THD calculation.
         Default is 5.
@@ -1056,6 +1089,8 @@ def calculate_inharmonicity(signal, freqs, magnitudes, fundamental_frequency, **
         Array of frequency values corresponding to the magnitudes.
     magnitudes : np.ndarray
         Array of magnitude values corresponding to the frequencies.
+    fundamental_frequency : np.ndarray
+        An array of estimated fundamental frequency values (F0) for the audio signal, typically obtained using the YIN algorithm.
 
     Returns:
     --------
@@ -1123,9 +1158,8 @@ def calculate_tristimulus(magnitudes_normalized, **kwargs):
 
     Parameters:
     ----------
-    magnitudes : np.ndarray
-        Array of magnitude values corresponding to the frequencies.
-
+    magnitudes_normalized : np.array
+        An array of magnitude values normalized by the total magnitude, representing the energy distribution across the frequency spectrum.
     Returns:
     -------
     np.array
@@ -1222,7 +1256,12 @@ def calculate_spectral_spread_ratio(
 
     magnitudes : array-like
         Array of magnitudes corresponding to the frequency spectrum of the signal.
-
+    magnitudes_normalized : array-like
+        Array of magnitudes normalized by the total magnitude, used for weighting in the bandwidth calculation.
+    mean_frequency : float
+        The spectral centroid (mean frequency) of the spectrum, which serves as the reference point for calculating the bandwidth.
+    spectral_bandwidth_order_2 : float
+        The spectral bandwidth of order 2 (standard deviation) of the spectrum, used for calculating the spectral spread ratio.
     reference_value: float, optional (default=1.0)
         The reference value to normalize the spectral spread (bandwidth).
 
@@ -1258,6 +1297,12 @@ def calculate_spectral_skewness_ratio(
     magnitudes : array-like
         Array of magnitudes corresponding to the frequency spectrum of the signal.
 
+    magnitudes_normalized : array-like
+        Array of magnitudes normalized by the total magnitude, used for weighting in the skewness calculation.
+    mean_frequency : float
+        The spectral centroid (mean frequency) of the spectrum, which serves as the reference point for calculating the skewness.
+    spectral_bandwidth_order_2 : float
+        The spectral bandwidth of order 2 (standard deviation) of the spectrum, used for calculating the spectral skewness ratio.
     reference_value: float, optional (default=1.0)
         The reference value to normalize the spectral skewness.
 
@@ -1298,7 +1343,12 @@ def calculate_spectral_kurtosis_ratio(
 
     magnitudes : array-like
         Array of magnitudes corresponding to the frequency spectrum of the signal.
-
+    mean_frequency : float
+        The spectral centroid (mean frequency) of the spectrum, which serves as the reference point for calculating the kurtosis.
+    magnitudes_normalized : array-like
+        Array of magnitudes normalized by the total magnitude, used for weighting in the kurtosis calculation.
+    spectral_bandwidth_order_2 : float
+        The spectral bandwidth of order 2 (standard deviation) of the spectrum, used for calculating the spectral kurtosis ratio.
     reference_value: float, optional (default=1.0)
         The reference value to normalize the spectral kurtosis.
 
@@ -1365,7 +1415,8 @@ def calculate_spectral_harmonics_to_noise_ratio(signal, harmonic, **kwargs):
     ----------
     signal : np.ndarray
         Input audio signal. Should be a 1D numpy array.
-
+    harmonic : np.ndarray
+        The harmonic component of the signal. Should be a 1D numpy array of the same length as `signal`.
     Returns
     -------
     np.ndarray
@@ -1407,7 +1458,8 @@ def calculate_spectral_noise_to_harmonics_ratio(signal, harmonic, **kwargs):
     ----------
     signal : np.ndarray
         Input audio signal
-
+    harmonic : np.ndarray
+        The harmonic component of the signal. Should be a 1D numpy array of the same length as `signal`.
     Returns
     -------
     signal : np.ndarray
@@ -1447,7 +1499,8 @@ def calculate_spectral_even_to_odd_harmonic_energy_ratio(
     ----------
     signal : array-like
         The input audio signal in the time domain. Should be a one-dimensional array.
-
+    fundamental_frequency : array-like
+        An array of estimated fundamental frequency values (F0) for the audio signal, typically obtained using the YIN algorithm.
     fs : int
         The sampling frequency of the signal, in Hz.
 

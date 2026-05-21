@@ -6,6 +6,7 @@ import copy as cp
 import os
 import pickle
 
+
 def get_calculators(module, calculator_list=None):
     """
     Get all calculator functions from the given modules. Will exclude functions
@@ -15,7 +16,7 @@ def get_calculators(module, calculator_list=None):
     ----------
     modules: list
         List of modules to get the calculators from.
-    
+
     Returns:
     -------
     calculators: list
@@ -23,13 +24,14 @@ def get_calculators(module, calculator_list=None):
     """
     calculators = []
     for k, v in module.__dict__.items():
-        if k.startswith("calculate_") and not hasattr(v, 'exclude'):
+        if k.startswith("calculate_") and not hasattr(v, "exclude"):
             if calculator_list is not None:
                 if k.replace("calculate_", "") in calculator_list:
                     calculators.append(v)
             else:
                 calculators.append(v)
     return calculators
+
 
 def get_module(module_str):
     """
@@ -46,14 +48,17 @@ def get_module(module_str):
         List of modules.
     """
     module = None
-    if module_str=="statistical":
+    if module_str == "statistical":
         from tifex_py.feature_extraction import statistical_feature_calculators
+
         module = statistical_feature_calculators
-    elif module_str=="spectral":
+    elif module_str == "spectral":
         from tifex_py.feature_extraction import spectral_feature_calculators
+
         module = spectral_feature_calculators
-    elif module_str=="time_frequency":
+    elif module_str == "time_frequency":
         from tifex_py.feature_extraction import time_frequency_feature_calculators
+
         module = time_frequency_feature_calculators
     return module
 
@@ -97,10 +102,10 @@ def extract_features(calculator, series, param_dict):
             {
                 "label": data["label"],
                 "feature": feature,
-                "idx": data.get("idx",None),
+                "idx": data.get("idx", None),
             }
         )
-        
+
     return features
 
 
@@ -191,7 +196,14 @@ def structure_features(feature, name):
     return features
 
 
-def structure_results(results, nan_mask=None, pos_inf_mask=None, neg_inf_mask=None, group_name=None):
+def structure_results(
+    results,
+    nan_mask=None,
+    pos_inf_mask=None,
+    neg_inf_mask=None,
+    group_name=None,
+    concat_channels=False,
+):
     """
     Structure the calculated features into a list of DataFrames, one per sample, with labels as index and features as columns.
     Parameters:
@@ -206,6 +218,8 @@ def structure_results(results, nan_mask=None, pos_inf_mask=None, neg_inf_mask=No
         Value to replace negative infinity values with. If None, negative infinity values are not replaced.
     group_name: str, optional
         Optional prefix to add to feature names for grouping purposes. If None, no prefix is added.
+    concat_channels: bool
+        Whether to concatenate channels when calculating features. If True, each axis becomes a separate row (sample_x, sample_y, sample_z) within a sample. If False, axes are interleaved as column suffixes (feature_x, feature_y, feature_z).
     Returns:
     -------
     all_outputs: list of pandas.DataFrame
@@ -227,8 +241,43 @@ def structure_results(results, nan_mask=None, pos_inf_mask=None, neg_inf_mask=No
                 else:
                     all_features[idx][label][name] = val
 
+    if concat_channels:
+        all_outputs = structure_results_output_concat_axis(
+            all_features, nan_mask=nan_mask, pos_inf_mask=pos_inf_mask, neg_inf_mask=neg_inf_mask
+        )
+    else:
+        all_outputs = structure_results_output_interleaved_axis(
+            all_features, nan_mask=nan_mask, pos_inf_mask=pos_inf_mask, neg_inf_mask=neg_inf_mask
+        )
+    return all_outputs
+
+
+def structure_results_output_interleaved_axis(
+    all_features, nan_mask=None, pos_inf_mask=None, neg_inf_mask=None
+):
     all_outputs = []
-   
+    for idx, data in all_features.items():  # Per each sample
+        sample_output = []
+        for label, features in data.items():  # Per each label
+            row = {"label": label}
+            for name, value in features.items():  # Per each feature
+                row[name] = value
+            sample_output.append(row)
+        df = pd.DataFrame(sample_output)
+        # Fill Nan, pos inf, neg inf values if specified
+        df = fill_missing_values(
+            df, nan_mask=nan_mask, pos_inf_mask=pos_inf_mask, neg_inf_mask=neg_inf_mask
+        )
+        df.set_index("label", inplace=True)
+        all_outputs.append(df)
+    return all_outputs
+
+
+def structure_results_output_concat_axis(
+    all_features, nan_mask=None, pos_inf_mask=None, neg_inf_mask=None
+):
+    all_outputs = []
+
     for idx, data in all_features.items():  # Per each sample
         row = {}
         for label, features in data.items():  # Per each label
@@ -236,17 +285,42 @@ def structure_results(results, nan_mask=None, pos_inf_mask=None, neg_inf_mask=No
                 full_name = f"{name}|{label}"
                 row[full_name] = value
         df = pd.DataFrame([row])
-       
+
         # Fill Nan, pos inf, neg inf values if specified
-        if nan_mask is not None:
-            df.fillna(nan_mask, inplace=True)
-        if pos_inf_mask is not None:
-            df.replace([np.inf], pos_inf_mask, inplace=True)
-        if neg_inf_mask is not None:
-            df.replace([-np.inf], neg_inf_mask, inplace=True)
-            
+        df = fill_missing_values(
+            df, nan_mask=nan_mask, pos_inf_mask=pos_inf_mask, neg_inf_mask=neg_inf_mask
+        )
+
         all_outputs.append(df)
     return all_outputs
+
+
+def fill_missing_values(df, nan_mask=None, pos_inf_mask=None, neg_inf_mask=None):
+    """
+    Fill missing values in the DataFrame with specified masks for NaN, positive infinity, and negative infinity.
+    Parameters:
+    ----------
+    df: pandas.DataFrame
+        The DataFrame in which to fill missing values.
+    nan_mask: float, optional
+        Value to replace NaN values with. If None, NaN values are not replaced.
+    pos_inf_mask: float, optional
+        Value to replace positive infinity values with. If None, positive infinity values are not replaced.
+    neg_inf_mask: float, optional
+        Value to replace negative infinity values with. If None, negative infinity values are not replaced.
+    Returns:
+    -------
+    df: pandas.DataFrame
+        The DataFrame with missing values filled according to the specified masks.
+    """
+    if nan_mask is not None:
+        df.fillna(nan_mask, inplace=True)
+    if pos_inf_mask is not None:
+        df.replace([np.inf], pos_inf_mask, inplace=True)
+    if neg_inf_mask is not None:
+        df.replace([-np.inf], neg_inf_mask, inplace=True)
+    return df
+
 
 def split_input_into_batches(data, samples_per_file=4000):
     """
@@ -266,6 +340,7 @@ def split_input_into_batches(data, samples_per_file=4000):
     for i in range(0, len(data), samples_per_file):
         batch_start_end_indices.append((i, min(i + samples_per_file, len(data))))
     return batch_start_end_indices
+
 
 def save_features(features, batch_start_end_index, output_path):
     """

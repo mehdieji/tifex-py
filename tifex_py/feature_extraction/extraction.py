@@ -33,6 +33,7 @@ def calculate_features(
     window_size=None,
     columns=None,
     njobs=None,
+    concat_channels=False,
     store_features=True,
 ):
     """
@@ -57,6 +58,8 @@ def calculate_features(
     njobs: int
         Number of worker processes to use. If None or -1, the number returned by
         os.cpu_count() is used.
+    concat_channels: bool
+        Whether to concatenate channels when calculating features. If True, each axis becomes a separate row (sample_x, sample_y, sample_z) within a sample. If False, axes are interleaved as column suffixes (feature_x, feature_y, feature_z).
     store_features: bool
         Whether to store the calculated features in a file. If True, the features are stored in the specified directory. If False, the features are returned as a list of DataFrames. Default is True.
     Returns:
@@ -115,6 +118,7 @@ def calculate_all_features(
     store_path,
     columns=None,
     njobs=None,
+    concat_channels=False,
     store_features=True,
     samples_per_file=4000,
 ):
@@ -139,6 +143,8 @@ def calculate_all_features(
     njobs: int
         Number of worker processes to use. If None or -1, the number returned by
         os.cpu_count() is used.
+    concat_channels: bool
+        Whether to concatenate channels when calculating features. If True, each axis becomes a separate row (sample_x, sample_y, sample_z) within a sample. If False, axes are interleaved as column suffixes (feature_x, feature_y, feature_z).
     store_features: bool
         Whether to store the calculated features in a file. If True, the features are stored in the specified directory. If False, the features are returned as a list of DataFrames.
     samples_per_file: int
@@ -154,13 +160,13 @@ def calculate_all_features(
         print(f"Processing batch {batch} for all feature extraction.")
         input_data = data[batch[0] : batch[1]]
         stat_features = calculate_statistical_features(
-            input_data, stat_params, columns=columns, njobs=njobs
+            input_data, stat_params, columns=columns, concat_channels=concat_channels, njobs=njobs
         )
         spec_features = calculate_spectral_features(
-            input_data, spec_params, columns=columns, njobs=njobs
+            input_data, spec_params, columns=columns, concat_channels=concat_channels, njobs=njobs
         )
         tf_features = calculate_time_frequency_features(
-            input_data, tf_params, columns=columns, njobs=njobs
+            input_data, tf_params, columns=columns, concat_channels=concat_channels, njobs=njobs
         )
 
         output_features = []
@@ -181,7 +187,7 @@ def calculate_all_features(
 
 
 def calculate_statistical_features(
-    data, params=None, window_size=None, columns=None, njobs=None
+    data, params=None, window_size=None, columns=None,concat_channels=False, njobs=None
 ):
     """
     Calculates statistical features for the given dataset.
@@ -196,6 +202,8 @@ def calculate_statistical_features(
         Window size to use for feature extraction.
     columns: list
         Columns to calculate features for or names of the np.array columns.
+    concat_channels: bool
+        Whether to concatenate channels when calculating features. If True, each axis becomes a separate row (sample_x, sample_y, sample_z) within a sample. If False, axes are interleaved as column suffixes (feature_x, feature_y, feature_z).
     njobs: int
         Number of worker processes to use. If None or -1, the number returned by
         os.cpu_count() is used.
@@ -210,12 +218,12 @@ def calculate_statistical_features(
 
     time_series = TimeSeries(data, columns=columns)
 
-    features = calculate_ts_features(time_series, "statistical", params, njobs=njobs)
+    features = calculate_ts_features(time_series, "statistical", params,concat_channels=concat_channels, njobs=njobs)
     return features
 
 
 def calculate_spectral_features(
-    data, params=None, window_size=None, fs=None, columns=None, njobs=None
+    data, params=None, window_size=None, fs=None, columns=None,concat_channels=False, njobs=None
 ):
     """
     Calculates spectral features for the given dataset.
@@ -232,6 +240,8 @@ def calculate_spectral_features(
         Sampling frequency of the data.
     columns: list
         Columns to calculate features for or names of the np.array columns.
+    concat_channels: bool
+        Whether to concatenate channels when calculating features. If True, each axis becomes a separate row (sample_x, sample_y, sample_z) within a sample. If False, axes are interleaved as column suffixes (feature_x, feature_y, feature_z).
     njobs: int
         Number of worker processes to use. If None or -1, the number returned by
         os.cpu_count() is used.
@@ -246,12 +256,12 @@ def calculate_spectral_features(
     time_series = SpectralTimeSeries(
         data, columns=columns, fs=params.fs, nperseg=params.nperseg, n_fft=params.n_fft
     )
-    features = calculate_ts_features(time_series, "spectral", params, njobs=njobs)
+    features = calculate_ts_features(time_series, "spectral", params,concat_channels=concat_channels, njobs=njobs)
     return features
 
 
 def calculate_time_frequency_features(
-    data, params=None, window_size=None, columns=None, njobs=None
+    data, params=None, window_size=None, columns=None,concat_channels=False, njobs=None
 ):
     """
     Calculates time frequency features for the given dataset.
@@ -266,6 +276,7 @@ def calculate_time_frequency_features(
         Window size to use for feature extraction.
     columns: list
         Columns to calculate features for or names of the np.array columns.
+    
     njobs: int
         Number of worker processes to use. If None, the  or -1number returned by
         os.cpu_count() is used.
@@ -280,12 +291,14 @@ def calculate_time_frequency_features(
 
     time_series = TimeSeries(data, columns=columns)
     features = calculate_time_frequency_ts_features(
-        time_series, "time_frequency", params, njobs=njobs
+        time_series, "time_frequency", params, concat_channels=concat_channels, njobs=njobs
     )
     return features
 
 
-def calculate_ts_features(time_series, module, params, njobs=None):
+def calculate_ts_features(
+    time_series, module, params, concat_channels=False, njobs=None
+):
     """
     Calculate features from the given module for the given time series data.
 
@@ -297,6 +310,8 @@ def calculate_ts_features(time_series, module, params, njobs=None):
         The module with the feature calculators to use.
     params: BaseFeatureParams
         Parameters to use in feature extraction.
+    concat_channels: bool
+        Whether to concatenate channels when calculating features. If True, each axis becomes a separate row (sample_x, sample_y, sample_z) within a sample. If False, axes are interleaved as column suffixes (feature_x, feature_y, feature_z).
     njobs: int
         Number of worker processes to use. If None or -1, the number returned by
         os.cpu_count() is used.
@@ -333,12 +348,15 @@ def calculate_ts_features(time_series, module, params, njobs=None):
         nan_mask=param_dict["nan_mask"],
         pos_inf_mask=param_dict["pos_inf_mask"],
         neg_inf_mask=param_dict["neg_inf_mask"],
+        concat_channels=concat_channels,
     )
     print("     Finished structuring results for " + module + ".")
     return all_features
 
 
-def calculate_time_frequency_ts_features(time_series, module, params, njobs=None):
+def calculate_time_frequency_ts_features(
+    time_series, module, params, concat_channels=False, njobs=None
+):
     """
     Calculate features from the given module for the given time series data.
 
@@ -350,6 +368,8 @@ def calculate_time_frequency_ts_features(time_series, module, params, njobs=None
         The module with the feature calculators to use.
     params: BaseFeatureParams
         Parameters to use in feature extraction.
+    concat_channels: bool
+        Whether to concatenate channels when calculating features. If True, each axis becomes a separate row (sample_x, sample_y, sample_z) within a sample. If False, axes are interleaved as column suffixes (feature_x, feature_y, feature_z).
     njobs: int
         Number of worker processes to use. If None or -1, the number returned by
         os.cpu_count() is used.
@@ -411,6 +431,7 @@ def calculate_time_frequency_ts_features(time_series, module, params, njobs=None
                     pos_inf_mask=params["pos_inf_mask"],
                     neg_inf_mask=params["neg_inf_mask"],
                     group_name=name,
+                    concat_channels=concat_channels,
                 )
                 all_structured_results.append(structured_results)
 

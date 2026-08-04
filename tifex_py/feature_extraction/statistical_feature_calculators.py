@@ -744,7 +744,8 @@ def calculate_entropy(signal, window_size, **kwargs):
     ----------
     signal : np.array
         The input time series.
-
+    window_size : int
+        The size of the window used for histogram calculation.
     Returns:
     -------
     float
@@ -808,6 +809,13 @@ def calculate_sample_entropy(signal, **kwargs):
 
     A = _phi(m + 1)
     B = _phi(m)
+    
+    if A == 0 and B == 0:
+        return np.nan
+    if A == 0: # Infinity
+        return np.inf
+    if B == 0:
+        return - np.inf
 
     return -np.log(A / B)
 
@@ -875,16 +883,23 @@ def calculate_approximate_entropy(signal, m, r, **kwargs):
         https://doi.org/10.1016/J.NEUCOM.2018.03.067
     """
     N = len(signal)
+    std = np.std(signal)
     feats = []
-    def _phi(m, r):
-            X = np.array([signal[i:i + m] for i in range(N - m + 1)])
-            C = np.sum(np.max(np.abs(X[:, None] - X[None, :]), axis=2) <= r, axis=0)
-            return np.sum(np.log(C / (N - m + 1))) / (N - m + 1)
-        
+
+    def _phi(max_val, m, r):
+        C = np.sum(max_val <= r, axis=0)
+        return np.sum(np.log(C / (N - m + 1))) / (N - m + 1)
+
+    X_m = np.array([signal[i : i + m] for i in range(N - m + 1)])
+    max_m = np.max(np.abs(X_m[:, None] - X_m[None, :]), axis=2)
+    X_m1 = np.array([signal[i : i + m + 1] for i in range(N - m)])
+
+    max_m1 = np.max(np.abs(X_m1[:, None] - X_m1[None, :]), axis=2)
+
     for r in r:
-        r *= np.std(signal)  # r known as the tolerance is typically set as a fraction of the standard deviation
-        feats.append(_phi(m, r) - _phi(m + 1, r))
-        
+        r *= std  # r known as the tolerance is typically set as a fraction of the standard deviation
+        feats.append(_phi(max_m, m, r) - _phi(max_m1, m + 1, r))
+
     return feats
 
 @name("renyi_entropy")
@@ -1421,7 +1436,7 @@ def calculate_coefficient_of_variation(signal, **kwargs):
     coefficient_of_variation = np.std(signal) / np.mean(signal)
     return coefficient_of_variation
 
-@name("mean_abs_deviation")
+@name("median_abs_deviation")
 def calculate_median_absolute_deviation(signal, adjusted, **kwargs):
     """
     Calculate the Median Absolute Deviation (MAD) of a time series signal.
@@ -1533,6 +1548,8 @@ def calculate_higuchi_fractal_dimensions(signal, higuchi_k_values, **kwargs):
     -----------
     signal : array-like
         The input time series data.
+    higuchi_k_values : array-like
+        A list or array of integers specifying the maximum interval (k) values for which to calculate the Higuchi Fractal Dimension. 
         
     Returns:
     --------
@@ -1555,8 +1572,10 @@ def calculate_higuchi_fractal_dimensions(signal, higuchi_k_values, **kwargs):
     def compute_length_for_interval(data, interval, start_time):
         data_size = data.size
         num_intervals = (data_size - start_time) // interval
+        if num_intervals <=0:
+            return np.nan
         normalization_factor = (data_size - 1) / (num_intervals * interval)
-        sum_difference = np.sum(np.abs(np.diff(data[start_time::interval], n=1)))
+        sum_difference = np.sum(np.abs(np.diff(data[start_time:num_intervals:interval], n=1)))
         length_for_time = (sum_difference * normalization_factor) / interval
         return length_for_time
 
@@ -1575,7 +1594,11 @@ def calculate_higuchi_fractal_dimensions(signal, higuchi_k_values, **kwargs):
                 for interval in range(1, max_interval + 1)
             ])
             interval_range = np.arange(1, max_interval + 1)
-            fractal_dimension, _ = -np.polyfit(np.log(interval_range), np.log(average_lengths), 1)
+            valid = (~np.isnan(average_lengths)) & (average_lengths > 0)
+            if np.sum(valid) < 2:
+                fractal_dimension = np.nan
+            else:
+                fractal_dimension, _ = -np.polyfit(np.log(interval_range[valid]), np.log(average_lengths[valid]), 1)
         except Exception as e:
             print(f"Error computing HFD for k={max_interval}: {e}")
             fractal_dimension = np.nan
@@ -1643,7 +1666,7 @@ def calculate_petrosian_fractal_dimension(signal, **kwargs):
         2020, Vol. 34,  Issue 3, Pages: 180-190, 34(3), 180–190. https://doi.org/10.7555/JBR.33.20190009
     """
     N = len(signal)
-    nzc = calculate_zero_crossings(np.diff(signal))
+    nzc, _ = calculate_zero_crossings(np.diff(signal))
     return np.log10(N) / (np.log10(N) + np.log10(N / (N + 0.4 * nzc)))
 
 @name(["hjorth_mobility", "hjorth_complexity"])
@@ -1685,13 +1708,14 @@ def calculate_hjorth_mobility_and_complexity(signal, **kwargs):
     return np.array([mobility, complexity])
 
 @name("cardinality")
-def calculate_cardinality(signal, window_size, **kwargs):
+def calculate_cardinality(signal, **kwargs):
     # Parameter
     thresh = 0.05 * np.std(signal)  # threshold
     # Sort data
+    signal_size = len(signal)
     sorted_values = np.sort(signal)
-    cardinality_array = np.zeros(window_size - 1)
-    for i in range(window_size - 1):
+    cardinality_array = np.zeros(signal_size - 1)
+    for i in range(signal_size - 1):
         cardinality_array[i] = np.abs(sorted_values[i] - sorted_values[i + 1]) > thresh
     cardinality = np.sum(cardinality_array)
     return cardinality
@@ -3271,8 +3295,10 @@ def calculate_hurst_exponent(signal, **kwargs):
         Sequence. https://arxiv.org/abs/2310.19051v1
         - https://github.com/GrAbsRD/HurstExponent
     """
-    segment_size, fluctuation_values = calculate_detrended_fluctuation_analysis(signal)
-
+    result, _ = calculate_detrended_fluctuation_analysis(signal)
+    segment_size, fluctuation_values = result
+    if len(segment_size) < 2 or len(fluctuation_values) < 2:
+        return np.nan
     poly = np.polyfit(np.log(segment_size), np.log(fluctuation_values), 1)
     hurst = poly[0]
     return hurst
@@ -3426,7 +3452,7 @@ def calculate_large_std(signal, **kwargs):
         Extraction on basis of Scalable Hypothesis tests (tsfresh – A Python package). Neurocomputing, 
         307, 72–77. https://doi.org/10.1016/J.NEUCOM.2018.03.067
     """
-    range = calculate_range(signal)
+    range, _ = calculate_range(signal)
     N = len(signal)
     r = 4 if 15 < N <=70 else 6
 

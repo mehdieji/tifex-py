@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from scipy.signal import welch
-
+import librosa
 
 class SignalFeatures():
     """
@@ -44,23 +44,6 @@ class TimeSeries():
         else:
             raise ValueError("Data format not supported.")
 
-    def __iter__(self):
-        """
-        Make the class iterable.
-        """
-        self.index = 0
-        return self
-
-    def __next__(self):
-        """
-        Get the next time series.
-        """
-        if self.index < len(self.data):
-            result = self.data[self.index]
-            self.index += 1
-            return result
-        else:
-            raise StopIteration
 
     def parse_from_dataframe(self, data, columns=None):
         """
@@ -81,8 +64,16 @@ class TimeSeries():
         ts_list = []
         if columns is None:
             columns = data.columns
-        for column in columns:
-            ts_list.append(self.create_data_dict(data[column].values, column))
+        # Check number of rows in the dataframe
+        if len(data) == 1:
+            # If there is only one row, we assume that the columns are the time series and the row contains the values
+            for column in columns:
+                ts_list.append(self.create_data_dict(data[column].values, column))
+        else:
+            # Iterate over the rows
+            for idx, row in data.iterrows():
+                for column in columns:
+                    ts_list.append(self.create_data_dict(row[column], column, idx=idx))
         return ts_list
 
     def parse_from_array(self, data, columns=None):
@@ -114,6 +105,14 @@ class TimeSeries():
                 columns = list(range(data.shape[1]))
             for i, c in enumerate(columns):
                 ts_list.append(self.create_data_dict(data[:, i], c))
+        elif len(data.shape) == 3:  # [batch, time, channels]
+            if columns is None:
+                columns = list(range(data.shape[2]))
+            for j, r in enumerate(
+                list(range(data.shape[0]))
+            ):  # For each sample in the batch
+                for i, c in enumerate(columns):
+                    ts_list.append(self.create_data_dict(data[r, :, i], c, idx=j))
         else:
             raise ValueError("Arrays with more than 2 dimensions are not supported.")
         return ts_list
@@ -138,7 +137,7 @@ class TimeSeries():
         name = data.name
         return [self.create_data_dict(data.values, name)]
 
-    def create_data_dict(self, signal, name):
+    def create_data_dict(self, signal, name, idx=None):
         """
         Create a dictionary with the signal and the label.
 
@@ -148,17 +147,21 @@ class TimeSeries():
             The time series data.
         name : str
             The name of the time series.
+        idx : int
+            The index of the time series in the batch (if applicable).
 
         Returns:
         --------
         dict
-            Dictionary with the signal and the label.
-        """    
+            Dictionary with the signal and the label. If idx is not None, the dictionary also contains the index of the time series in the batch.
+        """   
+        if idx is not None:
+            return {"signal": signal, "label": name, "idx": idx}
         return {"signal": signal, "label": name}
 
 
 class SpectralTimeSeries(TimeSeries):
-    def __init__(self, data, columns=None, fs=1.0):
+    def __init__(self, data, columns=None, fs=1.0, nperseg=50, n_fft=None):
         """
         Parameters:
         ----------
@@ -169,9 +172,11 @@ class SpectralTimeSeries(TimeSeries):
             If data is an array, this is the list of column names.
         """
         self.fs = fs
+        self.nperseg = nperseg
+        self.n_fft= n_fft
         super().__init__(data, columns=columns)
 
-    def create_data_dict(self, signal, name):
+    def create_data_dict(self, signal, name, idx=None):
         """
         Creates a dictionary with the signal and its label as well as the
         frequency spectrum and the power spectral density of the signal.
@@ -182,7 +187,9 @@ class SpectralTimeSeries(TimeSeries):
             The time series data.
         name : str
             The name of the time series.
-        
+        idx : int
+            The index of the time series in the batch (if applicable).
+
         Returns:
         --------
         dict
@@ -197,9 +204,39 @@ class SpectralTimeSeries(TimeSeries):
         freqs_spectrum = np.abs(np.fft.fftfreq(length, 1.0 / self.fs)[:length // 2 + 1])
 
         # Calculating the power spectral density using Welch's method.
-        freqs_psd, psd = welch(signal, fs=self.fs)
+        freqs_psd, psd = welch(signal, fs=self.fs, nperseg=self.nperseg)
         psd_normalized = psd / np.sum(psd)
 
-        return {"signal": signal, "spectrum": spectrum, "magnitudes": spectrum_magnitudes,
-                "magnitudes_normalized": spectrum_magnitudes_normalized, "freqs": freqs_spectrum,
-                "psd": psd, "psd_normalized": psd_normalized, "freqs_psd": freqs_psd, "label": name}
+         # Calculate harmonic component using librosa
+        harmonic_component = librosa.effects.harmonic(signal,n_fft=self.n_fft)
+
+        # Calculate spectral centroid with order 1 = mean frequency
+        spectral_centroid = np.sum(
+            spectrum_magnitudes * (freqs_spectrum**1)
+        ) / np.sum(spectrum_magnitudes)
+
+        #  Calculate fundamental frequency using librosa's YIN algorithm
+        f0 = librosa.yin(
+            signal, fmin=librosa.note_to_hz("C1"), fmax=librosa.note_to_hz("C8")
+        )
+
+        spectral_bandwidth_order_2 = ((np.sum((np.abs(freqs_spectrum - spectral_centroid) ** 2) * spectrum_magnitudes_normalized)) ** (1 / 2))
+
+        final_obj = {
+            "signal": signal,
+            "spectrum": spectrum,
+            "magnitudes": spectrum_magnitudes,
+            "magnitudes_normalized": spectrum_magnitudes_normalized,
+            "freqs": freqs_spectrum,
+            "psd": psd,
+            "psd_normalized": psd_normalized,
+            "freqs_psd": freqs_psd,
+            "label": name,
+            "harmonic": harmonic_component,
+            "mean_frequency": spectral_centroid,
+            "fundamental_frequency": f0,
+            "spectral_bandwidth_order_2": spectral_bandwidth_order_2
+        }
+        if idx is not None:
+            final_obj["idx"] = idx
+        return final_obj

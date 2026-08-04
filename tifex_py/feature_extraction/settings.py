@@ -5,8 +5,11 @@ import numpy as np
 
 
 class BaseFeatureParams:
-    def __init__(self, calculators=None):
+    def __init__(self, calculators=None, nan_mask=None, pos_inf_mask=None, neg_inf_mask=None):
         self.calculators = calculators
+        self.nan_mask = nan_mask
+        self.pos_inf_mask = pos_inf_mask
+        self.neg_inf_mask = neg_inf_mask
 
     @classmethod
     def from_json(cls, file_path):
@@ -200,6 +203,12 @@ class StatisticalFeatureParams(BaseFeatureParams):
         Length of compared run of data for approximate entropy
     cwt_peaks_n: list
         Upper limits of widths for determining the peaks
+    nan_mask: int, optional
+        Value to replace NaN values with. Default is None, which means NaN values are not replaced.
+    pos_inf_mask: int, optional
+        Value to replace positive infinity values with. Default is None, which means positive infinity values are not replaced.
+    neg_inf_mask: int, optional
+        Value to replace negative infinity values with. Default is None, which means negative infinity values are not replaced.
     """
     def __init__(self,
                  window_size,
@@ -234,9 +243,13 @@ class StatisticalFeatureParams(BaseFeatureParams):
                  m=2,
                  r=[0.1, 0.2, 0.3, 0.5, 0.7, 0.9],
                  cwt_peaks_n=[1,5],
-                 calculators=None
+                 calculators=None,
+                 nan_mask=None,
+                 pos_inf_mask=None,
+                 neg_inf_mask=None
+
                 ):
-        super().__init__(calculators)
+        super().__init__(calculators, nan_mask=nan_mask, pos_inf_mask=pos_inf_mask, neg_inf_mask=neg_inf_mask)
         self.window_size = window_size
         self.tsallis_q_parameter = tsallis_q_parameter
         self.renyi_alpha_parameter = renyi_alpha_parameter
@@ -293,6 +306,8 @@ class SpectralFeatureParams(BaseFeatureParams):
     
     Attributes:
     -----------
+    window_size : int
+        Size of the window to compute the features.
     fs : int
         Sampling frequency of the signal.
     f_bands : list
@@ -328,9 +343,21 @@ class SpectralFeatureParams(BaseFeatureParams):
         Used in calculation of spectral_cumulative_frequency_above_threshold_*.
         List of values between 0 and 1 indicating the cumulative power threshold (e.g., 0.8 for 80%).
         The default is [0.5, 0.75].
+    nperseg : int, optional
+        Used in calculation of spectoram and STFT features.
+        The deafult is 50.
+    n_fft: int, optional
+        Number of samples used to compute each FFT in the STFT, which controls the frequency resolution
+    nan_mask: int, optional
+        Value to replace NaN values with. Default is None, which means NaN values are not replaced.
+    pos_inf_mask: int, optional
+        Value to replace positive infinity values with. Default is None, which means positive infinity values are not replaced.
+    neg_inf_mask: int, optional
+        Value to replace negative infinity values with. Default is None, which means negative infinity values are not replaced.
     
     """
     def __init__(self,
+                 window_size,
                  fs,
                  f_bands=[[0.5,4], [4,8], [8,12], [12,30], [30,100]],
                  n_dom_freqs=5,
@@ -341,8 +368,14 @@ class SpectralFeatureParams(BaseFeatureParams):
                  flux_orders=[2],
                  thresholds_freq_below=[0.5, 0.75],
                  thresholds_freq_above=[0.5, 0.75],
-                 calculators=None):
-        super().__init__(calculators)
+                 nperseg=None,
+                 n_fft=None,
+                 calculators=None,
+                 nan_mask=None,
+                 pos_inf_mask=None,
+                 neg_inf_mask=None):
+        super().__init__(calculators, nan_mask=nan_mask, pos_inf_mask=pos_inf_mask, neg_inf_mask=neg_inf_mask)
+        self.window_size = window_size
         self.fs = fs
         self.f_bands = f_bands
         self.n_dom_freqs = n_dom_freqs
@@ -356,6 +389,9 @@ class SpectralFeatureParams(BaseFeatureParams):
         self.flux_orders = flux_orders
         self.thresholds_freq_below = thresholds_freq_below
         self.thresholds_freq_above = thresholds_freq_above
+        self.nperseg = self.window_size // 4 if nperseg is None else nperseg
+        if n_fft is None:
+            self.n_fft = window_size 
 
 
 class TimeFrequencyFeatureParams(BaseFeatureParams):
@@ -382,6 +418,12 @@ class TimeFrequencyFeatureParams(BaseFeatureParams):
         Parameters for the spectogram feature calculation. The default is None.
     stft_sf_params : StatisticalFeatureParams, optional
         Parameters for the STFT feature calculation. The default is None.
+    nan_mask: int, optional
+        Value to replace NaN values with. Default is None, which means NaN values are not replaced.
+    pos_inf_mask: int, optional
+        Value to replace positive infinity values with. Default is None, which means positive infinity values are not replaced.
+    neg_inf_mask: int, optional
+        Value to replace negative infinity values with. Default is None, which means negative infinity values are not replaced.
     """
     def __init__(self,
                  window_size,
@@ -393,9 +435,12 @@ class TimeFrequencyFeatureParams(BaseFeatureParams):
                  wavelet_sf_params=None,
                  spectogram_sf_params=None,
                  stft_sf_params=None,
-                 calculators=None
+                 calculators=None,
+                 nan_mask=None,
+                 pos_inf_mask=None,
+                 neg_inf_mask=None
                 ):
-        super().__init__(calculators)
+        super().__init__(calculators, nan_mask=nan_mask, pos_inf_mask=pos_inf_mask, neg_inf_mask=neg_inf_mask)
         self.window_size = window_size
         self.wavelet = wavelet
         self.stft_window = stft_window

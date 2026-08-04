@@ -1,16 +1,127 @@
 import os
 import pandas as pd
+import numpy as np
 import multiprocessing as mp
 from functools import partial
 
 import tifex_py.feature_extraction.statistical_feature_calculators as statistical_feature_calculators
 import tifex_py.feature_extraction.spectral_feature_calculators as spectral_feature_calculators
 import tifex_py.feature_extraction.time_frequency_feature_calculators as time_frequency_feature_calculators
-from tifex_py.feature_extraction.settings import StatisticalFeatureParams, SpectralFeatureParams, TimeFrequencyFeatureParams
-from tifex_py.utils.extraction_utils import get_calculators, extract_features
+from tifex_py.feature_extraction.settings import (
+    StatisticalFeatureParams,
+    SpectralFeatureParams,
+    TimeFrequencyFeatureParams,
+)
+from tifex_py.utils.extraction_utils import (
+    get_calculators,
+    extract_features,
+    get_module,
+    extract_signals,
+    structure_results,
+    split_input_into_batches,
+    save_features,
+)
 from tifex_py.feature_extraction.data import TimeSeries, SpectralTimeSeries
 
-def calculate_all_features(data, stat_params, spec_params, tf_params, columns=None, njobs=None):
+
+def calculate_features(
+    data,
+    store_path,
+    feature_type="statistical",
+    params=None,
+    samples_per_file=4000,
+    window_size=None,
+    columns=None,
+    njobs=None,
+    concat_channels=False,
+    store_features=True,
+):
+    """
+    Calculates the specified type of features for the given dataset.
+
+    Parameters:
+    ----------
+    data: pandas.DataFrame or array-like
+        The dataset to calculate features for.
+    store_path: str
+        The path to store the calculated features if store_features is True.
+    feature_type: str {"statistical", "spectral", "time_frequency"}
+        The type of features to calculate.
+    params: StatisticalFeatureParams or SpectralFeatureParams or TimeFrequencyFeatureParams
+        Parameters to use in feature extraction.
+    samples_per_file: int
+        Number of data samples to include in each output file when splitting the dataset. Once this limit is reached, a new file is created. Default is 4000.
+    window_size: int
+        Window size to use for feature extraction.
+    columns: list
+        Columns to calculate features for or names of the np.array columns.
+    njobs: int
+        Number of worker processes to use. If None or -1, the number returned by
+        os.cpu_count() is used.
+    concat_channels: bool
+        Whether to concatenate channels when calculating features. If True, each axis becomes a separate row (sample_x, sample_y, sample_z) within a sample. If False, axes are interleaved as column suffixes (feature_x, feature_y, feature_z).
+    store_features: bool
+        Whether to store the calculated features in a file. If True, the features are stored in the specified directory. If False, the features are returned as a list of DataFrames. Default is True.
+    Returns:
+    -------
+    features: list of pandas.DataFrame
+        List of DataFrames containing the calculated features.
+    """
+    if feature_type == "statistical":
+        feature_function = calculate_statistical_features
+        if params is not None and type(params).__name__ != "StatisticalFeatureParams":
+            raise ValueError(
+                "For statistical feature extraction, params should be an instance of StatisticalFeatureParams."
+            )
+    elif feature_type == "spectral":
+        feature_function = calculate_spectral_features
+        if params is not None and type(params).__name__ != "SpectralFeatureParams":
+            raise ValueError(
+                "For spectral feature extraction, params should be an instance of SpectralFeatureParams."
+            )
+    elif feature_type == "time_frequency":
+        feature_function = calculate_time_frequency_features
+        if params is not None and type(params).__name__ != "TimeFrequencyFeatureParams":
+            raise ValueError(
+                "For time frequency feature extraction, params should be an instance of TimeFrequencyFeatureParams."
+            )
+    else:
+        raise ValueError(
+            "Invalid feature type. Please choose from 'statistical', 'spectral', or 'time_frequency'."
+        )
+
+    batch_groups = split_input_into_batches(data, samples_per_file)
+    batch_data = []
+    for batch in batch_groups:
+        print(f"Processing batch {batch} for {feature_type} feature extraction.")
+        input_data = data[batch[0] : batch[1]]
+        features = feature_function(
+            input_data, params=params, columns=columns, njobs=njobs
+        )
+        if store_features:
+            save_features(
+                features,
+                batch,
+                store_path,
+            )
+        else:
+            batch_data.append(features)
+    if not store_features:
+        return batch_data
+
+
+def calculate_all_features(
+    data,
+    stat_params,
+    spec_params,
+    tf_params,
+    store_path,
+    columns=None,
+    njobs=None,
+    concat_channels=False,
+    store_features=True,
+    samples_per_file=4000,
+):
     """
     Calculates statistical, spectral, and time frequency features for the
     given dataset.
@@ -19,6 +130,8 @@ def calculate_all_features(data, stat_params, spec_params, tf_params, columns=No
     ----------
     data: pandas.DataFrame or array-like
         The dataset to calculate features for.
+    store_path: str
+        The path to store the calculated features if store_features is True.
     stat_params: StatisticalFeatureParams
         Parameters to use in statistical feature extraction.
     spec_params: SpectralFeatureParams
@@ -30,19 +143,52 @@ def calculate_all_features(data, stat_params, spec_params, tf_params, columns=No
     njobs: int
         Number of worker processes to use. If None or -1, the number returned by
         os.cpu_count() is used.
-    
+    concat_channels: bool
+        Whether to concatenate channels when calculating features. If True, each axis becomes a separate row (sample_x, sample_y, sample_z) within a sample. If False, axes are interleaved as column suffixes (feature_x, feature_y, feature_z).
+    store_features: bool
+        Whether to store the calculated features in a file. If True, the features are stored in the specified directory. If False, the features are returned as a list of DataFrames.
+    samples_per_file: int
+        Number of data samples to include in each output file when splitting the dataset. Once this limit is reached, a new file is created. Default is 4000.
     Returns:
     -------
-    features: pandas.DataFrame
-        DataFrame of calculated features.
+    features: list of pandas.DataFrame
+        List of DataFrames containing the calculated features.
     """
-    stat_features = calculate_statistical_features(data, stat_params, columns=columns, njobs=njobs)
-    spec_features = calculate_spectral_features(data, spec_params, columns=columns, njobs=njobs)
-    tf_features = calculate_time_frequency_features(data, tf_params, columns=columns, njobs=njobs)
-    return pd.concat([stat_features, spec_features, tf_features], axis=1)
+    batch_groups = split_input_into_batches(data, samples_per_file)
+    batch_data = []
+    for batch in batch_groups:
+        print(f"Processing batch {batch} for all feature extraction.")
+        input_data = data[batch[0] : batch[1]]
+        stat_features = calculate_statistical_features(
+            input_data, stat_params, columns=columns, concat_channels=concat_channels, njobs=njobs
+        )
+        spec_features = calculate_spectral_features(
+            input_data, spec_params, columns=columns, concat_channels=concat_channels, njobs=njobs
+        )
+        tf_features = calculate_time_frequency_features(
+            input_data, tf_params, columns=columns, concat_channels=concat_channels, njobs=njobs
+        )
+
+        output_features = []
+        for idx in range(len(stat_features)):
+            output_features.append(
+                pd.concat(
+                    [stat_features[idx], spec_features[idx], tf_features[idx]], axis=1
+                )
+            )
+
+        if store_features:
+            save_features(output_features, batch, store_path)
+        else:
+            batch_data.append(output_features)
+
+    if not store_features:
+        return batch_data
 
 
-def calculate_statistical_features(data, params=None, window_size=None, columns=None, njobs=None):
+def calculate_statistical_features(
+    data, params=None, window_size=None, columns=None,concat_channels=False, njobs=None
+):
     """
     Calculates statistical features for the given dataset.
 
@@ -56,6 +202,8 @@ def calculate_statistical_features(data, params=None, window_size=None, columns=
         Window size to use for feature extraction.
     columns: list
         Columns to calculate features for or names of the np.array columns.
+    concat_channels: bool
+        Whether to concatenate channels when calculating features. If True, each axis becomes a separate row (sample_x, sample_y, sample_z) within a sample. If False, axes are interleaved as column suffixes (feature_x, feature_y, feature_z).
     njobs: int
         Number of worker processes to use. If None or -1, the number returned by
         os.cpu_count() is used.
@@ -70,10 +218,13 @@ def calculate_statistical_features(data, params=None, window_size=None, columns=
 
     time_series = TimeSeries(data, columns=columns)
 
-    features = calculate_ts_features(time_series, "statistical", params, njobs=njobs)
+    features = calculate_ts_features(time_series, "statistical", params,concat_channels=concat_channels, njobs=njobs)
     return features
 
-def calculate_spectral_features(data, params=None, fs=None, columns=None, njobs=None):
+
+def calculate_spectral_features(
+    data, params=None, window_size=None, fs=None, columns=None,concat_channels=False, njobs=None
+):
     """
     Calculates spectral features for the given dataset.
 
@@ -83,10 +234,14 @@ def calculate_spectral_features(data, params=None, fs=None, columns=None, njobs=
         The dataset to calculate features for.
     params: SpectralFeatureParams
         Parameters to use in feature extraction.
+    window_size: int
+        Window size to use for feature extraction.
     fs: float
         Sampling frequency of the data.
     columns: list
         Columns to calculate features for or names of the np.array columns.
+    concat_channels: bool
+        Whether to concatenate channels when calculating features. If True, each axis becomes a separate row (sample_x, sample_y, sample_z) within a sample. If False, axes are interleaved as column suffixes (feature_x, feature_y, feature_z).
     njobs: int
         Number of worker processes to use. If None or -1, the number returned by
         os.cpu_count() is used.
@@ -97,12 +252,17 @@ def calculate_spectral_features(data, params=None, fs=None, columns=None, njobs=
         DataFrame of calculated features.
     """
     if params is None:
-        params = SpectralFeatureParams(fs)
-    time_series = SpectralTimeSeries(data, columns=columns, fs=params.fs)
-    features = calculate_ts_features(time_series, "spectral", params,  njobs=njobs)
+        params = SpectralFeatureParams(fs, window_size=window_size)
+    time_series = SpectralTimeSeries(
+        data, columns=columns, fs=params.fs, nperseg=params.nperseg, n_fft=params.n_fft
+    )
+    features = calculate_ts_features(time_series, "spectral", params,concat_channels=concat_channels, njobs=njobs)
     return features
 
-def calculate_time_frequency_features(data, params=None, window_size=None, columns=None, njobs=None):
+
+def calculate_time_frequency_features(
+    data, params=None, window_size=None, columns=None,concat_channels=False, njobs=None
+):
     """
     Calculates time frequency features for the given dataset.
 
@@ -116,6 +276,7 @@ def calculate_time_frequency_features(data, params=None, window_size=None, colum
         Window size to use for feature extraction.
     columns: list
         Columns to calculate features for or names of the np.array columns.
+    
     njobs: int
         Number of worker processes to use. If None, the  or -1number returned by
         os.cpu_count() is used.
@@ -129,10 +290,15 @@ def calculate_time_frequency_features(data, params=None, window_size=None, colum
         params = TimeFrequencyFeatureParams(window_size)
 
     time_series = TimeSeries(data, columns=columns)
-    features = calculate_ts_features(time_series, "time_frequency", params, njobs=njobs)
+    features = calculate_time_frequency_ts_features(
+        time_series, "time_frequency", params, concat_channels=concat_channels, njobs=njobs
+    )
     return features
 
-def calculate_ts_features(time_series, module, params, njobs=None):
+
+def calculate_ts_features(
+    time_series, module, params, concat_channels=False, njobs=None
+):
     """
     Calculate features from the given module for the given time series data.
 
@@ -144,10 +310,12 @@ def calculate_ts_features(time_series, module, params, njobs=None):
         The module with the feature calculators to use.
     params: BaseFeatureParams
         Parameters to use in feature extraction.
+    concat_channels: bool
+        Whether to concatenate channels when calculating features. If True, each axis becomes a separate row (sample_x, sample_y, sample_z) within a sample. If False, axes are interleaved as column suffixes (feature_x, feature_y, feature_z).
     njobs: int
         Number of worker processes to use. If None or -1, the number returned by
         os.cpu_count() is used.
-    
+
     Returns:
     -------
     features_df: pandas.DataFrame
@@ -159,15 +327,125 @@ def calculate_ts_features(time_series, module, params, njobs=None):
     features = []
     index = []
 
-    pool = mp.Pool(njobs)
+    param_dict = params.get_settings_as_dict()
+    calculators = get_calculators(get_module(module), param_dict["calculators"])
+    print("     Calculating features for " + module + "...")
+    with mp.Pool(njobs) as pool:
+        results = list(
+            pool.imap(
+                partial(
+                    extract_features,
+                    series=time_series,
+                    param_dict=param_dict,
+                ),
+                calculators,
+            )
+        )
+    print("     Finished calculating features for " + module + ".")
+    print("     Structuring results for " + module + "...")
+    all_features = structure_results(
+        results,
+        nan_mask=param_dict["nan_mask"],
+        pos_inf_mask=param_dict["pos_inf_mask"],
+        neg_inf_mask=param_dict["neg_inf_mask"],
+        concat_channels=concat_channels,
+    )
+    print("     Finished structuring results for " + module + ".")
+    return all_features
+
+
+def calculate_time_frequency_ts_features(
+    time_series, module, params, concat_channels=False, njobs=None
+):
+    """
+    Calculate features from the given module for the given time series data.
+
+    Parameters:
+    ----------
+    time_series: TimeSeries
+        The time series data to calculate features for.
+    module: str
+        The module with the feature calculators to use.
+    params: BaseFeatureParams
+        Parameters to use in feature extraction.
+    concat_channels: bool
+        Whether to concatenate channels when calculating features. If True, each axis becomes a separate row (sample_x, sample_y, sample_z) within a sample. If False, axes are interleaved as column suffixes (feature_x, feature_y, feature_z).
+    njobs: int
+        Number of worker processes to use. If None or -1, the number returned by
+        os.cpu_count() is used.
+
+    Returns:
+    -------
+    features_df: pandas.DataFrame
+        DataFrame of calculated features.
+    """
+    if njobs is None or njobs == -1:
+        njobs = os.cpu_count()
+
+    index = []
 
     param_dict = params.get_settings_as_dict()
+    calculators = get_calculators(get_module(module), param_dict["calculators"])
+    print("     Calculating signals for time-frequency features...")
+    with mp.Pool(njobs) as pool:
+        results = list(
+            pool.map(
+                partial(
+                    extract_signals,
+                    series=time_series,
+                    param_dict=param_dict,
+                ),
+                calculators,
+            )
+        )
+    with mp.Pool(njobs) as inner_pool:
+        print("     Finished calculating signals for time-frequency features.")
+        all_structured_results = []
+        for result in results:  # Per each time series calculator
 
-    results = pool.imap(partial(extract_features, module=module, param_dict=param_dict), time_series)
+            for name in result[2]:  # Per each signal name
+                time_series.data = result[0][
+                    name
+                ]  # Update the time series data with the calculated signal
 
-    for r in results:
-        index.append(r.label)
-        features.append(r.features)
+                params = result[1]
 
-    features_df = pd.DataFrame(features, index=index)
-    return features_df
+                calculators = get_calculators(
+                    get_module("statistical"), params["calculators"]
+                )  # Get the calculator function for the calculated signal
+                # For each result -> get features from the signal
+                feature_results = list(
+                    inner_pool.map(
+                        partial(
+                            extract_features,
+                            series=time_series,
+                            param_dict=params,
+                        ),
+                        calculators,
+                    )
+                )
+
+                structured_results = structure_results(
+                    feature_results,
+                    nan_mask=params["nan_mask"],
+                    pos_inf_mask=params["pos_inf_mask"],
+                    neg_inf_mask=params["neg_inf_mask"],
+                    group_name=name,
+                    concat_channels=concat_channels,
+                )
+                all_structured_results.append(structured_results)
+
+    print("     Finished calculating features for time-frequency signals.")
+    # Single concat per idx slot at the end
+    if not all_structured_results:
+        return []
+
+    n_slots = len(all_structured_results[0])
+    features = [
+        pd.concat(
+            [iteration[idx] for iteration in all_structured_results], axis=1
+        ).copy()
+        for idx in range(n_slots)
+    ]
+
+    return features

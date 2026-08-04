@@ -13,3 +13,4 @@ Public Dataset/
 */__pycache__
 package_name/*/__pycache__
 *.pyc
+*.egg-info

@@ -112,10 +112,10 @@ def calculate_features(
 
 def calculate_all_features(
     data,
-    stat_params,
-    spec_params,
-    tf_params,
     store_path,
+    stat_params=None,
+    spec_params=None,
+    tf_params=None,
     columns=None,
     njobs=None,
     concat_channels=False,
@@ -123,8 +123,7 @@ def calculate_all_features(
     samples_per_file=4000,
 ):
     """
-    Calculates statistical, spectral, and time frequency features for the
-    given dataset.
+    Calculates the specified features for the given dataset.
 
     Parameters:
     ----------
@@ -159,23 +158,42 @@ def calculate_all_features(
     for batch in batch_groups:
         print(f"Processing batch {batch} for all feature extraction.")
         input_data = data[batch[0] : batch[1]]
-        stat_features = calculate_statistical_features(
-            input_data, stat_params, columns=columns, concat_channels=concat_channels, njobs=njobs
-        )
-        spec_features = calculate_spectral_features(
-            input_data, spec_params, columns=columns, concat_channels=concat_channels, njobs=njobs
-        )
-        tf_features = calculate_time_frequency_features(
-            input_data, tf_params, columns=columns, concat_channels=concat_channels, njobs=njobs
-        )
+        if stat_params:
+            stat_features = calculate_statistical_features(
+                input_data,
+                stat_params,
+                columns=columns,
+                concat_channels=concat_channels,
+                njobs=njobs,
+            )
+        if spec_params:
+            spec_features = calculate_spectral_features(
+                input_data,
+                spec_params,
+                columns=columns,
+                concat_channels=concat_channels,
+                njobs=njobs,
+            )
+        if tf_params:
+            tf_features = calculate_time_frequency_features(
+                input_data,
+                tf_params,
+                columns=columns,
+                concat_channels=concat_channels,
+                njobs=njobs,
+            )
 
         output_features = []
         for idx in range(len(stat_features)):
-            output_features.append(
-                pd.concat(
-                    [stat_features[idx], spec_features[idx], tf_features[idx]], axis=1
-                )
-            )
+            features_to_concat = []
+            if stat_params:
+                features_to_concat.append(stat_features[idx])
+            if spec_params:
+                features_to_concat.append(spec_features[idx])
+            if tf_params:
+                features_to_concat.append(tf_features[idx])
+
+            output_features.append(pd.concat(features_to_concat, axis=1))
 
         if store_features:
             save_features(output_features, batch, store_path)
@@ -187,7 +205,7 @@ def calculate_all_features(
 
 
 def calculate_statistical_features(
-    data, params=None, window_size=None, columns=None,concat_channels=False, njobs=None
+    data, params=None, window_size=None, columns=None, concat_channels=False, njobs=None
 ):
     """
     Calculates statistical features for the given dataset.
@@ -218,12 +236,20 @@ def calculate_statistical_features(
 
     time_series = TimeSeries(data, columns=columns)
 
-    features = calculate_ts_features(time_series, "statistical", params,concat_channels=concat_channels, njobs=njobs)
+    features = calculate_ts_features(
+        time_series, "statistical", params, concat_channels=concat_channels, njobs=njobs
+    )
     return features
 
 
 def calculate_spectral_features(
-    data, params=None, window_size=None, fs=None, columns=None,concat_channels=False, njobs=None
+    data,
+    params=None,
+    window_size=None,
+    fs=None,
+    columns=None,
+    concat_channels=False,
+    njobs=None,
 ):
     """
     Calculates spectral features for the given dataset.
@@ -256,12 +282,14 @@ def calculate_spectral_features(
     time_series = SpectralTimeSeries(
         data, columns=columns, fs=params.fs, nperseg=params.nperseg, n_fft=params.n_fft
     )
-    features = calculate_ts_features(time_series, "spectral", params,concat_channels=concat_channels, njobs=njobs)
+    features = calculate_ts_features(
+        time_series, "spectral", params, concat_channels=concat_channels, njobs=njobs
+    )
     return features
 
 
 def calculate_time_frequency_features(
-    data, params=None, window_size=None, columns=None,concat_channels=False, njobs=None
+    data, params=None, window_size=None, columns=None, concat_channels=False, njobs=None
 ):
     """
     Calculates time frequency features for the given dataset.
@@ -276,7 +304,6 @@ def calculate_time_frequency_features(
         Window size to use for feature extraction.
     columns: list
         Columns to calculate features for or names of the np.array columns.
-    
     njobs: int
         Number of worker processes to use. If None, the  or -1number returned by
         os.cpu_count() is used.
@@ -291,7 +318,11 @@ def calculate_time_frequency_features(
 
     time_series = TimeSeries(data, columns=columns)
     features = calculate_time_frequency_ts_features(
-        time_series, "time_frequency", params, concat_channels=concat_channels, njobs=njobs
+        time_series,
+        "time_frequency",
+        params,
+        concat_channels=concat_channels,
+        njobs=njobs,
     )
     return features
 
